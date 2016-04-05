@@ -1,0 +1,21 @@
+{
+    "id": "#(service.id)",
+    "name": "#(service.name)",
+    "urls": [{
+        "url": "/geostore",
+        "method": "POST",
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/geostore"
+        }]
+    }, {
+        "url": "/geostore/:id",
+        "method": "GET",
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/geostore/:id"
+        }]
+    }]
+}
