@@ -3,7 +3,7 @@ develop:
     file: base.yml
     service: base
   ports:
-    - "35731:35729"
+    - "35735:35729"
   container_name: gfw-user-api-develop
   environment:
     NODE_ENV: dev

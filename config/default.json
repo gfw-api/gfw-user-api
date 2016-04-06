@@ -8,8 +8,8 @@
     "service": {
         "id": "gfw-user-api_1.0.0",
         "name": "GFW User API",
-        "uri": "http://192.168.99.100:3100",
-        "port": 3100
+        "uri": "http://192.168.99.100:3400",
+        "port": 3400
     },
     "apiGateway":{
         "uri": "http://192.168.99.100:8000/gateway/service"

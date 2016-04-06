@@ -2,7 +2,7 @@ FROM node:latest
 MAINTAINER raul.requero@vizzuality.com
 
 
-RUN npm install -g grunt-cli
+RUN npm install -g grunt-cli bunyan
 ENV NAME gfw-user-api
 ENV USER microservice
 

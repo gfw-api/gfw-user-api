@@ -2,20 +2,47 @@
     "id": "#(service.id)",
     "name": "#(service.name)",
     "urls": [{
-        "url": "/geostore",
+        "url": "/user",
         "method": "POST",
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
-            "path": "/api/v1/geostore"
+            "path": "/api/v1/user"
         }]
     }, {
-        "url": "/geostore/:id",
+        "url": "/user/createOrGet",
+        "method": "POST",
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/createOrGet"
+        }]
+    }, {
+        "url": "/user/:id",
         "method": "GET",
+        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
-            "path": "/api/v1/geostore/:id"
+            "path": "/api/v1/user/:id"
+        }]
+    }, {
+        "url": "/user/:id",
+        "method": "DELETE",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "DELETE",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/:id"
+        }]
+    }, {
+        "url": "/user/:id",
+        "method": "PATCH",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "PATCH",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/:id"
         }]
     }]
 }

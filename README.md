@@ -1,5 +1,5 @@
-# GFW GeoStore API
-This repository is the microservice that it implement the geostore funcionality and exposed the /geostore endpoint in the apigateway
+# GFW User API
+This repository is the microservice that it implement the user funcionality and exposed the /user endpoint in the apigateway
 
 ## First time user
 Perform the following steps:
@@ -51,21 +51,49 @@ Example:
     "id": "#(service.id)",
     "name": "#(service.name)",
     "urls": [{
-        "url": "/geostore",
+        "url": "/user",
         "method": "POST",
         "endpoints": [{
             "method": "POST",
             "baseUrl": "#(service.uri)",
-            "path": "/api/v1/geostore"
+            "path": "/api/v1/user"
         }]
     }, {
-        "url": "/geostore/:id",
+        "url": "/user/createOrGet",
+        "method": "POST",
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/createOrGet"
+        }]
+    }, {
+        "url": "/user/:id",
         "method": "GET",
+        "authenticated": true,
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
-            "path": "/api/v1/geostore/:id"
+            "path": "/api/v1/user/:id"
+        }]
+    }, {
+        "url": "/user/:id",
+        "method": "DELETE",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "DELETE",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/:id"
+        }]
+    }, {
+        "url": "/user/:id",
+        "method": "PATCH",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "PATCH",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/:id"
         }]
     }]
 }
+
 ```

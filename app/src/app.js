@@ -45,7 +45,6 @@ var onDbReady = function(err) {
     });
 
     //load custom validator
-    require('validators/geoJSONValidator');
     app.use(validate());
 
     //load routes

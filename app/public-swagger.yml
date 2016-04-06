@@ -1,39 +1,40 @@
 swagger: '2.0'
 info:
-  title: GFW GeoStore API
-  description: Global Forest Watch - GeoStore API
+  title: GFW User API
+  description: Global Forest Watch - User API
   version: "1.0.0"
-host: api.gfw.com
+host: example.vizzuality.com
 
 schemes:
   - https
   - http
-
+# will be prefixed to all paths
+basePath: /api/v1
 produces:
   - application/vnd.api+json
 
 paths:
-  /geostore/{id}:
+  /user/{id}:
     get:
-      description: Returns geostore based on a single ID, if the geostore not exist return 404
-      operationId: getGeoStoreById
+      description: Returns user based on a single ID, if the user not exist return 404
+      operationId: getUserById
       produces:
         - application/vnd.api+json
       tags:
-        - GeoStore
+        - User
       parameters:
         - name: id
           in: path
-          description: ID of geostore to fetch
+          description: ID of user to fetch
           required: true
           type: string
       responses:
         200:
-          description: Geostore obtained
+          description: User obtained
           schema:
-            $ref: '#/definitions/GeoStoreAPI'
+            $ref: '#/definitions/UserAPI'
         404:
-          description: Geostore not found
+          description: User not found
           schema:
             $ref: '#/definitions/Errors'
         500:
@@ -44,27 +45,127 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Errors'
-  /geostore:
-    post:
-      summary: Create geostore
-      description: Create Geostore
+    delete:
+      description: Delete user based on a single ID, if the user not exist return 404
+      operationId: deleteUserById
       produces:
         - application/vnd.api+json
       tags:
-        - GeoStore
-      operationId: createGeoStore
+        - User
       parameters:
-        - name: geoStore
-          in: body
-          description: GeoStore to save
+        - name: id
+          in: path
+          description: ID of user to delete
           required: true
-          schema:
-            $ref: '#/definitions/Features'
+          type: string
       responses:
         200:
-          description: The object created
+          description: User deleted
           schema:
-            $ref: '#/definitions/GeoStoreAPI'
+            $ref: '#/definitions/UserAPI'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+    put:
+      description: Update user based on a single ID, if the user not exist return 404
+      operationId: updateUser
+      produces:
+        - application/vnd.api+json
+      tags:
+        - User
+      parameters:
+        - name: id
+          in: path
+          description: ID of user to update
+          required: true
+          type: string
+        - name: user
+          in: body
+          description: User to save
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreate'
+      responses:
+        200:
+          description: User updated
+          schema:
+            $ref: '#/definitions/UserAPI'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /user:
+    post:
+      summary: Create user. If user exist, return 400
+      description: Create user
+      produces:
+        - application/vnd.api+json
+      tags:
+        - User
+      operationId: createUser
+      parameters:
+        - name: user
+          in: body
+          description: User to save
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreate'
+      responses:
+        200:
+          description: The user created
+          schema:
+            $ref: '#/definitions/UserAPI'
+        400:
+          description: Validate error or duplicated user
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+            
+  /user/createOrGet:
+    post:
+      summary: Create user if not exist, if exist return the user
+      description: Create user if not exist, if exist return the user
+      produces:
+        - application/vnd.api+json
+      tags:
+        - User
+      operationId: createOrGetUser
+      parameters:
+        - name: user
+          in: body
+          description: User to save
+          required: true
+          schema:
+            $ref: '#/definitions/UserCreate'
+      responses:
+        200:
+          description: The user created
+          schema:
+            $ref: '#/definitions/UserAPI'
         400:
           description: Validate error
           schema:
@@ -129,15 +230,15 @@ definitions:
         description: A meta object containing non-standard meta-information about the error.
 
 
-  GeoStoreAPI:
+  UserAPI:
     type: object
     properties:
       data:
         type: array
         items:
-          $ref: '#/definitions/GeoJSON'
+          $ref: '#/definitions/User'
 
-  GeoJSON:
+  User:
     type: object
     properties:
       type:
@@ -149,42 +250,37 @@ definitions:
       attributes:
         properties:
           schema:
-            $ref: '#/definitions/Features'
-  Features:
+            $ref: '#/definitions/UserData'
+  UserData:
     type: object
     properties:
-      type:
+      fullName:
         type: string
-        description: Type of feature
-      features:
-        type: array
-        description: Features
-        items:
-          $ref: '#/definitions/Feature'
-  Feature:
+      provider:
+        type: string
+        description: Provider of oauth
+      providerId:
+        type: string
+        description: Id of provider obtained in the authentication
+      email:
+        type: string
+      createdAt:
+        type: string
+      sector:
+        type: string
+      primaryResponsabilities:
+        type: string
+      country:
+        type: string
+      state:
+        type: string
+      city:
+        type: string
+      howDoYouUse:
+        type: string
+        
+  UserCreate:
+    allOf:
+      - $ref: '#/definitions/UserData'
     type: object
-    properties:
-      type:
-        type: string
-        description: Type of feature
-      properties:
-        type: object
-        description: Feature
-      geometry:
-        type: object
-        description: Geometries
-        properties:
-          schema:
-            $ref: '#/definitions/Geometry'
-
-  Geometry:
-    type: object
-    properties:
-      type:
-        type: string
-        description: Geometry type
-      coordinates:
-        type: array
-        description: Coordinates array
-        items:
-          type: object
+     
