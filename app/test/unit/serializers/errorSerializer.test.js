@@ -24,7 +24,6 @@ describe('Error serializer test', function() {
       response.should.not.be.a.Array();
       response.should.have.property('errors');
       response.errors.should.have.length(2);
-
       let error = response.errors[0];
 
       error.should.have.property('source');
