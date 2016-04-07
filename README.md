@@ -1,4 +1,7 @@
 # GFW User API
+
+Master: [![Build Status](https://travis-ci.org/gfw-api/gfw-user-api.svg?branch=master)](https://travis-ci.org/gfw-api/gfw-user-api) Develop: [![Build Status](https://travis-ci.org/gfw-api/gfw-user-api.svg?branch=develop)](https://travis-ci.org/gfw-api/gfw-user-api)
+
 This repository is the microservice that it implement the user funcionality and exposed the /user endpoint in the apigateway
 
 ## First time user
