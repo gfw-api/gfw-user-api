@@ -1,0 +1,8 @@
+base:
+  build: .
+  ports:
+    - "3400:3400"
+  environment:
+    PORT: 3400
+    NODE_PATH: app/src
+  container_name: gfw-user-api

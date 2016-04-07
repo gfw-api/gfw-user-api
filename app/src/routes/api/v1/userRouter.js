@@ -1,0 +1,113 @@
+'use strict';
+
+var Router = require('koa-router');
+var logger = require('logger');
+var UserSerializer = require('serializers/userSerializer');
+var UserValidator = require('validators/userValidator');
+var User = require('models/user');
+var router = new Router({
+    prefix: '/user'
+});
+
+
+class UserRouter {
+    static * getUsers(){
+        logger.info('Obtaining users');
+        let users = yield User.find();
+        this.body = UserSerializer.serialize(users);
+    }
+    
+    static * getUserById(){
+        logger.info('Obtaining users by id %s', this.params.id);
+        let userFind = yield User.findById(this.params.id);
+        if(!userFind){
+            logger.error('User not found');
+            this.throw(404, 'User not found');
+            return; 
+        }
+        this.body = UserSerializer.serialize(userFind);
+    }
+    
+    static * createUser(){
+        logger.info('Create user', this.request.body);
+        let exist = yield User.count({provider: this.request.body.provider, providerId: this.request.body.providerId});
+        if(exist > 0){
+            logger.error('Duplicated user');
+            this.throw(400, 'Duplicated user');
+            return; 
+        }
+        let userCreate = yield new User(this.request.body).save();
+        this.body = UserSerializer.serialize(userCreate);
+    }
+    
+     static * createOrGetUser(){
+        logger.info('Create or get user', this.request.body);
+        let userFind = yield User.findOne({provider: this.request.body.provider, providerId: this.request.body.providerId});
+        if(userFind){
+            logger.debug('User exist', userFind);
+            this.body = UserSerializer.serialize(userFind);
+            return;
+        }
+        let userCreate = yield new User(this.request.body).save();
+        this.body = UserSerializer.serialize(userCreate);
+    }
+    
+    static * updateUser(){
+        logger.info('Obtaining users by id %s', this.params.id);
+        let userFind = yield User.findById(this.params.id);
+        if(!userFind){
+            logger.error('User not found');
+            this.throw(404, 'User not found');
+            return;
+        }
+        //extend user
+        if(this.request.body.fullName !== undefined){
+            userFind.fullName = this.request.body.fullName;
+        }
+        if(this.request.body.email !== undefined){
+            userFind.email = this.request.body.email;
+        }
+        if(this.request.body.sector !== undefined){
+            userFind.sector = this.request.body.sector;
+        }
+        if(this.request.body.primaryResponsibilities !== undefined){
+            userFind.primaryResponsibilities = this.request.body.primaryResponsibilities;
+        }
+        if(this.request.body.country !== undefined){
+            userFind.country = this.request.body.country;
+        }
+        if(this.request.body.state !== undefined){
+            userFind.state = this.request.body.state;
+        }
+        if(this.request.body.city !== undefined){
+            userFind.city = this.request.body.city;
+        }
+        if(this.request.body.howDoYouUse !== undefined){
+            userFind.howDoYouUse = this.request.body.howDoYouUse;
+        }
+        
+        yield userFind.save();
+        this.body = UserSerializer.serialize(userFind);
+    }
+  
+    static * deleteUser(){
+        logger.info('Obtaining users by id %s', this.params.id);
+        let userFind = yield User.findById(this.params.id);
+        if(!userFind){
+            logger.error('User not found');
+            this.throw(404, 'User not found');
+            return; 
+        }
+        yield userFind.remove();
+        this.body = UserSerializer.serialize(userFind);
+    }
+}
+
+router.get('/', UserRouter.getUsers);
+router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
+router.post('/', UserValidator.create, UserRouter.createUser);
+router.post('/createOrGet', UserValidator.create, UserRouter.createOrGetUser);
+router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
+router.delete('/:id', UserValidator.getBydId, UserRouter.deleteUser);
+
+module.exports = router;

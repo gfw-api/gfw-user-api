@@ -1,0 +1,12 @@
+{
+    "logger": {
+        "name": "gfw-user-api",
+        "level": "info",
+        "toFile": false,
+        "dirLogFile": null
+    },
+    "service": {
+        "uri": "http://gfw-user-api.herokuapp.com",
+        "port": null
+    } 
+}
