@@ -30,8 +30,6 @@ docker-compose -f docker-compose-test.yml run test
 
 ## Install in heroku
 
-Config heroku app with: [https://elements.heroku.com/buildpacks/prashtx/heroku-buildpack-gdal](https://elements.heroku.com/buildpacks/prashtx/heroku-buildpack-gdal)
-
 Is necessary define the next environment variables:
 * API_GATEWAY_URI => Url the register of the API Gateway. Remember: If the authentication is active in API Gateway, add the username and password in the url
 * NODE_ENV => Environment (prod, staging, dev)
