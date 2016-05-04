@@ -6,7 +6,6 @@
         "dirLogFile": null
     },
     "service": {
-        "uri": "http://gfw-user-api.herokuapp.com",
-        "port": null
-    } 
+        "uri": "http://172.31.45.42:3400",
+    }
 }
