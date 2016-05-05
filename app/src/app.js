@@ -1,5 +1,7 @@
 'use strict';
 //load modules
+//
+require('newrelic');
 var config = require('config');
 var logger = require('logger');
 var path = require('path');
