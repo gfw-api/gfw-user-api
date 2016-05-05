@@ -4,8 +4,5 @@
         "level": "info",
         "toFile": false,
         "dirLogFile": null
-    },
-    "service": {
-        "uri": "http://172.31.45.42:3400",
     }
 }
