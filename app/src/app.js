@@ -1,5 +1,7 @@
 'use strict';
 //load modules
+//
+require('newrelic');
 var config = require('config');
 var logger = require('logger');
 var path = require('path');
@@ -64,7 +66,8 @@ var onDbReady = function(err) {
             uri: config.get('service.uri'),
             dirConfig: path.join(__dirname, '../microservice'),
             dirPackage: path.join(__dirname, '../../'),
-            logger: logger
+            logger: logger,
+            app: app
         });
         p.then(function() {}, function(err) {
             logger.error(err);
