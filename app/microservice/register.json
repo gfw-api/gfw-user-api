@@ -11,6 +11,7 @@
         }]
     }, {
         "url": "/user/createOrGet",
+        "authenticated": true,
         "method": "POST",
         "endpoints": [{
             "method": "POST",

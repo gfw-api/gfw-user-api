@@ -144,7 +144,7 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Errors'
-            
+
   /user/createOrGet:
     post:
       summary: Create user if not exist, if exist return the user
@@ -278,9 +278,8 @@ definitions:
         type: string
       howDoYouUse:
         type: string
-        
+
   UserCreate:
     allOf:
       - $ref: '#/definitions/UserData'
     type: object
-     

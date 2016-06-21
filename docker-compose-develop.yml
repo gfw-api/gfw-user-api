@@ -7,8 +7,7 @@ develop:
   container_name: gfw-user-api-develop
   environment:
     NODE_ENV: dev
-    API_GATEWAY_URI: http://192.168.99.100:8000
-    SELF_REGISTRY: "on"
+    API_GATEWAY_URL: http://192.168.99.100:8000
   command: develop
   links:
     - mongo
