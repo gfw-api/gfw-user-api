@@ -3,6 +3,14 @@
     "name": "#(service.name)",
     "urls": [{
         "url": "/user",
+        "method": "GET",
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user"
+        }]
+    }, {
+        "url": "/user",
         "method": "POST",
         "endpoints": [{
             "method": "POST",
