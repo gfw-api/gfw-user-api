@@ -89,7 +89,7 @@ class UserRouter {
             userFind.howDoYouUse = this.request.body.howDoYouUse;
         }
         if(this.request.body.signUpForTesting !== undefined){
-            userFind.signUpForTesting = this.request.body.signUpForTesting;
+            userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
         }
 
         yield userFind.save();
