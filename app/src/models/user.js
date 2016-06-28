@@ -13,7 +13,8 @@ var User = new Schema({
     country: {type: String, required: false, trim: true},
     state: {type: String, required: false, trim: true},
     city: {type: String, required: false, trim: true},
-    howDoYouUse: {type: Array , 'default' : []},
+    howDoYouUse: {type: Array , default: []},
+    signUpForTesting: {type: Boolean , default: false},
 });
 
 module.exports = mongoose.model('User', User);

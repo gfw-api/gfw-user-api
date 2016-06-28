@@ -88,6 +88,9 @@ class UserRouter {
         if(this.request.body.howDoYouUse !== undefined){
             userFind.howDoYouUse = this.request.body.howDoYouUse;
         }
+        if(this.request.body.signUpForTesting !== undefined){
+            userFind.signUpForTesting = this.request.body.signUpForTesting;
+        }
 
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
