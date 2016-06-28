@@ -3,6 +3,7 @@
     "name": "#(service.name)",
     "urls": [{
         "url": "/user",
+        "authenticated": true,
         "method": "GET",
         "endpoints": [{
             "method": "GET",
@@ -34,6 +35,15 @@
             "method": "GET",
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/user/:id"
+        }]
+    }, {
+        "url": "/user/stories",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/stories"
         }]
     }, {
         "url": "/user/:id",

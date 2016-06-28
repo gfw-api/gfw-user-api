@@ -8,6 +8,7 @@ var User = require('models/user');
 var router = new Router({
     prefix: '/user'
 });
+var StoriesService = require('services/storiesService');
 
 
 class UserRouter {
@@ -107,10 +108,17 @@ class UserRouter {
         yield userFind.remove();
         this.body = UserSerializer.serialize(userFind);
     }
+
+    static * getStories() {
+        logger.info('Obtaining stories for logged in user');
+        let userId = this.request.query.loggedUser.id;
+        this.body = yield StoriesService.getStoriesByUser(userId);
+    }
 }
 
 router.get('/', UserRouter.getCurrentUser);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
+router.get('/stories',  UserRouter.getStories);
 router.post('/', UserValidator.create, UserRouter.createUser);
 router.post('/createOrGet', UserValidator.create, UserRouter.createOrGetUser);
 router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
