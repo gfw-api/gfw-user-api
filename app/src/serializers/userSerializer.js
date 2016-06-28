@@ -11,7 +11,6 @@ var userSerializer = new JSONAPISerializer('user', {
 });
 
 class UserSerializer {
-
   static serialize(data) {
     return userSerializer.serialize(data);
   }

@@ -18,7 +18,7 @@ class ServiceValidator {
         yield next;
 
     }
-    
+
     static * getBydId(next){
         logger.debug('Validate get user by id');
         this.checkParams('id').notEmpty();
