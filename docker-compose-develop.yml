@@ -8,6 +8,7 @@ develop:
   environment:
     NODE_ENV: dev
     API_GATEWAY_URL: http://192.168.99.100:8000
+    MIGRATE_URI: <urlmigrate>
   command: develop
   links:
     - mongo
