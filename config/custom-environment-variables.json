@@ -9,5 +9,8 @@
     "service": {
         "port": "PORT",
         "uri": "URI"
+    },
+    "migrate":{
+        "uri": "MIGRATE_URI"
     }
 }

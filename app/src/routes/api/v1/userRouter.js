@@ -8,38 +8,42 @@ var User = require('models/user');
 var router = new Router({
     prefix: '/user'
 });
+var StoriesService = require('services/storiesService');
 
 
 class UserRouter {
-    static * getUsers(){
-        logger.info('Obtaining users');
-        let users = yield User.find();
-        this.body = UserSerializer.serialize(users);
+    static * getCurrentUser(data){
+        logger.info('Obtaining logged in user');
+
+        let userId = this.request.query.loggedUser.id,
+            user = yield User.findById(userId);
+
+        this.body = UserSerializer.serialize(user);
     }
-    
+
     static * getUserById(){
         logger.info('Obtaining users by id %s', this.params.id);
         let userFind = yield User.findById(this.params.id);
         if(!userFind){
             logger.error('User not found');
             this.throw(404, 'User not found');
-            return; 
+            return;
         }
         this.body = UserSerializer.serialize(userFind);
     }
-    
+
     static * createUser(){
         logger.info('Create user', this.request.body);
         let exist = yield User.count({provider: this.request.body.provider, providerId: this.request.body.providerId});
         if(exist > 0){
             logger.error('Duplicated user');
             this.throw(400, 'Duplicated user');
-            return; 
+            return;
         }
         let userCreate = yield new User(this.request.body).save();
         this.body = UserSerializer.serialize(userCreate);
     }
-    
+
      static * createOrGetUser(){
         logger.info('Create or get user', this.request.body);
         let userFind = yield User.findOne({provider: this.request.body.provider, providerId: this.request.body.providerId});
@@ -51,7 +55,7 @@ class UserRouter {
         let userCreate = yield new User(this.request.body).save();
         this.body = UserSerializer.serialize(userCreate);
     }
-    
+
     static * updateUser(){
         logger.info('Obtaining users by id %s', this.params.id);
         let userFind = yield User.findById(this.params.id);
@@ -85,25 +89,35 @@ class UserRouter {
         if(this.request.body.howDoYouUse !== undefined){
             userFind.howDoYouUse = this.request.body.howDoYouUse;
         }
-        
+        if(this.request.body.signUpForTesting !== undefined){
+            userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
+        }
+
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
     }
-  
+
     static * deleteUser(){
         logger.info('Obtaining users by id %s', this.params.id);
         let userFind = yield User.findById(this.params.id);
         if(!userFind){
             logger.error('User not found');
             this.throw(404, 'User not found');
-            return; 
+            return;
         }
         yield userFind.remove();
         this.body = UserSerializer.serialize(userFind);
     }
+
+    static * getStories() {
+        logger.info('Obtaining stories for logged in user');
+        let userId = this.request.query.loggedUser.id;
+        this.body = yield StoriesService.getStoriesByUser(userId);
+    }
 }
 
-router.get('/', UserRouter.getUsers);
+router.get('/', UserRouter.getCurrentUser);
+router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
 router.post('/', UserValidator.create, UserRouter.createUser);
 router.post('/createOrGet', UserValidator.create, UserRouter.createOrGetUser);
