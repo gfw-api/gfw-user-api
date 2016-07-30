@@ -1,6 +1,6 @@
 'use strict';
 
-var microserviceClient = require('microservice-client');
+var microserviceClient = require('vizz.microservice-client');
 
 class StoriesService {
 
