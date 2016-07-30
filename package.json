@@ -8,7 +8,7 @@
     "test-unit": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js unitTest",
     "start": "NODE_PATH=app/src node app/index.js",
     "test": "NODE_PATH=app/src NODE_ENV=test grunt --gruntfile app/Gruntfile.js test",
-    "migrate": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js run:migration"
+    "migrate": "NODE_PATH=app/src node app/src/migrate/migrate.js"
   },
   "repository": {
     "type": "git",
@@ -43,9 +43,9 @@
     "koa-qs": "^2.0.0",
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
-    "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.4",
     "mongoose": "4.4.6",
-    "newrelic": "1.27.1"
+    "newrelic": "1.27.1",
+    "vizz.microservice-client": "^1.2.5"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
