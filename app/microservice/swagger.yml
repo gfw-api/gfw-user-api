@@ -48,7 +48,7 @@ paths:
       produces:
         - application/vnd.api+json
       tags:
-        - User
+        - USER
       parameters:
         - name: id
           in: path
@@ -108,7 +108,7 @@ paths:
       produces:
         - application/vnd.api+json
       tags:
-        - User
+        - USER
       parameters:
         - name: id
           in: path
@@ -189,7 +189,7 @@ paths:
       produces:
         - application/vnd.api+json
       tags:
-        - User
+        - USER
       operationId: createUser
       parameters:
         - name: user
