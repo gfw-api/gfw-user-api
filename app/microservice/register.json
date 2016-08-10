@@ -37,6 +37,14 @@
             "baseUrl": "#(service.uri)",
             "path": "/api/v1/user/:id"
         }]
+    },{
+        "url": "/user/oldId/:id",
+        "method": "GET",
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/oldId/:id"
+        }]
     }, {
         "url": "/user/stories",
         "method": "GET",

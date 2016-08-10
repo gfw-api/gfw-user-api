@@ -43,9 +43,9 @@
     "koa-qs": "^2.0.0",
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
+    "microservice-client": "git+https://github.com/Vizzuality/microservice-client.git#1.2.4",
     "mongoose": "4.4.6",
-    "newrelic": "1.27.1",
-    "vizz.microservice-client": "^1.2.5"
+    "newrelic": "1.27.1"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
