@@ -58,6 +58,11 @@ class UserRouter {
 
     static * updateUser(){
         logger.info('Obtaining users by id %s', this.params.id);
+        let userId = this.request.query.loggedUser.id;
+        if(this.params.id !== userId){
+            this.throw(401, 'Not authorized');
+            return;
+        }
         let userFind = yield User.findById(this.params.id);
         if(!userFind){
             logger.error('User not found');
@@ -99,6 +104,11 @@ class UserRouter {
 
     static * deleteUser(){
         logger.info('Obtaining users by id %s', this.params.id);
+        let userId = this.request.query.loggedUser.id;
+        if(this.params.id !== userId){
+            this.throw(401, 'Not authorized');
+            return;
+        }
         let userFind = yield User.findById(this.params.id);
         if(!userFind){
             logger.error('User not found');
@@ -114,11 +124,23 @@ class UserRouter {
         let userId = this.request.query.loggedUser.id;
         this.body = yield StoriesService.getStoriesByUser(userId);
     }
+
+    static * getUserByOldId(){
+        logger.info('Obtaining users by oldId %s', this.params.id);
+        let userFind = yield User.findOne({oldId: this.params.id});
+        if(!userFind){
+            logger.error('User not found');
+            this.throw(404, 'User not found');
+            return;
+        }
+        this.body = UserSerializer.serialize(userFind);
+    }
 }
 
 router.get('/', UserRouter.getCurrentUser);
 router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
+router.get('/oldId/:id',  UserRouter.getUserByOldId);
 router.post('/', UserValidator.create, UserRouter.createUser);
 router.post('/createOrGet', UserValidator.create, UserRouter.createOrGetUser);
 router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
