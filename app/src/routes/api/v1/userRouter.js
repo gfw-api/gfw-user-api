@@ -58,7 +58,7 @@ class UserRouter {
 
     static * updateUser(){
         logger.info('Obtaining users by id %s', this.params.id);
-        let userId = this.request.query.loggedUser.id;
+        let userId = this.request.body.loggedUser.id;
         if(this.params.id !== userId){
             this.throw(401, 'Not authorized');
             return;
