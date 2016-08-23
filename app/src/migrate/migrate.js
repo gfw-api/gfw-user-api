@@ -28,6 +28,9 @@ var transformAndSaveData = function *(list){
         for(let i =0; i< list.length; i++){
             let element = list[i];
             let oauth = element.auth_ids[0].split(':');
+            if(oauth[0] === 'google#plus'){
+                oauth[0] = 'google';
+            }
             let user = {
                 fullName: element.profile.user_info.info.displayName,
                 provider: oauth[0],
