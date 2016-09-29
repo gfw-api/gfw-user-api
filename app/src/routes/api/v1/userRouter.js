@@ -123,9 +123,14 @@ class UserRouter {
     }
 
     static * getStories() {
-        logger.info('Obtaining stories for logged in user');
-        let userId = this.request.query.loggedUser.id;
-        this.body = yield StoriesService.getStoriesByUser(userId);
+        try{
+            logger.info('Obtaining stories for logged in user');
+            let userId = this.request.query.loggedUser.id;
+            this.body = yield StoriesService.getStoriesByUser(userId);
+        } catch(e){
+            logger.error('Error obtaining stories', e);
+            throw e;
+        }
     }
 
     static * getUserByOldId(){
