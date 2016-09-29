@@ -6,6 +6,6 @@ prod:
     - prod.env
   command: start
   restart: always
-  log_driver: "gelf"
-  log_opt:
-    gelf-address: ${GELF_ADDRESS}
+  # log_driver: "gelf"
+  # log_opt:
+  #   gelf-address: ${GELF_ADDRESS}
