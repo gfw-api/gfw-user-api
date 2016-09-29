@@ -129,6 +129,7 @@ class UserRouter {
             this.body = yield StoriesService.getStoriesByUser(userId);
         } catch(e){
             logger.error('Error obtaining stories', e);
+            throw e;
         }
     }
 
