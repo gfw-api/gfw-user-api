@@ -1,11 +1,12 @@
 prod:
-  image: vizzuality/gfw-user-api:1.0.1${STAGING}
+  image: vizzuality/gfw-user-api:1.0.2${STAGING}
   ports:
     - "3100"
   env_file:
     - prod.env
   command: start
   restart: always
-  # log_driver: "gelf"
-  # log_opt:
-  #   gelf-address: ${GELF_ADDRESS}
+  dns: ${DNS_SERVER}
+  log_driver: "gelf"
+  log_opt:
+    gelf-address: ${GELF_ADDRESS}
