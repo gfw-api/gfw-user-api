@@ -97,6 +97,9 @@ class UserRouter {
         if(this.request.body.signUpForTesting !== undefined){
             userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
         }
+        if(this.request.body.language !== undefined){
+            userFind.language = this.request.body.language;
+        }
 
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
