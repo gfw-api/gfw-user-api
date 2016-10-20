@@ -17,7 +17,7 @@ var User = new Schema({
     howDoYouUse: {type: Array , default: []},
     signUpForTesting: {type: Boolean , default: false},
     language: {type: String, required: true, default: 'en'},
-    profileComplete: {type: String, required: true, default: false}
+    profileComplete: {type: Boolean, required: true, default: false}
 });
 
 module.exports = mongoose.model('User', User);
