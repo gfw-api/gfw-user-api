@@ -100,6 +100,9 @@ class UserRouter {
         if(this.request.body.language !== undefined){
             userFind.language = this.request.body.language;
         }
+        if(this.request.body.profileComplete !== undefined){
+            userFind.profileComplete = this.request.body.profileComplete;
+        }
 
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
