@@ -3,7 +3,11 @@
 var logger = require('logger');
 var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 var userSerializer = new JSONAPISerializer('user', {
-    attributes: ['fullName', 'provider', 'providerId', 'email', 'createdAt', 'sector', 'primaryResponsibilities', 'country', 'state', 'city', 'howDoYouUse', 'signUpForTesting', 'language'],
+    attributes: [
+        'fullName', 'provider', 'providerId', 'email', 'createdAt', 'sector',
+        'primaryResponsibilities', 'country', 'state', 'city', 'howDoYouUse',
+        'signUpForTesting', 'language', 'profileComplete'
+    ],
     typeForAttribute: function (attribute, record) {
         return attribute;
     },
