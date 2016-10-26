@@ -16,7 +16,7 @@ var User = new Schema({
     city: {type: String, required: false, trim: true},
     howDoYouUse: {type: Array , default: []},
     signUpForTesting: {type: Boolean , default: false},
-    language: {type: String, required: true, default: 'en'},
+    language: {type: String, required: false},
     profileComplete: {type: Boolean, required: true, default: false}
 });
 
