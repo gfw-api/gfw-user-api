@@ -7,6 +7,7 @@ var config = require('config');
 var logger = require('logger');
 var path = require('path');
 var koa = require('koa');
+var co = require('co');
 var koaQs = require('koa-qs');
 var bodyParser = require('koa-bodyparser');
 var koaLogger = require('koa-logger');
@@ -15,6 +16,7 @@ var validate = require('koa-validate');
 var mongoose = require('mongoose');
 var ErrorSerializer = require('serializers/errorSerializer');
 var mongoUri = process.env.MONGO_URI || 'mongodb://' + config.get('mongodb.host') + ':' + config.get('mongodb.port') + '/' + config.get('mongodb.database');
+var registerClient = require('vizz.microservice-client');
 
 var onDbReady = function(err) {
     if (err) {
@@ -55,6 +57,16 @@ var onDbReady = function(err) {
     //load routes
     loader.loadRoutes(app);
 
+    registerClient.register({
+        id: config.get('service.id'),
+        name: config.get('service.name'),
+        uri: config.get('service.uri'),
+        dirConfig: path.join(__dirname, '../microservice'),
+        dirPackage: path.join(__dirname, '../../'),
+        logger: logger,
+        app: app
+    });
+
     //Instance of http module
     var server = require('http').Server(app.callback());
 
@@ -63,18 +75,14 @@ var onDbReady = function(err) {
     var port = process.env.PORT || config.get('service.port');
 
     server.listen(port, function() {
-        var p = require('vizz.microservice-client').register({
-            id: config.get('service.id'),
-            name: config.get('service.name'),
-            dirConfig: path.join(__dirname, '../microservice'),
-            dirPackage: path.join(__dirname, '../../'),
-            logger: logger,
-            app: app
-        });
-        p.then(function() {}, function(err) {
-            logger.error(err);
-            process.exit(1);
-        });
+        if (process.env.NODE_ENV === 'dev'){
+            co(function *(){
+                yield registerClient.autoDiscovery();
+            }).then(function(){}, function(e){
+                logger.error('Error auto discovery', e);
+                process.exit(1);
+            });
+        }
     });
 
     logger.info('Server started in port:' + port);
