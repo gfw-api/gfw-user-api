@@ -1,6 +1,6 @@
 {
   "name": "gfw-user-api",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Global forest watch - User API",
   "main": "index.js",
   "scripts": {
@@ -43,7 +43,7 @@
     "koa-qs": "^2.0.0",
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
-    "vizz.microservice-client": "1.4.0",
+    "vizz.microservice-client": "1.5.1",
     "mongoose": "4.4.6",
     "newrelic": "1.27.1"
   },
