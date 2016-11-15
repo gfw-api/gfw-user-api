@@ -105,7 +105,7 @@ class UserRouter {
 
     static * deleteUser(){
         logger.info('Obtaining users by id %s', this.params.id);
-        let userId = this.request.query.loggedUser.id;
+        let userId = JSON.parse(this.request.query.loggedUser).id;
         if(this.params.id !== userId){
             this.throw(401, 'Not authorized');
             return;
@@ -123,7 +123,7 @@ class UserRouter {
     static * getStories() {
         try{
             logger.info('Obtaining stories for logged in user');
-            let userId = this.request.query.loggedUser.id;
+            let userId = JSON.parse(this.request.query.loggedUser).id;
             this.body = yield StoriesService.getStoriesByUser(userId);
         } catch(e){
             logger.error('Error obtaining stories', e);
