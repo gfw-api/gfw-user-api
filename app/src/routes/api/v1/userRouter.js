@@ -14,15 +14,21 @@ var StoriesService = require('services/storiesService');
 
 class UserRouter {
     static * getCurrentUser(data){
-        logger.info('Obtaining logged in user');
-        let loggedUser = null;
-        if (this.request.query.loggedUser){
-            logger.info('logged user', this.request.query.loggedUser);
-            loggedUser =this.request.query.loggedUser;
-            user = yield User.findById(loggedUser.id);
-            this.body = UserSerializer.serialize(user);
-        } else {
-            this.throw(403, 'Not authorized.');
+        try{
+            logger.info('Obtaining logged in user');
+            let loggedUser = null;
+            if (this.request.query.loggedUser){
+                logger.info('logged user', this.request.query.loggedUser);
+                loggedUser =this.request.query.loggedUser;
+                logger.debug()
+                user = yield User.findById(loggedUser.id);
+                this.body = UserSerializer.serialize(user);
+            } else {
+                this.throw(403, 'Not authorized.');
+            }
+        }catch(e){
+            logger.error(e);
+            this.throw(400, 'Error parsing');
         }
        
     }
