@@ -20,8 +20,9 @@ class UserRouter {
             if (this.request.query.loggedUser){
                 logger.info('logged user', this.request.query.loggedUser);
                 loggedUser =this.request.query.loggedUser;
-                
+                logger.info('Id', loggedUser.id);
                 let user = yield User.findById(loggedUser.id);
+                logger.info('Usr found', user);
                 this.body = UserSerializer.serialize(user);
             } else {
                 this.throw(403, 'Not authorized.');
