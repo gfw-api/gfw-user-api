@@ -4,6 +4,7 @@ var Router = require('koa-router');
 var logger = require('logger');
 var UserSerializer = require('serializers/userSerializer');
 var UserValidator = require('validators/userValidator');
+var mongoose = require('mongoose');
 var User = require('models/user');
 var router = new Router({
     prefix: '/user'
@@ -14,11 +15,15 @@ var StoriesService = require('services/storiesService');
 class UserRouter {
     static * getCurrentUser(data){
         logger.info('Obtaining logged in user');
-
-        let userId = this.request.query.loggedUser.id,
-            user = yield User.findById(userId);
-
-        this.body = UserSerializer.serialize(user);
+        let loggedUser = null;
+        if (this.request.query.loggedUser){
+            loggedUser = JSON.parse(this.request.query.loggedUser);
+            user = yield User.findById(loggedUser.id);
+            this.body = UserSerializer.serialize(user);
+        } else {
+            this.throw(403, 'Not authorized.');
+        }
+       
     }
 
     static * getUserById(){
@@ -32,29 +37,7 @@ class UserRouter {
         this.body = UserSerializer.serialize(userFind);
     }
 
-    static * createUser(){
-        logger.info('Create user', this.request.body);
-        let exist = yield User.count({provider: this.request.body.provider, providerId: this.request.body.providerId});
-        if(exist > 0){
-            logger.error('Duplicated user');
-            this.throw(400, 'Duplicated user');
-            return;
-        }
-        let userCreate = yield new User(this.request.body).save();
-        this.body = UserSerializer.serialize(userCreate);
-    }
-
-     static * createOrGetUser(){
-        logger.info('Create or get user', this.request.body);
-        let userFind = yield User.findOne({provider: this.request.body.provider, providerId: this.request.body.providerId});
-        if(userFind){
-            logger.debug('User exist', userFind);
-            this.body = UserSerializer.serialize(userFind);
-            return;
-        }
-        let userCreate = yield new User(this.request.body).save();
-        this.body = UserSerializer.serialize(userCreate);
-    }
+    
 
     static * updateUser(){
         logger.info('Obtaining users by id %s', this.params.id);
@@ -65,9 +48,9 @@ class UserRouter {
         }
         let userFind = yield User.findById(this.params.id);
         if(!userFind){
-            logger.error('User not found');
-            this.throw(404, 'User not found');
-            return;
+            userFind = new User();
+            userFind._id = mongoose.Types.ObjectId(userId);
+            yield userFind.save();
         }
         //extend user
         if(this.request.body.fullName !== undefined){
@@ -152,8 +135,6 @@ router.get('/', UserRouter.getCurrentUser);
 router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
 router.get('/oldId/:id',  UserRouter.getUserByOldId);
-router.post('/', UserValidator.create, UserRouter.createUser);
-router.post('/createOrGet', UserValidator.create, UserRouter.createOrGetUser);
 router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
 router.delete('/:id', UserValidator.getBydId, UserRouter.deleteUser);
 
