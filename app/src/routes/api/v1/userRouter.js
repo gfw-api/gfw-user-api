@@ -17,6 +17,7 @@ class UserRouter {
         logger.info('Obtaining logged in user');
         let loggedUser = null;
         if (this.request.query.loggedUser){
+            logger.info('logged user', this.request.query.loggedUser);
             loggedUser = JSON.parse(this.request.query.loggedUser);
             user = yield User.findById(loggedUser.id);
             this.body = UserSerializer.serialize(user);

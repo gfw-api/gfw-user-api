@@ -7,6 +7,6 @@ prod:
   command: start
   restart: always
   dns: ${DNS_SERVER}
-  log_driver: "gelf"
-  log_opt:
-    gelf-address: ${GELF_ADDRESS}
+  # log_driver: "gelf"
+  # log_opt:
+  #   gelf-address: ${GELF_ADDRESS}

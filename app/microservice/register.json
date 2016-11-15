@@ -12,23 +12,6 @@
             "path": "/api/v1/user"
         }]
     }, {
-        "url": "/user",
-        "method": "POST",
-        "endpoints": [{
-            "method": "POST",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user"
-        }]
-    }, {
-        "url": "/user/createOrGet",
-        "authenticated": true,
-        "method": "POST",
-        "endpoints": [{
-            "method": "POST",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/createOrGet"
-        }]
-    }, {
         "url": "/user/:id",
         "method": "GET",
         "authenticated": true,
