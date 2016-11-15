@@ -1,5 +1,5 @@
 prod:
-  image: vizzuality/gfw-user-api:1.0.3${STAGING}
+  image: vizzuality/gfw-user-api:1.0.4${STAGING}
   ports:
     - "3100"
   env_file:

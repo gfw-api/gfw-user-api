@@ -19,8 +19,8 @@ class UserRouter {
             let loggedUser = null;
             if (this.request.query.loggedUser){
                 logger.info('logged user', this.request.query.loggedUser);
-                loggedUser =this.request.query.loggedUser;
-                logger.info('Id', loggedUser.id);
+                loggedUser = JSON.parse(this.request.query.loggedUser);
+                
                 let user = yield User.findById(loggedUser.id);
                 logger.info('Usr found', user);
                 this.body = UserSerializer.serialize(user);
@@ -48,55 +48,59 @@ class UserRouter {
     
 
     static * updateUser(){
-        logger.info('Obtaining users by id %s', this.params.id);
-        let userId = this.request.body.loggedUser.id;
-        if(this.params.id !== userId){
-            this.throw(401, 'Not authorized');
-            return;
-        }
-        let userFind = yield User.findById(this.params.id);
-        if(!userFind){
-            userFind = new User();
-            userFind._id = mongoose.Types.ObjectId(userId);
-            yield userFind.save();
-        }
-        //extend user
-        if(this.request.body.fullName !== undefined){
-            userFind.fullName = this.request.body.fullName;
-        }
-        if(this.request.body.email !== undefined){
-            userFind.email = this.request.body.email;
-        }
-        if(this.request.body.sector !== undefined){
-            userFind.sector = this.request.body.sector;
-        }
-        if(this.request.body.primaryResponsibilities !== undefined){
-            userFind.primaryResponsibilities = this.request.body.primaryResponsibilities;
-        }
-        if(this.request.body.country !== undefined){
-            userFind.country = this.request.body.country;
-        }
-        if(this.request.body.state !== undefined){
-            userFind.state = this.request.body.state;
-        }
-        if(this.request.body.city !== undefined){
-            userFind.city = this.request.body.city;
-        }
-        if(this.request.body.howDoYouUse !== undefined){
-            userFind.howDoYouUse = this.request.body.howDoYouUse;
-        }
-        if(this.request.body.signUpForTesting !== undefined){
-            userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
-        }
-        if(this.request.body.language !== undefined){
-            userFind.language = this.request.body.language;
-        }
-        if(this.request.body.profileComplete !== undefined){
-            userFind.profileComplete = this.request.body.profileComplete;
-        }
+        try{
+            logger.info('Obtaining users by id %s', this.params.id);
+            let userId = this.request.body.loggedUser.id;
+            if(this.params.id !== userId){
+                this.throw(401, 'Not authorized');
+                return;
+            }
+            let userFind = yield User.findById(this.params.id);
+            if(!userFind){
+                userFind = new User();
+                userFind._id = mongoose.Types.ObjectId(userId);
+                yield userFind.save();
+            }
+            //extend user
+            if(this.request.body.fullName !== undefined){
+                userFind.fullName = this.request.body.fullName;
+            }
+            if(this.request.body.email !== undefined){
+                userFind.email = this.request.body.email;
+            }
+            if(this.request.body.sector !== undefined){
+                userFind.sector = this.request.body.sector;
+            }
+            if(this.request.body.primaryResponsibilities !== undefined){
+                userFind.primaryResponsibilities = this.request.body.primaryResponsibilities;
+            }
+            if(this.request.body.country !== undefined){
+                userFind.country = this.request.body.country;
+            }
+            if(this.request.body.state !== undefined){
+                userFind.state = this.request.body.state;
+            }
+            if(this.request.body.city !== undefined){
+                userFind.city = this.request.body.city;
+            }
+            if(this.request.body.howDoYouUse !== undefined){
+                userFind.howDoYouUse = this.request.body.howDoYouUse;
+            }
+            if(this.request.body.signUpForTesting !== undefined){
+                userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
+            }
+            if(this.request.body.language !== undefined){
+                userFind.language = this.request.body.language;
+            }
+            if(this.request.body.profileComplete !== undefined){
+                userFind.profileComplete = this.request.body.profileComplete;
+            }
 
-        yield userFind.save();
-        this.body = UserSerializer.serialize(userFind);
+            yield userFind.save();
+            this.body = UserSerializer.serialize(userFind);
+        }catch(e){
+            logger.error(e);
+        }
     }
 
     static * deleteUser(){
