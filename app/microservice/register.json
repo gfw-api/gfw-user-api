@@ -12,6 +12,15 @@
             "path": "/api/v1/user"
         }]
     }, {
+        "url": "/user",
+        "method": "POST",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "POST",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user"
+        }]
+    }, {
         "url": "/user/:id",
         "method": "GET",
         "authenticated": true,

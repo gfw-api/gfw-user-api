@@ -34,6 +34,19 @@ class UserRouter {
        
     }
 
+    static * createUser(){
+        logger.info('Create user', this.request.body);
+        let exist = yield User.findById(this.request.body.loggedUser.id);
+        if(exist > 0){
+            logger.error('Duplicated user');
+            this.throw(400, 'Duplicated user');
+            return;
+        }
+        this.request.body._id = mongoose.Types.ObjectId(this.request.body.loggedUser.id);
+        let userCreate = yield new User(this.request.body).save();
+        this.body = UserSerializer.serialize(userCreate);
+    }
+
     static * getUserById(){
         logger.info('Obtaining users by id %s', this.params.id);
         let userFind = yield User.findById(this.params.id);
@@ -144,6 +157,7 @@ class UserRouter {
 }
 
 router.get('/', UserRouter.getCurrentUser);
+router.post('/', UserValidator.create, UserRouter.createUser);
 router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
 router.get('/oldId/:id',  UserRouter.getUserByOldId);
