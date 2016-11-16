@@ -157,7 +157,7 @@ class UserRouter {
 }
 
 router.get('/', UserRouter.getCurrentUser);
-router.post('/', UserValidator.create, UserRouter.createUser);
+router.post('/', UserRouter.createUser);
 router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
 router.get('/oldId/:id',  UserRouter.getUserByOldId);
