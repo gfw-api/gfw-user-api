@@ -1,19 +1,74 @@
 swagger: '2.0'
+###############################################################################
+#                              API Information                                 
+###############################################################################
 info:
-  title: GFW User API
-  description: Global Forest Watch - User API
+  title: GLobal Forest Watch API
+  description: |
+    The Global Forest Watch API is currently in beta. Based on feedback from trusted testers, this document specifies new API changes that are currently under development. Interested in being a trusted tester? Contact the [Data Lab](mailTo:support@wri.com) at World Resources Institute.
+    
+    All endpoints are accessible via http & https and are located at
+    `https://production-api.globalforestwatch.org`.
+    
+    Forest change measures tree cover loss, tree cover gain, or forest disturbance. The following forest change data are available through the API: 
+    * University of Maryland tree cover loss & gain 
+    * FORMA alerts
+    * IMAZON SAD alerts
+    * Terrai alerts
+    * Prodes
+    * Guira Loss
+    * Biomass loss
+    * GLAD tree cover loss alerts 
+    * NASA VIIRs active fires.
+    
+    Other services provided by the Api complements the ecosystem that surrounds the platform:
+    
+    * Metadata
+    * Urthecast 
+    * Geostore
+    * OGR 
+    * Story 
+    * User 
+    * subscription
+    
+  
+    ### User API
+    This Microservice will provide a comprehensive way of create, modify or delete users within the platform
+    
+    
+  termsOfService: http://www.globalforestwatch.org/terms
+  contact:
+    name: API Support
+    url: http://www.globalforestwatch.org
+    email: support@wri.com
+  license:
+    name: MIT License (MIT)
+    url: https://opensource.org/licenses/MIT
   version: "1.0.0"
-host: example.vizzuality.com
+  
+host: staging-api.globalforestwatch.org
 
 schemes:
   - https
   - http
 
 consumes:
-  - application/json
-produces:
   - application/vnd.api+json
 
+produces:
+  - application/vnd.api+json
+###############################################################################
+#                                  Security                                    
+###############################################################################
+securityDefinitions:
+  UserSecurity:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: For write operations we need to provide a token like  ```Bearer {{TOKEN}}```
+###############################################################################
+#                                  Paths                                   
+###############################################################################
 paths:
   /user/{id}:
     delete:
@@ -52,6 +107,8 @@ paths:
           description: ID of user to delete
           required: true
           type: string
+      security:
+        - UserSecurity: []
       responses:
         200:
           description: User deleted
@@ -134,6 +191,8 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UserCreate'
+      security:
+        - UserSecurity: []
       responses:
         200:
           description: User updated
@@ -211,6 +270,8 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UserCreate'
+      security:
+        - UserSecurity: []
       responses:
         200:
           description: The user created
