@@ -65,7 +65,10 @@ securityDefinitions:
     type: apiKey
     in: header
     name: Authorization
-    description: For write operations we need to provide a token like  ```Bearer {{TOKEN}}```
+    description: |
+     For write operations it's need an api key like  ```Bearer {{TOKEN}}```.
+     
+     To obtain it please contact [support](mailto:support@wri.com).
 ###############################################################################
 #                                  Paths                                   
 ###############################################################################
