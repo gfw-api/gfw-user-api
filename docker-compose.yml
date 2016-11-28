@@ -7,6 +7,7 @@ prod:
   command: start
   restart: always
   dns: ${DNS_SERVER}
-  # log_driver: "gelf"
-  # log_opt:
-  #   gelf-address: ${GELF_ADDRESS}
+  log_driver: "syslog"
+  log_opt:
+    syslog-address: ${SYSLOG_ADDRESS}
+    tag: gfw-user-api${STAGING}

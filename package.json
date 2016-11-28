@@ -1,6 +1,6 @@
 {
   "name": "gfw-user-api",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Global forest watch - User API",
   "main": "index.js",
   "scripts": {
