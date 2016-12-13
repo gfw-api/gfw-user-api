@@ -1,7 +1,7 @@
 {
     "logger": {
         "name": "gfw-user-api-STAGING",
-        "level": "debug",
+        "level": "info",
         "toFile": false,
         "dirLogFile": null
     },
