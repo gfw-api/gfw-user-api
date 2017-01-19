@@ -9,6 +9,7 @@ var router = new Router({
     prefix: '/user'
 });
 var StoriesService = require('services/storiesService');
+var googleSheetsService = require('services/googleSheetsService');
 
 
 class UserRouter {
@@ -42,6 +43,13 @@ class UserRouter {
         }
         let userCreate = yield new User(this.request.body).save();
         this.body = UserSerializer.serialize(userCreate);
+        if ( this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true' ) {
+            try {
+                yield googleSheetsService.updateSheet(this.request.body.email);
+            } catch (err) {
+                logger.error(err);
+            }
+        }
     }
 
      static * createOrGetUser(){
@@ -106,6 +114,13 @@ class UserRouter {
 
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
+        if ( this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true' ) {
+            try {
+                yield googleSheetsService.updateSheet(userFind);
+            } catch (err) {
+                logger.error(err);
+            }
+        }
     }
 
     static * deleteUser(){
