@@ -48,7 +48,7 @@ class GoogleSheetsService {
                     'Position Primary Responsibilities': user.primaryResponsibilities,
                     'Organization Sector': user.sector
                 };
-                this.doc.addRow(2, newRow, function(err, result) {
+                this.doc.addRow(this.creds.target_sheet_index, newRow, function(err, result) {
                   if (err) {
                     return reject(err);
                   }
@@ -65,7 +65,7 @@ class GoogleSheetsService {
         try {
             logger.info('Getting user....');
             return new Promise(function(resolve, reject) {
-                this.doc.getRows(2, {
+                this.doc.getRows(this.creds.target_sheet_index, {
                     'offset': row.row - 1,
                     'limit': 1
                 }, function(err, row) {
@@ -95,7 +95,7 @@ class GoogleSheetsService {
         try {
             logger.debug('Checking rows....');
             return new Promise(function(resolve, reject) {
-                this.doc.getCells(2, {
+                this.doc.getCells(this.creds.target_sheet_index, {
                     'min-col': 5,
                     'max-col': 5
                 }, function(err, result) {
