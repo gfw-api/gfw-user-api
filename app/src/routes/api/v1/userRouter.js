@@ -114,12 +114,10 @@ class UserRouter {
 
         yield userFind.save();
         this.body = UserSerializer.serialize(userFind);
-        if ( this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true' ) {
-            try {
-                yield googleSheetsService.updateSheet(userFind);
-            } catch (err) {
-                logger.error(err);
-            }
+        try {
+            yield googleSheetsService.updateSheet(userFind);
+        } catch (err) {
+            logger.error(err);
         }
     }
 
