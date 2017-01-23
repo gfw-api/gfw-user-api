@@ -21,7 +21,7 @@ class UserRouter {
             if (this.request.query.loggedUser){
                 logger.info('logged user', this.request.query.loggedUser);
                 loggedUser = JSON.parse(this.request.query.loggedUser);
-                
+
                 let user = yield User.findById(loggedUser.id);
                 logger.info('Usr found', user);
                 this.body = UserSerializer.serialize(user);
@@ -32,7 +32,7 @@ class UserRouter {
             logger.error(e);
             this.throw(400, 'Error parsing');
         }
-       
+
     }
 
     static * createUser(){
@@ -64,14 +64,9 @@ class UserRouter {
             return;
         }
         this.body = UserSerializer.serialize(userFind);
-        try {
-            yield googleSheetsService.updateSheet(userFind);
-        } catch (err) {
-            logger.error(err);
-        }
     }
 
-    
+
 
     static * updateUser(){
         try{
@@ -124,6 +119,12 @@ class UserRouter {
 
             yield userFind.save();
             this.body = UserSerializer.serialize(userFind);
+
+            try {
+                yield googleSheetsService.updateSheet(userFind);
+            } catch (err) {
+                logger.error(err);
+            }
         }catch(e){
             logger.error(e);
         }
