@@ -10,6 +10,7 @@ var router = new Router({
     prefix: '/user'
 });
 var StoriesService = require('services/storiesService');
+var googleSheetsService = require('services/googleSheetsService');
 
 
 class UserRouter {
@@ -20,7 +21,7 @@ class UserRouter {
             if (this.request.query.loggedUser){
                 logger.info('logged user', this.request.query.loggedUser);
                 loggedUser = JSON.parse(this.request.query.loggedUser);
-                
+
                 let user = yield User.findById(loggedUser.id);
                 logger.info('Usr found', user);
                 this.body = UserSerializer.serialize(user);
@@ -31,7 +32,7 @@ class UserRouter {
             logger.error(e);
             this.throw(400, 'Error parsing');
         }
-       
+
     }
 
     static * createUser(){
@@ -45,6 +46,13 @@ class UserRouter {
         this.request.body._id = mongoose.Types.ObjectId(this.request.body.loggedUser.id);
         let userCreate = yield new User(this.request.body).save();
         this.body = UserSerializer.serialize(userCreate);
+        if ( this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true' ) {
+            try {
+                yield googleSheetsService.updateSheet(this.request.body.email);
+            } catch (err) {
+                logger.error(err);
+            }
+        }
     }
 
     static * getUserById(){
@@ -58,7 +66,7 @@ class UserRouter {
         this.body = UserSerializer.serialize(userFind);
     }
 
-    
+
 
     static * updateUser(){
         try{
@@ -111,6 +119,12 @@ class UserRouter {
 
             yield userFind.save();
             this.body = UserSerializer.serialize(userFind);
+
+            try {
+                yield googleSheetsService.updateSheet(userFind);
+            } catch (err) {
+                logger.error(err);
+            }
         }catch(e){
             logger.error(e);
         }
