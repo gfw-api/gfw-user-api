@@ -192,7 +192,7 @@ class UserRouter {
     }
 }
 
-const isMicroservice = function* (next) {
+const isMicroserviceOrAdmin = function* (next) {
     let loggedUser = this.request.body ? this.request.body.loggedUser : null;
     if (!loggedUser) {
         loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
@@ -201,15 +201,18 @@ const isMicroservice = function* (next) {
         this.throw(403, 'Not authorized');
         return;
     }
-    if (loggedUser.id !== 'microservice') {
-        this.throw(403, 'Not authorized');
+    if (loggedUser.id === 'microservice') {
+        yield next;
+        return;   
+    } else if ( loggedUser.role === 'ADMIN' && loggedUser.extraUserData && loggedUser.extraUserData.apps && loggedUser.extraUserData.apps.indexOf('gfw') >= 0) {
+        yield next;
         return;
     }
-    yield next;
+    this.throw(403, 'Not authorized');    
 };
 
 router.get('/', UserRouter.getCurrentUser);
-router.get('/internal/all-users', isMicroservice, UserRouter.getAllUsers);
+router.get('/obtain/all-users', isMicroserviceOrAdmin, UserRouter.getAllUsers);
 router.post('/', UserRouter.createUser);
 router.get('/stories', UserRouter.getStories);
 router.get('/:id', UserValidator.getBydId, UserRouter.getUserById);

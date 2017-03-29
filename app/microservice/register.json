@@ -57,13 +57,13 @@
             "path": "/api/v1/user/:id"
         }]
     }, {
-        "url": "/v1/user/internal/all-users",
+        "url": "/v1/user/obtain/all-users",
         "authenticated": true,
         "method": "GET",
         "endpoints": [{
             "method": "GET",
             "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/internal/all-users"
+            "path": "/api/v1/user/obtain/all-users"
         }]
     }]
 }
