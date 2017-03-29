@@ -80,7 +80,7 @@ var onDbReady = function(err) {
                 yield registerClient.autoDiscovery();
             }).then(function(){}, function(e){
                 logger.error('Error auto discovery', e);
-                process.exit(1);
+                // process.exit(1);
             });
         }
     });

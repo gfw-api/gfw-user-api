@@ -7,7 +7,7 @@ var GoogleSpreadsheet = require('google-spreadsheet');
 class GoogleSheetsService {
     constructor(){
         this.creds = config.get('googleSheets');
-        this.doc = new GoogleSpreadsheet(this.creds.target_sheet_id);
+        // this.doc = new GoogleSpreadsheet(this.creds.target_sheet_id);
     }
 
     * authSheets(creds){

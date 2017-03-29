@@ -14,11 +14,11 @@ var googleSheetsService = require('services/googleSheetsService');
 
 
 class UserRouter {
-    static * getCurrentUser(data){
-        try{
+    static * getCurrentUser() {
+        try {
             logger.info('Obtaining logged in user');
             let loggedUser = null;
-            if (this.request.query.loggedUser){
+            if (this.request.query.loggedUser) {
                 logger.info('logged user', this.request.query.loggedUser);
                 loggedUser = JSON.parse(this.request.query.loggedUser);
 
@@ -28,17 +28,37 @@ class UserRouter {
             } else {
                 this.throw(403, 'Not authorized.');
             }
-        }catch(e){
+        } catch (e) {
             logger.error(e);
             this.throw(400, 'Error parsing');
         }
 
     }
 
-    static * createUser(){
+    static * getAllUsers() {
+        logger.info('Obtaining users');
+
+        let defaultFilter = {};
+        if (this.query.start && this.query.end) {
+            defaultFilter = {
+                createdAt: {
+                    $gte: new Date(this.query.start),
+                    $lt: new Date(this.query.end)
+                }
+            };
+        }
+        try {
+            let users = yield User.find(defaultFilter);
+            this.body = UserSerializer.serialize(users);
+        } catch(err) {
+            logger.error(err);
+        }
+    }
+
+    static * createUser() {
         logger.info('Create user', this.request.body);
         let exist = yield User.findById(this.request.body.loggedUser.id);
-        if(exist > 0){
+        if (exist > 0) {
             logger.error('Duplicated user');
             this.throw(400, 'Duplicated user');
             return;
@@ -46,7 +66,7 @@ class UserRouter {
         this.request.body._id = mongoose.Types.ObjectId(this.request.body.loggedUser.id);
         let userCreate = yield new User(this.request.body).save();
         this.body = UserSerializer.serialize(userCreate);
-        if ( this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true' ) {
+        if (this.request.body.signUpForTesting && this.request.body.signUpForTesting === 'true') {
             try {
                 yield googleSheetsService.updateSheet(this.request.body.email);
             } catch (err) {
@@ -55,10 +75,10 @@ class UserRouter {
         }
     }
 
-    static * getUserById(){
+    static * getUserById() {
         logger.info('Obtaining users by id %s', this.params.id);
         let userFind = yield User.findById(this.params.id);
-        if(!userFind){
+        if (!userFind) {
             logger.error('User not found');
             this.throw(404, 'User not found');
             return;
@@ -68,52 +88,52 @@ class UserRouter {
 
 
 
-    static * updateUser(){
-        try{
+    static * updateUser() {
+        try {
             logger.info('Obtaining users by id %s', this.params.id);
             let userId = this.request.body.loggedUser.id;
-            if(this.params.id !== userId){
+            if (this.params.id !== userId) {
                 this.throw(401, 'Not authorized');
                 return;
             }
             let userFind = yield User.findById(this.params.id);
-            if(!userFind){
+            if (!userFind) {
                 userFind = new User();
                 userFind._id = mongoose.Types.ObjectId(userId);
                 yield userFind.save();
             }
             //extend user
-            if(this.request.body.fullName !== undefined){
+            if (this.request.body.fullName !== undefined) {
                 userFind.fullName = this.request.body.fullName;
             }
-            if(this.request.body.email !== undefined){
+            if (this.request.body.email !== undefined) {
                 userFind.email = this.request.body.email;
             }
-            if(this.request.body.sector !== undefined){
+            if (this.request.body.sector !== undefined) {
                 userFind.sector = this.request.body.sector;
             }
-            if(this.request.body.primaryResponsibilities !== undefined){
+            if (this.request.body.primaryResponsibilities !== undefined) {
                 userFind.primaryResponsibilities = this.request.body.primaryResponsibilities;
             }
-            if(this.request.body.country !== undefined){
+            if (this.request.body.country !== undefined) {
                 userFind.country = this.request.body.country;
             }
-            if(this.request.body.state !== undefined){
+            if (this.request.body.state !== undefined) {
                 userFind.state = this.request.body.state;
             }
-            if(this.request.body.city !== undefined){
+            if (this.request.body.city !== undefined) {
                 userFind.city = this.request.body.city;
             }
-            if(this.request.body.howDoYouUse !== undefined){
+            if (this.request.body.howDoYouUse !== undefined) {
                 userFind.howDoYouUse = this.request.body.howDoYouUse;
             }
-            if(this.request.body.signUpForTesting !== undefined){
+            if (this.request.body.signUpForTesting !== undefined) {
                 userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
             }
-            if(this.request.body.language !== undefined){
+            if (this.request.body.language !== undefined) {
                 userFind.language = this.request.body.language;
             }
-            if(this.request.body.profileComplete !== undefined){
+            if (this.request.body.profileComplete !== undefined) {
                 userFind.profileComplete = this.request.body.profileComplete;
             }
 
@@ -125,20 +145,20 @@ class UserRouter {
             } catch (err) {
                 logger.error(err);
             }
-        }catch(e){
+        } catch (e) {
             logger.error(e);
         }
     }
 
-    static * deleteUser(){
+    static * deleteUser() {
         logger.info('Obtaining users by id %s', this.params.id);
         let userId = JSON.parse(this.request.query.loggedUser).id;
-        if(this.params.id !== userId){
+        if (this.params.id !== userId) {
             this.throw(401, 'Not authorized');
             return;
         }
         let userFind = yield User.findById(this.params.id);
-        if(!userFind){
+        if (!userFind) {
             logger.error('User not found');
             this.throw(404, 'User not found');
             return;
@@ -148,20 +168,22 @@ class UserRouter {
     }
 
     static * getStories() {
-        try{
+        try {
             logger.info('Obtaining stories for logged in user');
             let userId = JSON.parse(this.request.query.loggedUser).id;
             this.body = yield StoriesService.getStoriesByUser(userId);
-        } catch(e){
+        } catch (e) {
             logger.error('Error obtaining stories', e);
             throw e;
         }
     }
 
-    static * getUserByOldId(){
+    static * getUserByOldId() {
         logger.info('Obtaining users by oldId %s', this.params.id);
-        let userFind = yield User.findOne({oldId: this.params.id});
-        if(!userFind){
+        let userFind = yield User.findOne({
+            oldId: this.params.id
+        });
+        if (!userFind) {
             logger.error('User not found');
             this.throw(404, 'User not found');
             return;
@@ -170,11 +192,28 @@ class UserRouter {
     }
 }
 
+const isMicroservice = function* (next) {
+    let loggedUser = this.request.body ? this.request.body.loggedUser : null;
+    if (!loggedUser) {
+        loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
+    }
+    if (!loggedUser) {
+        this.throw(403, 'Not authorized');
+        return;
+    }
+    if (loggedUser.id !== 'microservice') {
+        this.throw(403, 'Not authorized');
+        return;
+    }
+    yield next;
+};
+
 router.get('/', UserRouter.getCurrentUser);
+router.get('/internal/all-users', isMicroservice, UserRouter.getAllUsers);
 router.post('/', UserRouter.createUser);
-router.get('/stories',  UserRouter.getStories);
-router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
-router.get('/oldId/:id',  UserRouter.getUserByOldId);
+router.get('/stories', UserRouter.getStories);
+router.get('/:id', UserValidator.getBydId, UserRouter.getUserById);
+router.get('/oldId/:id', UserRouter.getUserByOldId);
 router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
 router.delete('/:id', UserValidator.getBydId, UserRouter.deleteUser);
 
