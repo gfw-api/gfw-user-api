@@ -66,7 +66,16 @@ class UserRouter {
         this.body = UserSerializer.serialize(userFind);
     }
 
-
+    static * getUserByEmail(){
+        logger.info('Obtaining users by email %s', this.params.email);
+        let userFind = yield User.findOne({email: this.params.email});
+        if(!userFind){
+            logger.error('User not found');
+            this.throw(404, 'User not found');
+            return;
+        }
+        this.body = UserSerializer.serialize(userFind);
+    }
 
     static * updateUser(){
         try{
@@ -174,6 +183,7 @@ router.get('/', UserRouter.getCurrentUser);
 router.post('/', UserRouter.createUser);
 router.get('/stories',  UserRouter.getStories);
 router.get('/:id',  UserValidator.getBydId, UserRouter.getUserById);
+router.get('/email/:email',  UserValidator.getByEmail, UserRouter.getUserByEmail);
 router.get('/oldId/:id',  UserRouter.getUserByOldId);
 router.patch('/:id', UserValidator.getBydId, UserRouter.updateUser);
 router.delete('/:id', UserValidator.getBydId, UserRouter.deleteUser);

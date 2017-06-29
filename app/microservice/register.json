@@ -30,6 +30,15 @@
             "path": "/api/v1/user/:id"
         }]
     }, {
+        "url": "/v1/user/email/:email",
+        "method": "GET",
+        "authenticated": true,
+        "endpoints": [{
+            "method": "GET",
+            "baseUrl": "#(service.uri)",
+            "path": "/api/v1/user/email/:email"
+        }]
+    }, {
         "url": "/v1/user/stories",
         "method": "GET",
         "authenticated": true,
