@@ -217,6 +217,125 @@ paths:
           description: unexpected error
           schema:
             $ref: '#/definitions/Errors'
+    get:
+      description: |
+        Get user based on an id, if the user does not exist return 404
+        **Is necesary authentication**
+        #### Example response
+        ```json
+        {
+            "data": {
+                "type": "user",
+                "id": "516a333ba0008d0e003b733b",
+                "attributes": {
+                    "provider": "twitter",
+                    "providerId": "000000000",
+                    "email": "vizz@vizzuality.com",
+                    "createdAt": "2016-06-23T15:41:41.248Z",
+                    "primaryResponsibilities": ["responsabilities"],
+                    "howDoYouUse": ["testing"],
+                    "signUpForTesting": false,
+                    "country": "Spain",
+                    "city": "Madrid",
+                    "stage": ""
+                }
+            }
+        }
+        ```
+      operationId: getUserById
+      produces:
+        - application/vnd.api+json
+      tags:
+        - USER
+      parameters:
+        - name: id
+          in: path
+          description: Id of user to find
+          required: true
+          type: string
+      security:
+        - UserSecurity: []
+      responses:
+        200:
+          description: User found
+          schema:
+            $ref: '#/definitions/UserAPI'
+        401:
+          description: Not authorized
+          schema:
+            $ref: '#/definitions/Errors'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+  /user/email/{email}:
+    get:
+      description: |
+        Get user based on an email, if the user does not exist return 404
+        **Is necesary authentication**
+        #### Example response
+        ```json
+        {
+            "data": {
+                "type": "user",
+                "id": "516a333ba0008d0e003b733b",
+                "attributes": {
+                    "provider": "twitter",
+                    "providerId": "000000000",
+                    "email": "vizz@vizzuality.com",
+                    "createdAt": "2016-06-23T15:41:41.248Z",
+                    "primaryResponsibilities": ["responsabilities"],
+                    "howDoYouUse": ["testing"],
+                    "signUpForTesting": false,
+                    "country": "Spain",
+                    "city": "Madrid",
+                    "stage": ""
+                }
+            }
+        }
+        ```
+      operationId: getUserByEmail
+      produces:
+        - application/vnd.api+json
+      tags:
+        - USER
+      parameters:
+        - name: email
+          in: path
+          description: Email of user to find
+          required: true
+          type: string
+      security:
+        - UserSecurity: []
+      responses:
+        200:
+          description: User found
+          schema:
+            $ref: '#/definitions/UserAPI'
+        401:
+          description: Not authorized
+          schema:
+            $ref: '#/definitions/Errors'
+        404:
+          description: User not found
+          schema:
+            $ref: '#/definitions/Errors'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
+        default:
+          description: unexpected error
+          schema:
+            $ref: '#/definitions/Errors'
   /user:
     post:
       summary: Create user. If user exist, return 400
