@@ -7,8 +7,9 @@ develop:
   container_name: gfw-user-api-develop
   environment:
     NODE_ENV: dev
-    API_GATEWAY_URL: http://mymachine:8000
+    CT_URL: http://mymachine:8000
     MIGRATE_URI: <urlmigrate>
+    CT_REGISTER_MODE: auto
   command: develop
   links:
     - mongo
