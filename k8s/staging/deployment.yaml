@@ -32,6 +32,11 @@ spec:
             value: app/src
           - name: LOCAL_URL
             value: http://{name}.default.svc.cluster.local:3100
+          - name: MONGO_URI
+            valueFrom:
+                secretKeyRef:
+                  name: dbsecrets
+                  key: USER_MONGO_URI
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
