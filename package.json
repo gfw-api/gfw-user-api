@@ -46,7 +46,7 @@
     "koa-validate": "0.2.11",
     "mongoose": "4.4.6",
     "newrelic": "1.27.1",
-    "vizz.microservice-client": "1.5.4"
+    "vizz.microservice-client": "1.6.1"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
