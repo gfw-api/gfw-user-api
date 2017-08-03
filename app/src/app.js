@@ -57,16 +57,6 @@ var onDbReady = function(err) {
     //load routes
     loader.loadRoutes(app);
 
-    registerClient.register({
-        id: config.get('service.id'),
-        name: config.get('service.name'),
-        uri: config.get('service.uri'),
-        dirConfig: path.join(__dirname, '../microservice'),
-        dirPackage: path.join(__dirname, '../../'),
-        logger: logger,
-        app: app
-    });
-
     //Instance of http module
     var server = require('http').Server(app.callback());
 
@@ -74,14 +64,20 @@ var onDbReady = function(err) {
     // In production environment, the port must be declared in environment variable
     var port = process.env.PORT || config.get('service.port');
 
-    server.listen(port, function() {
-        if (process.env.NODE_ENV === 'dev'){
-            co(function *(){
-                yield registerClient.autoDiscovery();
-            }).then(function(){}, function(e){
-                logger.error('Error auto discovery', e);
-                process.exit(1);
-            });
+
+    server.listen(port, function () {    
+        const microserviceClient = require('vizz.microservice-client');
+        
+        microserviceClient.register({
+            id: config.get('service.id'),
+            name: config.get('service.name'),
+            dirConfig: path.join(__dirname, '../microservice'),
+            dirPackage: path.join(__dirname, '../../'),
+            logger: logger,
+            app: app
+        });
+        if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
+            microserviceClient.autoDiscovery(config.get('service.name'));
         }
     });
 
