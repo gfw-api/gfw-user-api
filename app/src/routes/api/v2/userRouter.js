@@ -3,7 +3,7 @@
 var Router = require('koa-router');
 var logger = require('logger');
 var UserSerializer = require('serializers/userSerializerV2');
-var UserValidator = require('validators/userValidatorV2');
+var UserValidator = require('validators/userValidator');
 var mongoose = require('mongoose');
 var User = require('models/userV2');
 var router = new Router({
