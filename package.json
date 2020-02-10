@@ -4,8 +4,6 @@
   "description": "Global forest watch - User API",
   "main": "index.js",
   "scripts": {
-    "test-e2e": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js e2eTest",
-    "test-unit": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js unitTest",
     "start": "NODE_PATH=app/src node app/index.js",
     "test": "NODE_PATH=app/src NODE_ENV=test grunt --gruntfile app/Gruntfile.js test",
     "migrate": "NODE_PATH=app/src node app/src/migrate/migrate.js"
@@ -74,7 +72,8 @@
     "husky": ">=4",
     "lint-staged": ">=10",
     "load-grunt-tasks": "^5.1.0",
-    "mocha": "^7.0.1"
+    "mocha": "^7.0.1",
+    "should": "^13.2.3"
   },
   "husky": {
     "hooks": {
