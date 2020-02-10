@@ -6,19 +6,14 @@ chai.should();
 describe('User serializer test', () => {
     const user = {
         id: '5704f4031ad9ef22007e843f',
-        firstName: 'Test',
-        lastName: 'Vizzuality',
+        fullName: 'Vizzuality',
+        provider: 'google',
+        providerId: '2a324231345a',
         email: 'test@vizzuality.com',
         sector: 'Government (public sector)',
-        subsector: 'Researcher',
-        jobTitle: 'Technical staff',
-        company: 'Vizzuality',
-        country: 'Spain',
+        primaryResponsibilities: 'Technical staff',
         state: 'Madrid',
         city: 'Madrid',
-        aoiCountry: 'Spain',
-        aoiState: 'Madrid',
-        aoiCity: 'Madrid',
         howDoYouUse: 'Obtain maps and data on tree cover'
     };
 
@@ -33,37 +28,23 @@ describe('User serializer test', () => {
         data.should.have.property('id');
         data.type.should.equal('user');
         data.id.should.equal(user.id);
-        data.attributes.should.have.property('firstName');
-        data.attributes.should.have.property('lastName');
+        data.attributes.should.have.property('fullName');
         data.attributes.should.have.property('provider');
         data.attributes.should.have.property('providerId');
         data.attributes.should.have.property('email');
         data.attributes.should.have.property('sector');
-        data.attributes.should.have.property('subsector');
-        data.attributes.should.have.property('jobTitle');
-        data.attributes.should.have.property('company');
-        data.attributes.should.have.property('country');
+        data.attributes.should.have.property('primaryResponsibilities');
         data.attributes.should.have.property('state');
         data.attributes.should.have.property('city');
-        data.attributes.should.have.property('aoiCountry');
-        data.attributes.should.have.property('aoiState');
-        data.attributes.should.have.property('aoiCity');
         data.attributes.should.have.property('howDoYouUse');
-        data.attributes.firstName.should.be.equal(user.firstName);
-        data.attributes.lastName.should.be.equal(user.lastName);
+        data.attributes.fullName.should.be.equal(user.fullName);
         data.attributes.provider.should.be.equal(user.provider);
         data.attributes.providerId.should.be.equal(user.providerId);
         data.attributes.email.should.be.equal(user.email);
         data.attributes.sector.should.be.equal(user.sector);
-        data.attributes.subsector.should.be.equal(user.subsector);
-        data.attributes.jobTitle.should.be.equal(user.jobTitle);
-        data.attributes.company.should.be.equal(user.company);
-        data.attributes.country.should.be.equal(user.country);
+        data.attributes.primaryResponsibilities.should.be.equal(user.primaryResponsibilities);
         data.attributes.state.should.be.equal(user.state);
         data.attributes.city.should.be.equal(user.city);
-        data.attributes.aoiCountry.should.be.equal(user.aoiCountry);
-        data.attributes.aoiState.should.be.equal(user.aoiState);
-        data.attributes.aoiCity.should.be.equal(user.aoiCity);
         data.attributes.howDoYouUse.should.be.equal(user.howDoYouUse);
 
     });
