@@ -3,8 +3,8 @@ kind: Deployment
 metadata:
   namespace: gfw
   labels:
-    name: {name}
-  name: {name}
+    name: gfw-user
+  name: gfw-user
 spec:
   revisionHistoryLimit: 0
   template:
@@ -12,11 +12,11 @@ spec:
       annotations:
         chaos.alpha.kubernetes.io/enabled: "true"
       labels:
-        name: {name}
+        name: gfw-user
     spec:
       containers:
-      - name: {name}
-        image: vizzuality/{name}
+      - name: gfw-user
+        image: vizzuality/gfw-user
         imagePullPolicy: Always
         resources:
           requests:
@@ -32,7 +32,7 @@ spec:
           - name: NODE_PATH
             value: app/src
           - name: LOCAL_URL
-            value: http://{name}.gfw.svc.cluster.local:3100
+            value: http://gfw-user.gfw.svc.cluster.local:3100
           - name: MONGO_URI
             valueFrom:
                 secretKeyRef:
