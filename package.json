@@ -54,6 +54,8 @@
     "vizz.microservice-client": "1.6.2"
   },
   "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "co-mocha": "^1.2.2",
     "eslint": "^6.0.1",
     "eslint-config-airbnb": "^17.1.0",
@@ -74,6 +76,7 @@
     "lint-staged": ">=10",
     "load-grunt-tasks": "^5.1.0",
     "mocha": "^7.0.1",
+    "nock": "^11.8.2",
     "should": "^13.2.3",
     "nyc": "^15.0.0"
   },
