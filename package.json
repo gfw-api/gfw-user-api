@@ -71,7 +71,17 @@
     "grunt-express-server": "^0.5.4",
     "grunt-mocha-test": "^0.13.3",
     "grunt-notify": "^0.4.5",
+    "husky": ">=4",
+    "lint-staged": ">=10",
     "load-grunt-tasks": "^5.1.0",
     "mocha": "^7.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
   }
 }
