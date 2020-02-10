@@ -32,7 +32,6 @@ class UserRouter {
             logger.error(e);
             this.throw(400, 'Error parsing');
         }
-
     }
 
     static * getAllUsers() {
@@ -85,8 +84,6 @@ class UserRouter {
         }
         this.body = UserSerializer.serialize(userFind);
     }
-
-
 
     static * updateUser() {
         try {
