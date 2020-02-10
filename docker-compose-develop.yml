@@ -1,26 +1,32 @@
-develop:
-  extends:
-    file: base.yml
-    service: base
-  ports:
-    - "35735:35729"
-  container_name: gfw-user-api-develop
-  environment:
-    NODE_ENV: dev
-    CT_URL: http://mymachine:8000
-    MIGRATE_URI: <urlmigrate>
-    CT_REGISTER_MODE: auto
-  command: develop
-  links:
-    - mongo
-  volumes:
-    - ./app:/opt/gfw-user-api/app
-mongo:
-  image: mongo
-  container_name: gfw-user-mongo
-  command: --smallfiles
-  ports:
-    - "27017"
-  volumes:
-    - $HOME/docker/data/gfw-user-api:/data/db
-  restart: always
+version: "3"
+services:
+  develop:
+    build: .
+    ports:
+      - "8674:8674"
+    container_name: gfw-user-api-develop
+    env_file:
+      - dev.env
+    environment:
+      PORT: 8674
+      MIGRATE_URI: <urlmigrate>
+      NODE_PATH: app/src
+      CT_REGISTER_MODE: auto
+      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
+      API_VERSION: v1
+      MONGO_PORT_27017_TCP_ADDR: mongo
+    command: develop
+    links:
+      - mongo
+    volumes:
+      - ./app:/opt/gfw-user-api/app
+
+  mongo:
+    image: mongo:3.4
+    container_name: gfw-user-mongo-develop
+    command: --smallfiles
+    ports:
+      - "27017"
+    volumes:
+      - $HOME/docker/data/dataset:/data/db
+    restart: always

@@ -1,8 +1,9 @@
-'use strict';
+
 
 module.exports = function (grunt) {
 
     grunt.file.setBase('..');
+    // eslint-disable-next-line import/no-extraneous-dependencies
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
@@ -20,31 +21,11 @@ module.exports = function (grunt) {
                 ]
             }
         },
-        jshint: {
-            js: {
-                src: [
-                    'app/src/**/*.js'
-                ],
-                options: {
-                    jshintrc: true
-                },
-                globals: {}
-            },
-            jsTest: {
-                src: [
-                    'app/test/**/*.js'
-                ],
-                options: {
-                    jshintrc: true
-                },
-                globals: {}
-            }
-        },
         express: {
             dev: {
                 options: {
                     script: 'app/index.js',
-                    'node_env': 'dev',
+                    node_env: 'dev',
                     port: process.env.PORT,
                     output: 'started'
                 }
@@ -79,7 +60,7 @@ module.exports = function (grunt) {
                 files: [
                     'app/src/**/*.js',
                 ],
-                tasks: ['jshint:js', 'mochaTest:unit', 'express:dev'],
+                tasks: ['mochaTest:unit', 'express:dev'],
                 options: {
                     spawn: false
                 }
@@ -88,7 +69,7 @@ module.exports = function (grunt) {
                 files: [
                     'app/test/unit/**/*.test.js',
                 ],
-                tasks: ['jshint:jsTest', 'mochaTest:unit'],
+                tasks: ['mochaTest:unit'],
                 options: {
                     spawn: false
                 }
@@ -97,24 +78,36 @@ module.exports = function (grunt) {
                 files: [
                     'app/test/unit/**/*.spec.js',
                 ],
-                tasks: ['jshint:jsTest', 'mochaTest:e2e'],
+                tasks: ['mochaTest:e2e'],
                 options: {
                     spawn: false
                 }
             },
 
+        },
+
+
+        nyc: {
+            cover: {
+                options: {
+                    include: ['app/src/**'],
+                    exclude: '*.test.*',
+                    reporter: ['lcov', 'text-summary'],
+                    reportDir: 'coverage',
+                    all: true
+                },
+                cmd: false,
+                args: ['grunt', '--gruntfile', 'app/Gruntfile.js', 'test']
+            }
         }
     });
 
-
-    grunt.registerTask('unitTest', ['mochaTest:unit']);
-
-    grunt.registerTask('e2eTest', ['express:dev', 'mochaTest:e2e']);
-
-    grunt.registerTask('test', ['jshint', 'unitTest']);
+    grunt.registerTask('test', ['mochaTest:e2e', 'mochaTest:unit']);
 
     grunt.registerTask('serve', ['express:dev', 'watch']);
 
     grunt.registerTask('default', 'serve');
+
+    grunt.loadNpmTasks('grunt-simple-nyc');
 
 };

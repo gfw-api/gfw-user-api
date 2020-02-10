@@ -17,7 +17,7 @@
     "mongodb":{
         "database": "gfw_user_db",
         "host": "mymachine",
-        "port": 32780
+        "port": 27017
     },
     "migrate":{
         "uri": ""

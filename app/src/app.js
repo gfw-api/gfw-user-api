@@ -1,8 +1,5 @@
 'use strict';
 //load modules
-if(process.env.NODE_ENV === 'prod') {
-    require('newrelic');
-}
 var config = require('config');
 var logger = require('logger');
 var path = require('path');
@@ -65,9 +62,9 @@ var onDbReady = function(err) {
     var port = process.env.PORT || config.get('service.port');
 
 
-    server.listen(port, function () {    
+    server.listen(port, function () {
         const microserviceClient = require('vizz.microservice-client');
-        
+
         microserviceClient.register({
             id: config.get('service.id'),
             name: config.get('service.name'),
