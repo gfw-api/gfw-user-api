@@ -56,12 +56,12 @@ node {
         case "develop":
           sh("echo Deploying to STAGING cluster")
           sh("kubectl config use-context ${KUBECTL_CONTEXT_PREFIX}_${GCLOUD_PROJECT}_${GCLOUD_GCE_ZONE}_${KUBE_STAGING_CLUSTER}")
-          def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} || echo NotFound"]).trim()
+          def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} --namespace=gfw || echo NotFound"]).trim()
           if ((service && service.indexOf("NotFound") > -1) || (forceCompleteDeploy)){
             sh("kubectl apply -f k8s/services/")
             sh("kubectl apply -f k8s/staging/")
           }
-          sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --record")
+          sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --namespace=gfw --record")
           break
 
         // Roll out to production
@@ -87,12 +87,12 @@ node {
           if (userInput == true && !didTimeout){
             sh("echo Deploying to PROD cluster")
             sh("kubectl config use-context ${KUBECTL_CONTEXT_PREFIX}_${CLOUD_PROJECT_NAME}_${CLOUD_PROJECT_ZONE}_${KUBE_PROD_CLUSTER}")
-            def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} || echo NotFound"]).trim()
+            def service = sh([returnStdout: true, script: "kubectl get deploy ${appName} --namespace=gfw || echo NotFound"]).trim()
             if ((service && service.indexOf("NotFound") > -1) || (forceCompleteDeploy)){
               sh("kubectl apply -f k8s/services/")
               sh("kubectl apply -f k8s/production/")
             }
-            sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --record")
+            sh("kubectl set image deployment ${appName} ${appName}=${imageTag} --namespace=gfw --record")
           } else {
             sh("echo NOT DEPLOYED")
             currentBuild.result = 'SUCCESS'

@@ -4,6 +4,7 @@ metadata:
   namespace: gfw
   labels:
     name: gfw-user
+    app: gfw
   name: gfw-user
 spec:
   revisionHistoryLimit: 2
@@ -12,6 +13,20 @@ spec:
       labels:
         name: gfw-user
     spec:
+      tolerations:
+      - key: "type"
+        operator: "Equal"
+        value: "gfw"
+        effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: type
+                operator: In
+                values:
+                - gfw
       containers:
       - name: gfw-user
         image: vizzuality/gfw-user
