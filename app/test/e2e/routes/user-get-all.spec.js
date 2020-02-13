@@ -1,10 +1,7 @@
 const nock = require('nock');
-// const chai = require('chai');
 const config = require('config');
 
 const { createRequest } = require('../utils/test-server');
-
-// const should = chai.should();
 
 const prefix = '/api/v2/user/';
 nock.disableNetConnect();
@@ -35,24 +32,10 @@ describe('User v2 tests - Get all users', () => {
     });
 
     it('No dates in the query - all users (happy case)', async () => {
-        const response = await user.get(sampleUser);
+        const response = await user
+            .get('/obtain/all-users')
+            .query({});
         ensureCorrectError(response, 'Not authorized.', 403);
-    });
-
-    it('Getting logged user should return user info (happy case)', async () => {
-        const response = await user.get(sampleLoggedUser);
-
-        response.status.should.equal(200);
-        response.body.should.instanceOf(Object); // .and.have.property('data');
-
-        const { data } = response.body;
-        data.firstName.should.equal(sampleLoggedUser.loggedUser.firstName);
-        data.lastName.should.equal(sampleLoggedUser.loggedUser.lastName);
-        data.jobTitle.should.equal(sampleLoggedUser.loggedUser.jobTitle);
-        data.company.should.equal(sampleLoggedUser.loggedUser.company);
-        data.aoiCountry.should.equal(sampleLoggedUser.loggedUser.aoiCountry);
-        data.aoiState.should.equal(sampleLoggedUser.loggedUser.aoiState);
-        data.aoiCity.should.equal(sampleLoggedUser.loggedUser.aoiCity);
     });
 
     afterEach(() => {

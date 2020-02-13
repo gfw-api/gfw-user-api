@@ -35,12 +35,17 @@ describe('User v2 tests - Get current user', () => {
     });
 
     it('If the user isn\'t logged in it should return a 403', async () => {
-        const response = await user.get(sampleUser);
+        const response = await user
+            .get('/')
+            .query(sampleUser)
+
         ensureCorrectError(response, 'Not authorized.', 403);
     });
 
     it('Getting logged user should return user info (happy case)', async () => {
-        const response = await user.get(sampleLoggedUser);
+        const response = await user
+            .get('/')
+            .query(sampleLoggedUser)
 
         response.status.should.equal(200);
         response.body.should.instanceOf(Object); // .and.have.property('data');
