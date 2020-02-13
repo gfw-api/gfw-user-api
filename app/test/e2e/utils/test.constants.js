@@ -101,6 +101,22 @@ const USERS = {
     }
 };
 
+
+const SAMPLE_USER = {
+    firstName: 'roger',
+    lastName: 'test'
+};
+
+const SAMPLE_LOGGED_USER = {
+    loggedUser: {
+        firstName: 'logged',
+        lastName: 'user',
+        id: 123456
+    }
+};
+
 module.exports = {
-    USERS
+    USERS,
+    SAMPLE_USER,
+    SAMPLE_LOGGED_USER
 };
