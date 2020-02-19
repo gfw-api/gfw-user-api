@@ -45,6 +45,7 @@ module.exports = function (grunt) {
             e2e: {
                 options: {
                     reporter: 'spec',
+                    timeout: 10000,
                     quiet: false, // Optionally suppress output to standard out (defaults to false)
                     clearRequireCache: true, // Optionally clear the require cache before running tests (defaults to false)
 
@@ -76,14 +77,13 @@ module.exports = function (grunt) {
             },
             e2eTest: {
                 files: [
-                    'app/test/unit/**/*.spec.js',
+                    'app/test/e2e/**/*.spec.js',
                 ],
-                tasks: ['mochaTest:e2e'],
+                tasks: ['express:test', 'mochaTest:e2e'],
                 options: {
-                    spawn: false
+                    spawn: true
                 }
-            },
-
+            }
         },
 
 

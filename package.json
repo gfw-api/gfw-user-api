@@ -56,6 +56,7 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "chai-datetime": "^1.5.0",
     "co-mocha": "^1.2.2",
     "eslint": "^6.0.1",
     "eslint-config-airbnb": "^17.1.0",
