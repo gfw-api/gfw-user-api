@@ -919,6 +919,14 @@ co-body@~3.1.0:
     raw-body "~2.1.2"
     type-is "~1.6.6"
 
+co-mocha@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/co-mocha/-/co-mocha-1.2.2.tgz#c4fdf24d37f43ca4da668b14542a96e9377479ab"
+  integrity sha512-ocdJRn3sxonOqpdjSU2VwTwWzjTSoatzsTqCWiC3eGvJFNs8ZNMlZwfgYolQCdfddMz4muiZl99KIV9gKoNvxg==
+  dependencies:
+    co "^4.0.0"
+    is-generator "^1.0.1"
+
 co-request@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/co-request/-/co-request-1.0.0.tgz#8eb5fb656c2ee1e82e36c4ccfe9376846406b260"
@@ -926,7 +934,7 @@ co-request@1.0.0:
   dependencies:
     request "*"
 
-co@4.6.0, co@^4.0.2, co@^4.4.0:
+co@4.6.0, co@^4.0.0, co@^4.0.2, co@^4.4.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
   integrity sha1-bqa989hTrlTMuOR7+gvz+QMfsYQ=
@@ -2993,6 +3001,11 @@ is-fullwidth-code-point@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz#f116f8064fe90b3f7844a38997c0b75051269f1d"
   integrity sha512-zymm5+u+sCsSWyD9qNaejV3DFvhCKclKdizYaJUuHA83RLjb7nSuGnddCHGv0hk+KY7BMAlsWeK4Ueg6EV6XQg==
+
+is-generator@^1.0.1:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/is-generator/-/is-generator-1.0.3.tgz#c14c21057ed36e328db80347966c693f886389f3"
+  integrity sha1-wUwhBX7TbjKNuANHlmxpP4hjifM=
 
 is-glob@^3.1.0:
   version "3.1.0"
