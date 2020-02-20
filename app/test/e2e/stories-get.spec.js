@@ -29,15 +29,14 @@ describe('Get stories tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should be a 4xx
-    it('Get stories while not being logged in should return a 500 error', async () => {
+    it('Get stories while not being logged in should return a 401 \'Unauthorized\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/stories`);
 
-        response.status.should.equal(500);
+        response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal('Unexpected token u in JSON at position 0');
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
 
     });
 
@@ -59,8 +58,7 @@ describe('Get stories tests', () => {
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
-    // TODO: this should return an error
-    it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 204', async () => {
+    it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 500', async () => {
         nock(process.env.CT_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
@@ -74,7 +72,10 @@ describe('Get stories tests', () => {
                 loggedUser: JSON.stringify(USERS.USER)
             });
 
-        response.status.should.equal(204);
+        response.status.should.equal(503);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(503);
+        response.body.errors[0].should.have.property('detail').and.equal('Stories temporarily unavailable');
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice (remote content)', async () => {

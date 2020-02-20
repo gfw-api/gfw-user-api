@@ -1,14 +1,16 @@
 const config = require('config');
 const logger = require('logger');
-const path = require('path');
-const koa = require('koa');
+const Koa = require('koa');
 const koaQs = require('koa-qs');
 const bodyParser = require('koa-bodyparser');
 const koaLogger = require('koa-logger');
 const loader = require('loader');
 const validate = require('koa-validate');
 const mongoose = require('mongoose');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 const ErrorSerializer = require('serializers/errorSerializer');
+
+const mongooseOptions = require('../../config/mongoose');
 
 const mongoUri = process.env.MONGO_URI || `mongodb://${config.get('mongodb.host')}:${config.get('mongodb.port')}/${config.get('mongodb.database')}`;
 
@@ -22,7 +24,7 @@ async function init() {
             }
 
             // instance of koa
-            const app = koa();
+            const app = new Koa();
 
             // if environment is dev then load koa-logger
             if (process.env.NODE_ENV === 'dev') {
@@ -35,21 +37,34 @@ async function init() {
             }));
 
             // catch errors and send in jsonapi standard. Always return vnd.api+json
-            app.use(function* handleErrors(next) {
+            app.use(async (ctx, next) => {
                 try {
-                    yield next;
-                } catch (err) {
-                    this.status = err.status || 500;
-                    this.body = ErrorSerializer.serializeError(this.status, err.message);
-                    if (process.env.NODE_ENV === 'prod' && this.status === 500) {
-                        this.body = 'Unexpected error';
+                    await next();
+                } catch (inErr) {
+                    let error = inErr;
+                    try {
+                        error = JSON.parse(inErr);
+                    } catch (e) {
+                        logger.debug('Could not parse error message - is it JSON?: ', inErr);
+                        error = inErr;
                     }
+                    ctx.status = error.status || ctx.status || 500;
+                    if (ctx.status >= 500) {
+                        logger.error(error);
+                    } else {
+                        logger.info(error);
+                    }
+
+                    ctx.body = ErrorSerializer.serializeError(ctx.status, error.message);
+                    if (process.env.NODE_ENV === 'prod' && ctx.status === 500) {
+                        ctx.body = 'Unexpected error';
+                    }
+                    ctx.response.type = 'application/vnd.api+json';
                 }
-                this.response.type = 'application/vnd.api+json';
             });
 
             // load custom validator
-            app.use(validate());
+            validate(app);
 
             // load routes
             loader.loadRoutes(app);
@@ -63,19 +78,19 @@ async function init() {
 
 
             server.listen(port, () => {
-                const microserviceClient = require('vizz.microservice-client');
-
-                microserviceClient.register({
-                    id: config.get('service.id'),
-                    name: config.get('service.name'),
-                    dirConfig: path.join(__dirname, '../microservice'),
-                    dirPackage: path.join(__dirname, '../../'),
+                ctRegisterMicroservice.register({
+                    info: require('../microservice/register.json'),
+                    swagger: require('../microservice/public-swagger.json'),
+                    mode: (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') ? ctRegisterMicroservice.MODE_AUTOREGISTER : ctRegisterMicroservice.MODE_NORMAL,
+                    framework: ctRegisterMicroservice.KOA2,
+                    app,
                     logger,
-                    app
+                    name: config.get('service.name'),
+                    ctUrl: process.env.CT_URL,
+                    url: process.env.LOCAL_URL,
+                    token: process.env.CT_TOKEN,
+                    active: true
                 });
-                if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
-                    microserviceClient.autoDiscovery(config.get('service.name'));
-                }
             });
 
             logger.info(`Server started in port: ${port}`);
@@ -83,7 +98,7 @@ async function init() {
 
         }
 
-        mongoose.connect(mongoUri, onDbReady);
+        mongoose.connect(mongoUri, mongooseOptions, onDbReady);
     });
 }
 

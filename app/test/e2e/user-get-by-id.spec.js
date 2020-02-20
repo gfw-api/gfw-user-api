@@ -30,15 +30,14 @@ describe('Get user by id tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should be a 4xx
-    it('Get user by id for an invalid id should return a 500 error', async () => {
+    it('Get user by id for an invalid id should return a 404 \'User not found\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/1234`);
 
-        response.status.should.equal(500);
+        response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal('Cast to ObjectId failed for value "1234" at path "_id"');
+        response.body.errors[0].should.have.property('status').and.equal(404);
+        response.body.errors[0].should.have.property('detail').and.equal('User not found');
     });
 
     it('Get user by id for an valid id that does not exist on the database should return a 404', async () => {

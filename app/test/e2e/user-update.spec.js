@@ -29,18 +29,16 @@ describe('Update user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should return a body with an error message
-    // TODO: this should return a different 4xx error code
-    it('Update a user while not being logged in should return a 404 error', async () => {
+    it('Update a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
         const response = await requester
             .patch(`/api/v1/user/1234`);
 
-        response.status.should.equal(404);
-        // eslint-disable-next-line no-unused-expressions
-        response.body.should.be.empty;
+        response.status.should.equal(401);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
     });
 
-    // TODO: this should be a 4xx unauthorized
     it('Update a user while being logged in as a different user should return a 404', async () => {
         const user = await new UserModel(createUser()).save();
 
@@ -50,9 +48,10 @@ describe('Update user tests', () => {
                 loggedUser: USERS.USER
             });
 
-        response.status.should.equal(404);
-        // eslint-disable-next-line no-unused-expressions
-        response.body.should.be.empty;
+        response.status.should.equal(403);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(403);
+        response.body.errors[0].should.have.property('detail').and.equal('Forbidden');
     });
 
     it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
@@ -90,8 +89,7 @@ describe('Update user tests', () => {
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
-    // TODO: this should return a different 4xx code
-    it('Update a user while being logged in with a different user should return a 404 error', async () => {
+    it('Update a user while being logged in with a different user should return a 403 \'Forbidden\' error', async () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
@@ -100,9 +98,10 @@ describe('Update user tests', () => {
                 loggedUser: USERS.USER
             });
 
-        response.status.should.equal(404);
-        // eslint-disable-next-line no-unused-expressions
-        response.body.should.be.empty;
+        response.status.should.equal(403);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(403);
+        response.body.errors[0].should.have.property('detail').and.equal('Forbidden');
     });
 
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
@@ -150,26 +149,6 @@ describe('Update user tests', () => {
         responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
-
-    // TODO: this test reflects desired behavior, but instead we get a 500 :(
-    // it('Update a user that already exists should return a 400 \'Duplicated user\' error', async () => {
-    //     const user = await new UserModel(createUser()).save();
-    //
-    //     const response = await requester
-    //         .patch(`/api/v1/user`)
-    //         .send({
-    //             ...user,
-    //             loggedUser: {
-    //                 ...USERS.USER,
-    //                 id: user._id.toString()
-    //             }
-    //         });
-    //
-    //     response.status.should.equal(400);
-    //     response.body.should.have.property('errors').and.be.an('array').and.length(1);
-    //     response.body.errors[0].should.have.property('status').and.equal(400);
-    //     response.body.errors[0].should.have.property('detail').and.equal('Duplicated user');
-    // });
 
     // TODO: follow up with PM on this. Right now it fails silently, but probably shouldn't
     it('Update a user with signUpForTesting=true should add the user to a spreadsheet on google, but instead fails silently', async () => {

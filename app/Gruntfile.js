@@ -1,6 +1,4 @@
-
-
-module.exports = function (grunt) {
+module.exports = (grunt) => {
 
     grunt.file.setBase('..');
     // eslint-disable-next-line import/no-extraneous-dependencies
@@ -10,17 +8,6 @@ module.exports = function (grunt) {
 
 
         clean: {},
-        run: {
-            options: {
-                // Task-specific options go here.
-            },
-            migration: {
-                cmd: 'node',
-                args: [
-                    'app/src/migrate/migrate.js'
-                ]
-            }
-        },
         express: {
             dev: {
                 options: {

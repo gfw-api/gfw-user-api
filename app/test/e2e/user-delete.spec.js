@@ -29,16 +29,14 @@ describe('Delete user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should return a body with an error message
-    // TODO: this should return a different 4xx error code
-    it('Delete a user while not being logged in should return a 404 error', async () => {
+    it('Delete a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
         const response = await requester
             .delete(`/api/v1/user/1234`);
 
-        response.status.should.equal(500);
+        response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal('Unexpected token u in JSON at position 0');
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
     });
 
     it('Delete a user while being logged in as a different user should return a 401 \'Not authorized\' error', async () => {

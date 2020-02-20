@@ -22,7 +22,7 @@
   "noyield": true,
   "globals": {
     "module": false,
-    "yield": false,
+    "await": false,
     "require": false,
     "describe": false,
     "before": false,

@@ -30,7 +30,7 @@ describe('Get user by old id tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    it('Get user by old id for an numeric id that does not exist should return a 404 error', async () => {
+    it('Get user by old id for an numeric id that does not exist should return a 404 \'User not found\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/oldId/1234`);
 
@@ -40,16 +40,15 @@ describe('Get user by old id tests', () => {
         response.body.errors[0].should.have.property('detail').and.equal('User not found');
     });
 
-    // TODO: this should return a 4xx
-    it('Get user by old id for mongoose id should return a 500', async () => {
+    it('Get user by old id for mongoose id should return a 404 \'User not found\' error', async () => {
         const id = mongoose.Types.ObjectId();
         const response = await requester
             .get(`/api/v1/user/oldId/${id}`);
 
-        response.status.should.equal(500);
+        response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal(`Cast to number failed for value "${id}" at path "oldId"`);
+        response.body.errors[0].should.have.property('status').and.equal(404);
+        response.body.errors[0].should.have.property('detail').and.equal(`User not found`);
     });
 
     // TODO: limit this endpoint to ADMIN users or your own data

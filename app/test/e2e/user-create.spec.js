@@ -29,15 +29,14 @@ describe('Create user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should be a 4xx
-    it('Create a user while not being logged in should return a 500 \'Not authorized\' error', async () => {
+    it('Create a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
         const response = await requester
             .post(`/api/v1/user`);
 
-        response.status.should.equal(500);
+        response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal('Cannot read property \'id\' of undefined');
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
 
     });
 
@@ -95,25 +94,24 @@ describe('Create user tests', () => {
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
-    // TODO: this test reflects desired behavior, but instead we get a 500 :(
-    // it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
-    //     const user = await new UserModel(createUser()).save();
-    //
-    //     const response = await requester
-    //         .post(`/api/v1/user`)
-    //         .send({
-    //             ...user,
-    //             loggedUser: {
-    //                 ...USERS.USER,
-    //                 id: user._id.toString()
-    //             }
-    //         });
-    //
-    //     response.status.should.equal(400);
-    //     response.body.should.have.property('errors').and.be.an('array').and.length(1);
-    //     response.body.errors[0].should.have.property('status').and.equal(400);
-    //     response.body.errors[0].should.have.property('detail').and.equal('Duplicated user');
-    // });
+    it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
+        const user = await new UserModel(createUser()).save();
+
+        const response = await requester
+            .post(`/api/v1/user`)
+            .send({
+                ...user,
+                loggedUser: {
+                    ...USERS.USER,
+                    id: user._id.toString()
+                }
+            });
+
+        response.status.should.equal(400);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(400);
+        response.body.errors[0].should.have.property('detail').and.equal('Duplicated user');
+    });
 
     // TODO: follow up with PM on this. Right now it fails silently, but probably shouldn't
     it('Create a user with signUpForTesting=true should add the user to a spreadsheet on google, but instead fails silently', async () => {
