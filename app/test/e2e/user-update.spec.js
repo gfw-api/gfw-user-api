@@ -15,7 +15,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('Create user tests', () => {
+describe('Update user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -29,23 +29,41 @@ describe('Create user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should be a 4xx
-    it('Create a user while not being logged in should return a 500 \'Not authorized\' error', async () => {
+    // TODO: this should return a body with an
+    it('Update a user while not being logged in should return a 404 error', async () => {
         const response = await requester
-            .post(`/api/v1/user`);
+            .patch(`/api/v1/user/1234`);
 
-        response.status.should.equal(500);
-        response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(500);
-        response.body.errors[0].should.have.property('detail').and.equal('Cannot read property \'id\' of undefined');
-
+        response.status.should.equal(404);
+        // eslint-disable-next-line no-unused-expressions
+        response.body.should.be.empty;
     });
 
-    it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
+    // TODO: this should be a 4xx unauthorized
+    it('Update a user while being logged in as a different user should return a 404', async () => {
+        const user = await new UserModel(createUser()).save();
+
         const response = await requester
-            .post(`/api/v1/user`)
+            .patch(`/api/v1/user/${user._id.toString()}`)
             .send({
                 loggedUser: USERS.USER
+            });
+
+        response.status.should.equal(404);
+        // eslint-disable-next-line no-unused-expressions
+        response.body.should.be.empty;
+    });
+
+    it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
+        const user = await new UserModel(createUser()).save();
+
+        const response = await requester
+            .patch(`/api/v1/user/${user._id.toString()}`)
+            .send({
+                loggedUser: {
+                    ...USERS.USER,
+                    id: user._id.toString()
+                }
             });
 
         response.status.should.equal(200);
@@ -56,20 +74,57 @@ describe('Create user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('createdAt').and.be.a('string');
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.length(0);
-        responseUser.attributes.should.have.property('howDoYouUse').and.length(0);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(false);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(false);
+        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+        responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
+        responseUser.attributes.should.have.property('createdAt');
+        new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
+        responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
+        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
+        responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
+        responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
+        responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
+        responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
+        responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
+        responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
+        responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
-    it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
-        const user = createUser();
+    // TODO: this should return a different 4xx code
+    it('Update a user while being logged in with a different user should return a 404 error', async () => {
+        const user = await new UserModel(createUser()).save();
+
         const response = await requester
-            .post(`/api/v1/user`)
+            .patch(`/api/v1/user/${user._id.toString()}`)
             .send({
-                ...user,
                 loggedUser: USERS.USER
+            });
+
+        response.status.should.equal(404);
+        // eslint-disable-next-line no-unused-expressions
+        response.body.should.be.empty;
+    });
+
+    it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
+        const user = await new UserModel(createUser()).save();
+
+        const response = await requester
+            .patch(`/api/v1/user/${user._id.toString()}`)
+            .send({
+                loggedUser: {
+                    ...USERS.USER,
+                    id: user._id.toString()
+                },
+                fullName: `${user.fullName} updated`,
+                email: `${user.email} updated`,
+                sector: `${user.sector} updated`,
+                country: `${user.country} updated`,
+                state: `${user.state} updated`,
+                city: `${user.city} updated`,
+                language: `${user.language} updated`,
+                profileComplete: !user.profileComplete,
+                signUpForTesting: !user.signUpForTesting,
+                primaryResponsibilities: [],
+                howDoYouUse: []
             });
 
         response.status.should.equal(200);
@@ -96,11 +151,11 @@ describe('Create user tests', () => {
     });
 
     // TODO: this test reflects desired behavior, but instead we get a 500 :(
-    // it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
+    // it('Update a user that already exists should return a 400 \'Duplicated user\' error', async () => {
     //     const user = await new UserModel(createUser()).save();
     //
     //     const response = await requester
-    //         .post(`/api/v1/user`)
+    //         .patch(`/api/v1/user`)
     //         .send({
     //             ...user,
     //             loggedUser: {
@@ -116,14 +171,18 @@ describe('Create user tests', () => {
     // });
 
     // TODO: follow up with PM on this. Right now it fails silently, but probably shouldn't
-    it('Create a user with signUpForTesting=true should add the user to a spreadsheet on google, but instead fails silently', async () => {
-        const user = createUser();
+    it('Update a user with signUpForTesting=true should add the user to a spreadsheet on google, but instead fails silently', async () => {
+        const user = await new UserModel(createUser()).save();
+
         const response = await requester
-            .post(`/api/v1/user`)
+            .patch(`/api/v1/user/${user._id.toString()}`)
             .send({
+                loggedUser: {
+                    ...USERS.USER,
+                    id: user._id.toString()
+                },
                 ...user,
                 signUpForTesting: 'true',
-                loggedUser: USERS.USER
             });
 
         response.status.should.equal(200);
@@ -148,7 +207,6 @@ describe('Create user tests', () => {
         responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
-
 
     afterEach(async () => {
         await UserModel.remove({}).exec();
