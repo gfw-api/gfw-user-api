@@ -59,6 +59,24 @@ describe('Get stories tests', () => {
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
+    // TODO: this should return an error
+    it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 204', async () => {
+        nock(process.env.CT_URL)
+            .get(`/v1/story/user/${USERS.USER.id}`)
+            .once()
+            .reply(500, {
+                data: []
+            });
+
+        const response = await requester
+            .get(`/api/v1/user/stories`)
+            .query({
+                loggedUser: JSON.stringify(USERS.USER)
+            });
+
+        response.status.should.equal(204);
+    });
+
     it('Get stories while being logged in should load user stories from the stories microservice (remote content)', async () => {
         nock(process.env.CT_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
