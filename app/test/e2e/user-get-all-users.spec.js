@@ -29,7 +29,7 @@ describe('Get all users tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    it('Get all users while not being logged in should return a 403 \'Not authorized\' error', async () => {
+    it('Get all users while not being logged in should return a 401 \'Not authorized\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`);
 

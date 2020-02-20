@@ -39,7 +39,7 @@ describe('Update user tests', () => {
         response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
     });
 
-    it('Update a user while being logged in as a different user should return a 404', async () => {
+    it('Update a user while being logged in as a different user should return a 403 \'Forbidden\' error', async () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
@@ -87,21 +87,6 @@ describe('Update user tests', () => {
         responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
         responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
-    });
-
-    it('Update a user while being logged in with a different user should return a 403 \'Forbidden\' error', async () => {
-        const user = await new UserModel(createUser()).save();
-
-        const response = await requester
-            .patch(`/api/v1/user/${user._id.toString()}`)
-            .send({
-                loggedUser: USERS.USER
-            });
-
-        response.status.should.equal(403);
-        response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(403);
-        response.body.errors[0].should.have.property('detail').and.equal('Forbidden');
     });
 
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
