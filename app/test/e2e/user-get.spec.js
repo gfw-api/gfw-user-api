@@ -15,7 +15,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('User get tests', () => {
+describe('Get current user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {

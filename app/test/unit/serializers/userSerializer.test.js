@@ -1,11 +1,10 @@
-'use strict';
-var logger = require('logger');
-var should = require('should');
-var assert = require('assert');
-var UserSerializer = require('serializers/userSerializer');
+const UserSerializer = require('serializers/userSerializer');
+const chai = require('chai');
 
-describe('User serializer test', function () {
-    var user =  {
+chai.should();
+
+describe('User serializer test', () => {
+    const user = {
         id: '5704f4031ad9ef22007e843f',
         fullName: 'Vizzuality',
         provider: 'google',
@@ -15,19 +14,15 @@ describe('User serializer test', function () {
         primaryResponsibilities: 'Technical staff',
         state: 'Madrid',
         city: 'Madrid',
-        howDoYouUse: 'Obtain maps and data on tree cover'        
+        howDoYouUse: 'Obtain maps and data on tree cover'
     };
-   
 
-    before(function* () {
-
-    });
-
-    it('Generate correct jsonapi response of the user', function () {
-        let response = UserSerializer.serialize(user);
-        response.should.not.be.a.Array();
+    it('Generate correct jsonapi response of the user', () => {
+        const response = UserSerializer.serialize(user);
+        response.should.not.be.an('array');
         response.should.have.property('data');
-        let data = response.data;
+
+        const { data } = response;
         data.should.have.property('type');
         data.should.have.property('attributes');
         data.should.have.property('id');
@@ -42,7 +37,7 @@ describe('User serializer test', function () {
         data.attributes.should.have.property('state');
         data.attributes.should.have.property('city');
         data.attributes.should.have.property('howDoYouUse');
-        
+
         data.attributes.fullName.should.be.equal(user.fullName);
         data.attributes.provider.should.be.equal(user.provider);
         data.attributes.providerId.should.be.equal(user.providerId);
@@ -52,11 +47,6 @@ describe('User serializer test', function () {
         data.attributes.state.should.be.equal(user.state);
         data.attributes.city.should.be.equal(user.city);
         data.attributes.howDoYouUse.should.be.equal(user.howDoYouUse);
-        
-    });
-
-
-    after(function* () {
 
     });
 });

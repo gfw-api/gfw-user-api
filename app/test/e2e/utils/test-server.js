@@ -4,6 +4,7 @@ const chaiHttp = require('chai-http');
 
 let requester;
 
+chai.should();
 chai.use(chaiHttp);
 
 const getTestServer = async function getTestAgent() {

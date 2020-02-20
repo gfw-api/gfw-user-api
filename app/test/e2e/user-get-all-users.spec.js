@@ -15,7 +15,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('User get tests', () => {
+describe('Get all users tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -90,8 +90,8 @@ describe('User get tests', () => {
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
 
-        const responseUserOne = response.body.data.find(user => user.id === userOne._id.toString());
-        const responseUserTwo = response.body.data.find(user => user.id === userTwo._id.toString());
+        const responseUserOne = response.body.data.find((user) => user.id === userOne._id.toString());
+        const responseUserTwo = response.body.data.find((user) => user.id === userTwo._id.toString());
 
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
@@ -144,7 +144,7 @@ describe('User get tests', () => {
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(1);
 
-        const responseUserOne = response.body.data.find(user => user.id === userOne._id.toString());
+        const responseUserOne = response.body.data.find((user) => user.id === userOne._id.toString());
 
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
@@ -178,8 +178,8 @@ describe('User get tests', () => {
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
 
-        const responseUserOne = response.body.data.find(user => user.id === userOne._id.toString());
-        const responseUserTwo = response.body.data.find(user => user.id === userTwo._id.toString());
+        const responseUserOne = response.body.data.find((user) => user.id === userOne._id.toString());
+        const responseUserTwo = response.body.data.find((user) => user.id === userTwo._id.toString());
 
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
@@ -230,8 +230,8 @@ describe('User get tests', () => {
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
 
-        const responseUserOne = response.body.data.find(user => user.id === userOne._id.toString());
-        const responseUserTwo = response.body.data.find(user => user.id === userTwo._id.toString());
+        const responseUserOne = response.body.data.find((user) => user.id === userOne._id.toString());
+        const responseUserTwo = response.body.data.find((user) => user.id === userTwo._id.toString());
 
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
