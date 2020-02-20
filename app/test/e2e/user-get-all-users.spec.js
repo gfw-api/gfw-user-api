@@ -33,14 +33,14 @@ describe('Get all users tests', () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`);
 
-        response.status.should.equal(403);
+        response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(403);
+        response.body.errors[0].should.have.property('status').and.equal(401);
         response.body.errors[0].should.have.property('detail').and.equal('Not authorized');
 
     });
 
-    it('Get all users while being logged in as a USER should return a 403 \'Not authorized\' error', async () => {
+    it('Get all users while being logged in as a USER should return a 403 \'Forbidden\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
             .query({
@@ -50,10 +50,10 @@ describe('Get all users tests', () => {
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(403);
-        response.body.errors[0].should.have.property('detail').and.equal('Not authorized');
+        response.body.errors[0].should.have.property('detail').and.equal('Forbidden');
     });
 
-    it('Get all users while being logged in as a MANAGER should return a 403 \'Not authorized\' error', async () => {
+    it('Get all users while being logged in as a MANAGER should return a 403 \'Forbidden\' error', async () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
             .query({
@@ -63,7 +63,7 @@ describe('Get all users tests', () => {
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(403);
-        response.body.errors[0].should.have.property('detail').and.equal('Not authorized');
+        response.body.errors[0].should.have.property('detail').and.equal('Forbidden');
     });
 
     it('Get all users while being logged in as a ADMIN should return a 200 (happy case)', async () => {

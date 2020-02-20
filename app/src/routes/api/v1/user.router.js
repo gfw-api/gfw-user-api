@@ -1,7 +1,6 @@
 const Router = require('koa-router');
 const logger = require('logger');
 const UserSerializer = require('serializers/userSerializer');
-const ErrorSerializer = require('serializers/errorSerializer');
 const mongoose = require('mongoose');
 const User = require('models/user');
 
@@ -13,6 +12,16 @@ const googleSheetsService = require('services/googleSheetsService');
 
 
 class UserRouter {
+
+    static getUser(ctx) {
+        const { query, body } = ctx.request;
+
+        let user = { ...(query.loggedUser ? JSON.parse(query.loggedUser) : {}), ...ctx.request.body.loggedUser };
+        if (body.fields && body.fields.loggedUser) {
+            user = Object.assign(user, JSON.parse(body.fields.loggedUser));
+        }
+        return user;
+    }
 
     static async getCurrentUser(ctx) {
         try {
@@ -26,7 +35,7 @@ class UserRouter {
                 logger.info('Usr found', user);
                 ctx.body = UserSerializer.serialize(user);
             } else {
-                ctx.throw(403, 'Not authorized.');
+                ctx.throw(403, 'Forbidden');
             }
         } catch (e) {
             logger.error(e);
@@ -76,6 +85,12 @@ class UserRouter {
     }
 
     static async getUserById(ctx) {
+        const user = UserRouter.getUser(ctx);
+        if (ctx.params.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
+            ctx.throw(403, 'Forbidden');
+            return;
+        }
+
         logger.info('Obtaining users by id %s', ctx.params.id);
         if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) {
             ctx.throw(404, 'User not found');
@@ -88,7 +103,6 @@ class UserRouter {
         }
         ctx.body = UserSerializer.serialize(userFind);
     }
-
 
     static async updateUser(ctx) {
         logger.info('Obtaining users by id %s', ctx.params.id);
@@ -168,35 +182,31 @@ class UserRouter {
     }
 
     static async getUserByOldId(ctx) {
-        logger.info('Obtaining users by oldId %s', ctx.params.id);
+        logger.info('Obtaining user by oldId %s', ctx.params.id);
+        const user = UserRouter.getUser(ctx);
+
+        let userFind;
         try {
-            const userFind = await User.findOne({
+            userFind = await User.findOne({
                 oldId: ctx.params.id
             });
+            // eslint-disable-next-line no-empty
+        } catch (e) { }
 
-            if (!userFind) {
-                ctx.throw(404, 'User not found');
-                return;
-            }
-            ctx.body = UserSerializer.serialize(userFind);
-        } catch (e) {
+        if (!userFind) {
             ctx.throw(404, 'User not found');
+            return;
         }
+
+        if (userFind.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
+            ctx.throw(403, 'Forbidden');
+            return;
+        }
+
+        ctx.body = UserSerializer.serialize(userFind);
     }
 
 }
-
-const getUserById = async (ctx, next) => {
-    logger.debug('[UserRouter - getUserById] Validate get user by id');
-    ctx.checkParams('id').notEmpty();
-    if (ctx.errors) {
-        logger.debug('errors ', this.errors);
-        ctx.body = ErrorSerializer.serializeValidationBodyErrors(this.errors);
-        ctx.status = 400;
-        return;
-    }
-    await next();
-};
 
 const isLoggedIn = async (ctx, next) => {
     let loggedUser = ctx.request.body ? ctx.request.body.loggedUser : null;
@@ -216,7 +226,7 @@ const isMicroserviceOrAdmin = async (ctx, next) => {
         loggedUser = ctx.query.loggedUser ? JSON.parse(ctx.query.loggedUser) : null;
     }
     if (!loggedUser) {
-        ctx.throw(403, 'Not authorized');
+        ctx.throw(401, 'Not authorized');
         return;
     }
     if (loggedUser.id === 'microservice') {
@@ -227,15 +237,15 @@ const isMicroserviceOrAdmin = async (ctx, next) => {
         await next();
         return;
     }
-    ctx.throw(403, 'Not authorized');
+    ctx.throw(403, 'Forbidden');
 };
 
 router.get('/', UserRouter.getCurrentUser);
 router.get('/obtain/all-users', isMicroserviceOrAdmin, UserRouter.getAllUsers);
 router.post('/', isLoggedIn, UserRouter.createUser);
 router.get('/stories', isLoggedIn, UserRouter.getStories);
-router.get('/:id', getUserById, UserRouter.getUserById);
-router.get('/oldId/:id', UserRouter.getUserByOldId);
+router.get('/:id', isLoggedIn, UserRouter.getUserById);
+router.get('/oldId/:id', isLoggedIn, UserRouter.getUserByOldId);
 router.patch('/:id', isLoggedIn, UserRouter.updateUser);
 router.delete('/:id', isLoggedIn, UserRouter.deleteUser);
 
