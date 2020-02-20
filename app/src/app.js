@@ -5,6 +5,7 @@ const koaQs = require('koa-qs');
 const bodyParser = require('koa-bodyparser');
 const koaLogger = require('koa-logger');
 const loader = require('loader');
+const koaSimpleHealthCheck = require('koa-simple-healthcheck');
 const validate = require('koa-validate');
 const mongoose = require('mongoose');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
@@ -35,6 +36,8 @@ async function init() {
             app.use(bodyParser({
                 jsonLimit: '50mb'
             }));
+
+            app.use(koaSimpleHealthCheck());
 
             // catch errors and send in jsonapi standard. Always return vnd.api+json
             app.use(async (ctx, next) => {
