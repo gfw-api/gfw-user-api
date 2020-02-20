@@ -65,7 +65,6 @@ describe('User get tests', () => {
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
-        response.body.should.have.property('data').and.be.an('object');
         response.body.data.should.have.property('type').and.equal('user');
         response.body.data.should.have.property('id').and.equal(user._id.toString());
         response.body.data.should.have.property('attributes').and.be.an('object');
