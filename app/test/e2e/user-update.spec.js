@@ -29,7 +29,8 @@ describe('Update user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    // TODO: this should return a body with an
+    // TODO: this should return a body with an error message
+    // TODO: this should return a different 4xx error code
     it('Update a user while not being logged in should return a 404 error', async () => {
         const response = await requester
             .patch(`/api/v1/user/1234`);
