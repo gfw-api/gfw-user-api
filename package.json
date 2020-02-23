@@ -39,7 +39,6 @@
     "config": "^3.2.5",
     "ct-register-microservice-node": "^2.1.7",
     "geojsonhint": "^2.0.0",
-    "google-spreadsheet": "^3.0.8",
     "grunt-run": "^0.8.1",
     "jsonapi-serializer": "^3.6.6",
     "koa": "^2.11.0",

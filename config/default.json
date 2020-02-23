@@ -21,11 +21,5 @@
     },
     "migrate":{
         "uri": ""
-    },
-    "googleSheets":{
-        "private_key" : "",
-        "client_email": "",
-        "target_sheet_id": "",
-        "target_sheet_index": null
     }
 }

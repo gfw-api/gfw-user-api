@@ -8,7 +8,6 @@ const router = new Router({
     prefix: '/user'
 });
 const StoriesService = require('services/stories.service');
-const googleSheetsService = require('services/googleSheetsService');
 
 
 class UserRouter {
@@ -75,13 +74,6 @@ class UserRouter {
         ctx.request.body._id = mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
         const userCreate = await new User(ctx.request.body).save();
         ctx.body = UserSerializer.serialize(userCreate);
-        if (ctx.request.body.signUpForTesting && ctx.request.body.signUpForTesting === 'true') {
-            try {
-                await googleSheetsService.updateSheet(ctx.request.body.email);
-            } catch (err) {
-                logger.error(err);
-            }
-        }
     }
 
     static async getUserById(ctx) {
@@ -154,8 +146,6 @@ class UserRouter {
 
         await userFind.save();
         ctx.body = UserSerializer.serialize(userFind);
-
-        await googleSheetsService.updateSheet(userFind);
     }
 
     static async deleteUser(ctx) {
