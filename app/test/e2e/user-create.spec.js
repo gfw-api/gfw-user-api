@@ -113,41 +113,6 @@ describe('Create user tests', () => {
         response.body.errors[0].should.have.property('detail').and.equal('Duplicated user');
     });
 
-    // TODO: follow up with PM on this. Right now it fails silently, but probably shouldn't
-    it('Create a user with signUpForTesting=true should add the user to a spreadsheet on google, but instead fails silently', async () => {
-        const user = createUser();
-        const response = await requester
-            .post(`/api/v1/user`)
-            .send({
-                ...user,
-                signUpForTesting: 'true',
-                loggedUser: USERS.USER
-            });
-
-        response.status.should.equal(200);
-
-        const responseUser = response.body.data;
-        const databaseUser = await UserModel.findById(responseUser.id);
-
-        responseUser.should.have.property('type').and.equal('user');
-        responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
-        responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
-        responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
-        responseUser.attributes.should.have.property('createdAt');
-        new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
-        responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
-        responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
-        responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
-        responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
-        responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
-    });
-
-
     afterEach(async () => {
         await UserModel.remove({}).exec();
 

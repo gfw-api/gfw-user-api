@@ -1,6 +1,7 @@
 # v2.0
 
-Substantial error handling and permissions refactor:
+- Remove google sheets integration. 
+- Substantial error handling and permissions refactor:
 
 ### GET /v1/user
 - Getting all users without being authenticated now returns a 401 'Unauthorized' error.
