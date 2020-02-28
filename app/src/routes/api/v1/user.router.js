@@ -31,7 +31,7 @@ class UserRouter {
                 loggedUser = JSON.parse(ctx.request.query.loggedUser);
 
                 const user = await User.findById(loggedUser.id);
-                logger.info('Usr found', user);
+                logger.info('User found:', user);
                 ctx.body = UserSerializer.serialize(user);
             } else {
                 ctx.throw(403, 'Forbidden');
