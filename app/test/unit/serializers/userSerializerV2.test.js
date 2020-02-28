@@ -1,38 +1,30 @@
-'use strict';
-var logger = require('logger');
-var should = require('should');
-var assert = require('assert');
-var UserSerializer = require('serializers/userSerializer');
+const UserSerializer = require('serializers/userSerializerV2');
 
-describe('User serializer test', function () {
-    var user =  {
+describe('User serializer test', () => {
+    const user = {
         id: '5704f4031ad9ef22007e843f',
-        firstName: 'Test',
-        lastName: 'Vizzuality',
+        firstName: 'John',
+        lastName: 'Doe',
+        provider: 'google',
+        providerId: '2a324231345a',
         email: 'test@vizzuality.com',
         sector: 'Government (public sector)',
-        subsector: 'Researcher',
-        jobTitle: 'Technical staff',
+        subsector: 'IT',
+        jobTitle: 'Developer',
         company: 'Vizzuality',
-        country: 'Spain',
+        aoiCountry: 'Spain',
+        aoiState: 'state',
+        aoiCity: 'city',
         state: 'Madrid',
         city: 'Madrid',
-        aoiCountry: 'Spain',
-        aoiState: 'Madrid',
-        aoiCity: 'Madrid',
         howDoYouUse: 'Obtain maps and data on tree cover'
     };
-   
 
-    before(function* () {
-
-    });
-
-    it('Generate correct jsonapi response of the user', function () {
-        let response = UserSerializer.serialize(user);
+    it('Generate correct jsonapi response of the user', () => {
+        const response = UserSerializer.serialize(user);
         response.should.not.be.a.Array();
         response.should.have.property('data');
-        let data = response.data;
+        const { data } = response;
         data.should.have.property('type');
         data.should.have.property('attributes');
         data.should.have.property('id');
@@ -44,38 +36,16 @@ describe('User serializer test', function () {
         data.attributes.should.have.property('providerId');
         data.attributes.should.have.property('email');
         data.attributes.should.have.property('sector');
-        data.attributes.should.have.property('subsector');
-        data.attributes.should.have.property('jobTitle');
-        data.attributes.should.have.property('company');
-        data.attributes.should.have.property('country');
         data.attributes.should.have.property('state');
         data.attributes.should.have.property('city');
-        data.attributes.should.have.property('aoiCountry');
-        data.attributes.should.have.property('aoiState');
-        data.attributes.should.have.property('aoiCity');
         data.attributes.should.have.property('howDoYouUse');
-        
         data.attributes.firstName.should.be.equal(user.firstName);
-        data.attributes.lastName.should.be.equal(user.lastName);
         data.attributes.provider.should.be.equal(user.provider);
         data.attributes.providerId.should.be.equal(user.providerId);
         data.attributes.email.should.be.equal(user.email);
         data.attributes.sector.should.be.equal(user.sector);
-        data.attributes.subsector.should.be.equal(user.subsector);
-        data.attributes.jobTitle.should.be.equal(user.jobTitle);
-        data.attributes.company.should.be.equal(user.company);
-        data.attributes.country.should.be.equal(user.country);
         data.attributes.state.should.be.equal(user.state);
         data.attributes.city.should.be.equal(user.city);
-        data.attributes.aoiCountry.should.be.equal(user.aoiCountry);
-        data.attributes.aoiState.should.be.equal(user.aoiState);
-        data.attributes.aoiCity.should.be.equal(user.aoiCity);
         data.attributes.howDoYouUse.should.be.equal(user.howDoYouUse);
-        
-    });
-
-
-    after(function* () {
-
     });
 });

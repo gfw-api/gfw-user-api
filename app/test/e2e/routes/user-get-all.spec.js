@@ -1,38 +1,45 @@
 const nock = require('nock');
-const chai = require('chai');
+const { expect } = require('chai');
+const axios = require('axios');
 
-const { getTestServer } = require('../utils/test-server');
-
-chai.should();
-
-let requester;
+const API = `${process.env.CT_URL}/v1`;
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('User v2 tests - Get all users', () => {
+describe('User tests', () => {
+    it('Unauthorized app cannot get all users', async () => {
+        nock(process.env.CT_URL)
+            .get('/v1/user/obtain/all-users')
+            .reply(401);
 
-    before(async () => {
-        requester = await getTestServer();
-        if (process.env.NODE_ENV !== 'test') {
-            throw Error(`Running the test suite with NODE_ENV ${process.env.NODE_ENV} may result in permanent data loss. Please use NODE_ENV=test.`);
-        }
-        nock.cleanAll();
+        const endpoint = 'user/obtain/all-users';
+
+        axios(`${API}/${endpoint}`)
+            .then(() => { })
+            .catch((error) => {
+                expect(error.response.status).to.equal(401);
+            });
     });
 
-    it('No dates in the query - all users (happy case)', async () => {
-        const response = await requester
-            .get('/obtain/all-users');
+    it('Get all users by authorized app', () => {
+        nock(process.env.CT_URL, {
+            reqheaders: {
+                Authorization: `Bearer userToken1234`
+            }
+        })
+            .get('/v1/user/obtain/all-users')
+            .reply(200);
 
-        response.status.should.equal(403);
-        response.body.should.have.property('errors').and.be.an('array');
-        response.body.errors[0].should.have.property('detail').and.equal('Not authorized');
-        response.body.errors[0].should.have.property('status').and.equal(403);
-    });
+        const endpoint = 'user/obtain/all-users';
 
-    afterEach(() => {
-        if (!nock.isDone()) {
-            throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
-        }
+        return axios.get(`${API}/${endpoint}`, {
+            headers: {
+                Authorization: `Bearer userToken1234`
+            }
+        })
+            .then((response) => {
+                expect(response.status).to.equal(200);
+            });
     });
 });

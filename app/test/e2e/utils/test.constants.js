@@ -103,15 +103,29 @@ const USERS = {
 
 
 const SAMPLE_USER = {
-    firstName: 'roger',
-    lastName: 'test'
+    id: 1234,
+    firstName: 'John',
+    lastName: 'Doe',
+    provider: 'google',
+    providerId: '2a324231345a',
+    email: 'test@vizzuality.com',
+    sector: 'Government (public sector)',
+    subsector: 'IT',
+    jobTitle: 'Developer',
+    company: 'Vizzuality',
+    aoiCountry: 'Spain',
+    aoiState: 'state',
+    aoiCity: 'city',
+    state: 'Madrid',
+    city: 'Madrid',
+    howDoYouUse: 'Obtain maps and data on tree cover'
 };
 
 const SAMPLE_LOGGED_USER = {
     loggedUser: {
-        firstName: 'logged',
-        lastName: 'user',
-        id: 123456
+        firstName: 'John',
+        lastName: 'Doe',
+        id: 1234
     }
 };
 
