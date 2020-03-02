@@ -22,7 +22,7 @@ describe('User serializer test', () => {
 
     it('Generate correct jsonapi response of the user', () => {
         const response = UserSerializer.serialize(user);
-        response.should.not.be.a.Array();
+        response.should.not.be.an('array');
         response.should.have.property('data');
         const { data } = response;
         data.should.have.property('type');
