@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
-const UserModel = require('models/user');
+const UserModel = require('models/userV2');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUserV2 } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -40,7 +40,7 @@ describe('V2 - Update user tests', () => {
     });
 
     it('Update a user while being logged in as a different user should return a 403 \'Forbidden\' error', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
@@ -55,7 +55,7 @@ describe('V2 - Update user tests', () => {
     });
 
     it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
@@ -74,23 +74,19 @@ describe('V2 - Update user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+        responseUser.attributes.should.have.property('firstName').and.equal(databaseUser.firstName);
         responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
         responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
         responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
         responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
         responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
         responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
@@ -99,16 +95,14 @@ describe('V2 - Update user tests', () => {
                     ...USERS.USER,
                     id: user._id.toString()
                 },
-                fullName: `${user.fullName} updated`,
+                firstName: `${user.firstName} updated`,
+                lastName: `${user.lastName} updated`,
+                aoiState: `${user.aoiState} updated`,
                 email: `${user.email} updated`,
                 sector: `${user.sector} updated`,
                 country: `${user.country} updated`,
                 state: `${user.state} updated`,
                 city: `${user.city} updated`,
-                language: `${user.language} updated`,
-                profileComplete: !user.profileComplete,
-                signUpForTesting: !user.signUpForTesting,
-                primaryResponsibilities: [],
                 howDoYouUse: []
             });
 
@@ -120,19 +114,16 @@ describe('V2 - Update user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+        responseUser.attributes.should.have.property('firstName').and.equal(databaseUser.firstName);
         responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
         responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
         responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
         responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
+        responseUser.attributes.should.have.property('aoiState').and.equal(databaseUser.aoiState);
         responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
         responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
     afterEach(async () => {
