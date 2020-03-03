@@ -7,8 +7,6 @@ const User = require('models/userV2');
 const router = new Router({
     prefix: '/user'
 });
-const StoriesService = require('services/stories.service');
-
 
 class UserRouter {
 
@@ -186,12 +184,6 @@ class UserRouter {
         ctx.body = UserSerializer.serialize(userFind);
     }
 
-    static async getStories(ctx) {
-        logger.info('[UserRouter - getStories] Obtaining stories for logged in user');
-        const userId = JSON.parse(ctx.request.query.loggedUser).id;
-        ctx.body = await StoriesService.getStoriesByUser(userId);
-    }
-
     static async getUserByOldId(ctx) {
         logger.info('Obtaining user by oldId %s', ctx.params.id);
         const user = UserRouter.getUser(ctx);
@@ -254,7 +246,6 @@ const isMicroserviceOrAdmin = async (ctx, next) => {
 router.get('/', UserRouter.getCurrentUser);
 router.get('/obtain/all-users', isMicroserviceOrAdmin, UserRouter.getAllUsers);
 router.post('/', isLoggedIn, UserRouter.createUser);
-router.get('/stories', isLoggedIn, UserRouter.getStories);
 router.get('/:id', isLoggedIn, UserRouter.getUserById);
 router.get('/oldId/:id', isLoggedIn, UserRouter.getUserByOldId);
 router.patch('/:id', isLoggedIn, UserRouter.updateUser);
