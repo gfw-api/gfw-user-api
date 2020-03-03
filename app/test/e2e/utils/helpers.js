@@ -34,7 +34,6 @@ const createUserV2 = (anotherData = {}) => {
         country: `Fake country ${uuid}`,
         city: `Fake city ${uuid}`,
         howDoYouUse: ['fake howDoYouUse'],
-        signUpForTesting: false,
         ...anotherData
     };
 };

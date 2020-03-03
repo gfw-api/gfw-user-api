@@ -19,7 +19,6 @@ const userSerializer = new JSONAPISerializer('user', {
         'aoiState',
         'interests',
         'howDoYouUse',
-        'signUpForTesting',
         'signUpToNewsletter',
         'topics',
         'createdAt'

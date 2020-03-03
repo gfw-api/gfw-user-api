@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
-const UserModel = require('models/user');
+const UserModel = require('models/userV2');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUserV2 } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -40,7 +40,7 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a different user should return a 401 \'Not authorized\' error', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
@@ -55,7 +55,7 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in with that user should return a 200 and the user data (happy case)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
@@ -76,19 +76,19 @@ describe('V2 - Delete user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(user._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(user.fullName);
+        responseUser.attributes.should.have.property('firstName').and.equal(user.firstName);
+        responseUser.attributes.should.have.property('lastName').and.equal(user.lastName);
         responseUser.attributes.should.have.property('email').and.equal(user.email);
+        responseUser.attributes.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        responseUser.attributes.should.have.property('aoiState').and.equal(user.aoiState);
+        responseUser.attributes.should.have.property('aoiCity').and.equal(user.aoiCity);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(user.createdAt);
         responseUser.attributes.should.have.property('sector').and.equal(user.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
         responseUser.attributes.should.have.property('country').and.equal(user.country);
         responseUser.attributes.should.have.property('state').and.equal(user.state);
         responseUser.attributes.should.have.property('city').and.equal(user.city);
         responseUser.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(user.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     afterEach(async () => {

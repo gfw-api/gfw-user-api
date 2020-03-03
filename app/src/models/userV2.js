@@ -20,7 +20,6 @@ const UserV2 = new Schema({
     aoiCity: { type: String, required: true, trim: true },
     interests: { type: Array, default: [] },
     howDoYouUse: { type: Array, default: [] },
-    signUpForTesting: { type: Boolean, default: false },
     signUpToNewsletter: { type: Boolean, default: false },
     topics: { type: Array, default: [] }
 });

@@ -153,9 +153,6 @@ class UserRouter {
         if (ctx.request.body.howDoYouUse !== undefined) {
             userFind.howDoYouUse = ctx.request.body.howDoYouUse;
         }
-        // if (ctx.request.body.signUpToNewsletter !== undefined) {
-        //     userFind.signUpForTesting = (ctx.request.body.signUpForTesting === 'true');
-        // }
         if (ctx.request.body.topics !== undefined) {
             userFind.topics = (ctx.request.body.topics);
         }
