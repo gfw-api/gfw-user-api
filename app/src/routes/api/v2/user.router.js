@@ -69,8 +69,16 @@ class UserRouter {
             ctx.throw(400, 'Duplicated user');
             return;
         }
+
         ctx.request.body._id = mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
-        const userCreate = await new User(ctx.request.body).save();
+        const user = new User(ctx.request.body);
+        const errors = user.validateSync();
+        if (errors) {
+            logger.error(errors.message);
+            ctx.throw(400, errors.message);
+            return;
+        }
+        const userCreate = await user.save();
         ctx.body = UserSerializer.serialize(userCreate);
     }
 

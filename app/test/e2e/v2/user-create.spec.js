@@ -40,14 +40,14 @@ describe('V2 - Create user tests', () => {
 
     });
 
-    it('Create a user while logged in without required fields SHOULD NOT return a 200', async () => {
+    it('Create a user while logged in without required fields should return a 400', async () => {
         const response = await requester
             .post(`/api/v2/user`)
             .send({
                 loggedUser: USERS.USER
             });
 
-        response.status.should.not.equal(200);
+        response.status.should.equal(400);
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
