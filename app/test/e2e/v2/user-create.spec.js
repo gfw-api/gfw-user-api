@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
-const UserModel = require('models/user');
+const UserModel = require('models/userV2');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUserV2 } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -40,30 +40,18 @@ describe('V2 - Create user tests', () => {
 
     });
 
-    it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
+    it('Create a user while logged in without required fields SHOULD NOT return a 200', async () => {
         const response = await requester
             .post(`/api/v2/user`)
             .send({
                 loggedUser: USERS.USER
             });
 
-        response.status.should.equal(200);
-
-        const responseUser = response.body.data;
-        const databaseUser = await UserModel.findById(responseUser.id);
-
-        responseUser.should.have.property('type').and.equal('user');
-        responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
-        responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('createdAt').and.be.a('string');
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.length(0);
-        responseUser.attributes.should.have.property('howDoYouUse').and.length(0);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(false);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(false);
+        response.status.should.not.equal(200);
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
-        const user = createUser();
+        const user = createUserV2();
         const response = await requester
             .post(`/api/v2/user`)
             .send({
@@ -79,23 +67,23 @@ describe('V2 - Create user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+        responseUser.attributes.should.have.property('firstName').and.equal(databaseUser.firstName);
+        responseUser.attributes.should.have.property('lastName').and.equal(databaseUser.lastName);
+        responseUser.attributes.should.have.property('aoiCountry').and.equal(databaseUser.aoiCountry);
+        responseUser.attributes.should.have.property('aoiState').and.equal(databaseUser.aoiState);
+        responseUser.attributes.should.have.property('aoiCity').and.equal(databaseUser.aoiCity);
         responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
         responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
         responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
         responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
         responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
         responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .post(`/api/v2/user`)

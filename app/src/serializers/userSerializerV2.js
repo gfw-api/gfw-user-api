@@ -21,7 +21,8 @@ const userSerializer = new JSONAPISerializer('user', {
         'howDoYouUse',
         'signUpForTesting',
         'signUpToNewsletter',
-        'topics'
+        'topics',
+        'createdAt'
     ],
     typeForAttribute: (attribute) => attribute,
     keyForAttribute: 'camelCase'
