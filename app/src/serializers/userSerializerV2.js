@@ -23,7 +23,7 @@ const userSerializer = new JSONAPISerializer('user', {
         'signUpToNewsletter',
         'topics'
     ],
-    typeForAttribute: attribute => attribute,
+    typeForAttribute: (attribute) => attribute,
     keyForAttribute: 'camelCase'
 });
 

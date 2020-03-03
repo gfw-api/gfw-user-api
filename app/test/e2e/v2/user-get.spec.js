@@ -2,9 +2,9 @@
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
-const { USERS } = require('./utils/test.constants');
-const { getTestServer } = require('./utils/test-server');
-const { createUser } = require('./utils/helpers');
+const { USERS } = require('../utils/test.constants');
+const { getTestServer } = require('../utils/test-server');
+const { createUser } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -15,7 +15,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('Get current user tests', () => {
+describe('V2 - Get current user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -31,7 +31,7 @@ describe('Get current user tests', () => {
 
     it('Get the current user while not being logged in should return a 400 error', async () => {
         const response = await requester
-            .get(`/api/v1/user`);
+            .get(`/api/v2/user`);
 
         response.status.should.equal(400);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -42,7 +42,7 @@ describe('Get current user tests', () => {
 
     it('Get the current user while being logged in should return a 200 and no user data (happy case, empty db)', async () => {
         const response = await requester
-            .get(`/api/v1/user`)
+            .get(`/api/v2/user`)
             .query({
                 loggedUser: JSON.stringify(USERS.USER)
             });
@@ -55,7 +55,7 @@ describe('Get current user tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user`)
+            .get(`/api/v2/user`)
             .query({
                 loggedUser: JSON.stringify({
                     ...USERS.USER,

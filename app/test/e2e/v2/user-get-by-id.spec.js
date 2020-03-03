@@ -3,9 +3,9 @@ const nock = require('nock');
 const chai = require('chai');
 const mongoose = require('mongoose');
 const UserModel = require('models/user');
-const { USERS } = require('./utils/test.constants');
-const { getTestServer } = require('./utils/test-server');
-const { createUser } = require('./utils/helpers');
+const { USERS } = require('../utils/test.constants');
+const { getTestServer } = require('../utils/test-server');
+const { createUser } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -16,7 +16,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('Get user by id tests', () => {
+describe('V2 - Get user by id tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -34,7 +34,7 @@ describe('Get user by id tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`);
+            .get(`/api/v2/user/${user._id.toString()}`);
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -46,7 +46,7 @@ describe('Get user by id tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .query({
                 loggedUser: JSON.stringify(USERS.USER)
             });
@@ -61,7 +61,7 @@ describe('Get user by id tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .query({
                 loggedUser: JSON.stringify({
                     ...USERS.USER,
@@ -93,7 +93,7 @@ describe('Get user by id tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .query({
                 loggedUser: JSON.stringify(USERS.ADMIN)
             });
@@ -122,7 +122,7 @@ describe('Get user by id tests', () => {
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .query({
                 loggedUser: JSON.stringify(USERS.MICROSERVICE)
             });
@@ -149,7 +149,7 @@ describe('Get user by id tests', () => {
 
     it('Get user by id for an invalid id should return a 404 \'User not found\' error', async () => {
         const response = await requester
-            .get(`/api/v1/user/1234`)
+            .get(`/api/v2/user/1234`)
             .query({
                 loggedUser: JSON.stringify(USERS.ADMIN)
             });
@@ -162,7 +162,7 @@ describe('Get user by id tests', () => {
 
     it('Get user by id for an valid id that does not exist on the database should return a 404 \'User not found\' error', async () => {
         const response = await requester
-            .get(`/api/v1/user/${mongoose.Types.ObjectId()}`)
+            .get(`/api/v2/user/${mongoose.Types.ObjectId()}`)
             .query({
                 loggedUser: JSON.stringify(USERS.ADMIN)
             });
