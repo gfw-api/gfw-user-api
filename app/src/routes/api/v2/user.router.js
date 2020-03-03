@@ -12,57 +12,68 @@ const StoriesService = require('services/stories.service');
 
 class UserRouter {
 
-    static async getCurrentUser() {
+    static getUser(ctx) {
+        const { query, body } = ctx.request;
+
+        let user = { ...(query.loggedUser ? JSON.parse(query.loggedUser) : {}), ...ctx.request.body.loggedUser };
+        if (body.fields && body.fields.loggedUser) {
+            user = Object.assign(user, JSON.parse(body.fields.loggedUser));
+        }
+        return user;
+    }
+
+    static async getCurrentUser(ctx) {
         try {
             logger.info('Obtaining logged in user');
             let loggedUser = null;
-            if (this.request.query.loggedUser) {
-                logger.info('logged user', this.request.query.loggedUser);
-                loggedUser = JSON.parse(this.request.query.loggedUser);
+            if (ctx.request.query.loggedUser) {
+                logger.info('logged user', ctx.request.query.loggedUser);
+                loggedUser = JSON.parse(ctx.request.query.loggedUser);
 
                 const user = await User.findById(loggedUser.id);
-                logger.info('Usr found', user);
-                this.body = UserSerializer.serialize(user);
+                logger.info('User found:', user);
+                ctx.body = UserSerializer.serialize(user);
             } else {
-                this.throw(403, 'Not authorized.');
+                ctx.throw(403, 'Forbidden');
             }
         } catch (e) {
             logger.error(e);
-            this.throw(400, 'Error parsing');
+            ctx.throw(400, 'Error parsing');
         }
+
     }
 
-    static async getAllUsers() {
+    static async getAllUsers(ctx) {
         logger.info('Obtaining users');
 
         let defaultFilter = {};
-        if (this.query.start && this.query.end) {
+        if (ctx.query.start && ctx.query.end) {
             defaultFilter = {
                 createdAt: {
-                    $gte: new Date(this.query.start),
-                    $lt: new Date(this.query.end)
+                    $gte: new Date(ctx.query.start),
+                    $lt: new Date(ctx.query.end)
                 }
             };
         }
         try {
             const users = await User.find(defaultFilter);
-            this.body = UserSerializer.serialize(users);
+            ctx.body = UserSerializer.serialize(users);
         } catch (err) {
             logger.error(err);
         }
     }
 
-    static async createUser() {
-        logger.info('Create user', this.request.body);
-        const exist = await User.findById(this.request.body.loggedUser.id);
-        if (exist > 0) {
+    static async createUser(ctx) {
+        logger.info('Create user', ctx.request.body);
+        const existingUser = await User.findById(ctx.request.body.loggedUser.id);
+        if (existingUser) {
             logger.error('Duplicated user');
-            this.throw(400, 'Duplicated user');
+            ctx.throw(400, 'Duplicated user');
             return;
         }
-        this.request.body._id = mongoose.Types.ObjectId(this.request.body.loggedUser.id);
-        const userCreate = await new User(this.request.body).save();
-        this.body = UserSerializer.serialize(userCreate);
+        ctx.request.body._id = mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
+        const userCreate = await new User(ctx.request.body).save();
+        ctx.body = UserSerializer.serialize(userCreate);
     }
 
     static async getUserById(ctx) {
@@ -85,118 +96,104 @@ class UserRouter {
         ctx.body = UserSerializer.serialize(userFind);
     }
 
-    static async updateUser() {
-        logger.info('Obtaining users by id %s', this.params.id);
-        const userId = this.request.body.loggedUser.id;
-        if (this.params.id !== userId) {
-            this.throw(401, 'Not authorized');
+    static async updateUser(ctx) {
+        logger.info('Obtaining users by id %s', ctx.params.id);
+        const userId = ctx.request.body.loggedUser.id;
+        if (ctx.params.id !== userId) {
+            ctx.throw(403, 'Forbidden');
             return;
         }
-        let userFind = await User.findById(this.params.id);
+        let userFind = await User.findById(ctx.params.id);
         if (!userFind) {
             userFind = new User();
             userFind._id = mongoose.Types.ObjectId(userId);
             await userFind.save();
         }
         // extend user
-        if (this.request.body.firstName !== undefined) {
-            userFind.firstName = this.request.body.firstName;
+        if (ctx.request.body.fullName !== undefined) {
+            userFind.fullName = ctx.request.body.fullName;
         }
-        if (this.request.body.lastName !== undefined) {
-            userFind.lastName = this.request.body.lastName;
+        if (ctx.request.body.email !== undefined) {
+            userFind.email = ctx.request.body.email;
         }
-        if (this.request.body.email !== undefined) {
-            userFind.email = this.request.body.email;
+        if (ctx.request.body.sector !== undefined) {
+            userFind.sector = ctx.request.body.sector;
         }
-        if (this.request.body.sector !== undefined) {
-            userFind.sector = this.request.body.sector;
+        if (ctx.request.body.primaryResponsibilities !== undefined) {
+            userFind.primaryResponsibilities = ctx.request.body.primaryResponsibilities;
         }
-        if (this.request.body.subsector !== undefined) {
-            userFind.subsector = this.request.body.subsector;
+        if (ctx.request.body.country !== undefined) {
+            userFind.country = ctx.request.body.country;
         }
-        if (this.request.body.jobTitle !== undefined) {
-            userFind.jobTitle = this.request.body.jobTitle;
+        if (ctx.request.body.state !== undefined) {
+            userFind.state = ctx.request.body.state;
         }
-        if (this.request.body.company !== undefined) {
-            userFind.company = this.request.body.company;
+        if (ctx.request.body.city !== undefined) {
+            userFind.city = ctx.request.body.city;
         }
-        if (this.request.body.country !== undefined) {
-            userFind.country = this.request.body.country;
+        if (ctx.request.body.howDoYouUse !== undefined) {
+            userFind.howDoYouUse = ctx.request.body.howDoYouUse;
         }
-        if (this.request.body.city !== undefined) {
-            userFind.city = this.request.body.city;
+        if (ctx.request.body.signUpForTesting !== undefined) {
+            userFind.signUpForTesting = (ctx.request.body.signUpForTesting === 'true');
         }
-        if (this.request.body.state !== undefined) {
-            userFind.state = this.request.body.state;
+        if (ctx.request.body.language !== undefined) {
+            userFind.language = ctx.request.body.language;
         }
-        if (this.request.body.aoiCountry !== undefined) {
-            userFind.aoiCountry = this.request.body.aoiCountry;
-        }
-        if (this.request.body.aoiCity !== undefined) {
-            userFind.aoiCity = this.request.body.aoiCity;
-        }
-        if (this.request.body.aoiState !== undefined) {
-            userFind.aoiState = this.request.body.aoiState;
-        }
-        if (this.request.body.interests !== undefined) {
-            userFind.interests = this.request.body.interests;
-        }
-        if (this.request.body.howDoYouUse !== undefined) {
-            userFind.howDoYouUse = this.request.body.howDoYouUse;
-        }
-        if (this.request.body.signUpForTesting !== undefined) {
-            userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
-        }
-        if (this.request.body.signUpToNewsletter !== undefined) {
-            userFind.signUpForTesting = (this.request.body.signUpForTesting === 'true');
-        }
-        if (this.request.body.topics !== undefined) {
-            userFind.topics = this.request.body.topics;
+        if (ctx.request.body.profileComplete !== undefined) {
+            userFind.profileComplete = ctx.request.body.profileComplete;
         }
 
         await userFind.save();
-        this.body = UserSerializer.serialize(userFind);
+        ctx.body = UserSerializer.serialize(userFind);
     }
 
-    static async deleteUser() {
-        logger.info('Obtaining users by id %s', this.params.id);
-        const userId = JSON.parse(this.request.query.loggedUser).id;
-        if (this.params.id !== userId) {
-            this.throw(401, 'Not authorized');
+    static async deleteUser(ctx) {
+        logger.info('Obtaining users by id %s', ctx.params.id);
+        const userId = JSON.parse(ctx.request.query.loggedUser).id;
+        if (ctx.params.id !== userId) {
+            ctx.throw(401, 'Not authorized');
             return;
         }
-        const userFind = await User.findById(this.params.id);
+        const userFind = await User.findById(ctx.params.id);
         if (!userFind) {
             logger.error('User not found');
-            this.throw(404, 'User not found');
+            ctx.throw(404, 'User not found');
             return;
         }
         await userFind.remove();
-        this.body = UserSerializer.serialize(userFind);
+        ctx.body = UserSerializer.serialize(userFind);
     }
 
-    static async getStories() {
+    static async getStories(ctx) {
+        logger.info('[UserRouter - getStories] Obtaining stories for logged in user');
+        const userId = JSON.parse(ctx.request.query.loggedUser).id;
+        ctx.body = await StoriesService.getStoriesByUser(userId);
+    }
+
+    static async getUserByOldId(ctx) {
+        logger.info('Obtaining user by oldId %s', ctx.params.id);
+        const user = UserRouter.getUser(ctx);
+
+        let userFind;
         try {
-            logger.info('Obtaining stories for logged in user');
-            const userId = JSON.parse(this.request.query.loggedUser).id;
-            this.body = await StoriesService.getStoriesByUser(userId);
-        } catch (e) {
-            logger.error('Error obtaining stories', e);
-            throw e;
-        }
-    }
+            userFind = await User.findOne({
+                oldId: ctx.params.id
+            });
+            // eslint-disable-next-line no-empty
+        } catch (e) { }
 
-    static async getUserByOldId() {
-        logger.info('Obtaining users by oldId %s', this.params.id);
-        const userFind = await User.findOne({
-            oldId: this.params.id
-        });
         if (!userFind) {
-            logger.error('User not found');
-            this.throw(404, 'User not found');
+            ctx.throw(404, 'User not found');
             return;
         }
-        this.body = UserSerializer.serialize(userFind);
+
+        if (userFind.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
+            ctx.throw(403, 'Forbidden');
+            return;
+        }
+
+        ctx.body = UserSerializer.serialize(userFind);
     }
 
 }
@@ -214,12 +211,12 @@ const isLoggedIn = async (ctx, next) => {
 };
 
 const isMicroserviceOrAdmin = async (ctx, next) => {
-    let loggedUser = this.request.body ? this.request.body.loggedUser : null;
+    let loggedUser = ctx.request.body ? ctx.request.body.loggedUser : null;
     if (!loggedUser) {
-        loggedUser = this.query.loggedUser ? JSON.parse(this.query.loggedUser) : null;
+        loggedUser = ctx.query.loggedUser ? JSON.parse(ctx.query.loggedUser) : null;
     }
     if (!loggedUser) {
-        this.throw(403, 'Not authorized');
+        ctx.throw(401, 'Not authorized');
         return;
     }
     if (loggedUser.id === 'microservice') {
@@ -230,7 +227,7 @@ const isMicroserviceOrAdmin = async (ctx, next) => {
         await next();
         return;
     }
-    this.throw(403, 'Not authorized');
+    ctx.throw(403, 'Forbidden');
 };
 
 router.get('/', UserRouter.getCurrentUser);
