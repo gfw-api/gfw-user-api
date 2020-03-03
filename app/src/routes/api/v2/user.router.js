@@ -110,8 +110,11 @@ class UserRouter {
             await userFind.save();
         }
         // extend user
-        if (ctx.request.body.fullName !== undefined) {
-            userFind.fullName = ctx.request.body.fullName;
+        if (ctx.request.body.firstName !== undefined) {
+            userFind.firstName = ctx.request.body.firstName;
+        }
+        if (ctx.request.body.lastName !== undefined) {
+            userFind.lastName = ctx.request.body.lastName;
         }
         if (ctx.request.body.email !== undefined) {
             userFind.email = ctx.request.body.email;
@@ -119,8 +122,14 @@ class UserRouter {
         if (ctx.request.body.sector !== undefined) {
             userFind.sector = ctx.request.body.sector;
         }
-        if (ctx.request.body.primaryResponsibilities !== undefined) {
-            userFind.primaryResponsibilities = ctx.request.body.primaryResponsibilities;
+        if (ctx.request.body.subsector !== undefined) {
+            userFind.subsector = ctx.request.body.subsector;
+        }
+        if (ctx.request.body.jobTitle !== undefined) {
+            userFind.jobTitle = ctx.request.body.jobTitle;
+        }
+        if (ctx.request.body.company !== undefined) {
+            userFind.company = ctx.request.body.company;
         }
         if (ctx.request.body.country !== undefined) {
             userFind.country = ctx.request.body.country;
@@ -131,14 +140,26 @@ class UserRouter {
         if (ctx.request.body.city !== undefined) {
             userFind.city = ctx.request.body.city;
         }
+        if (ctx.request.body.aoiCountry !== undefined) {
+            userFind.aoiCountry = ctx.request.body.aoiCountry;
+        }
+        if (ctx.request.body.aoiCity !== undefined) {
+            userFind.aoiCity = ctx.request.body.aoiCity;
+        }
+        if (ctx.request.body.aoiState !== undefined) {
+            userFind.aoiState = ctx.request.body.aoiState;
+        }
+        if (ctx.request.body.interests !== undefined) {
+            userFind.interests = ctx.request.body.interests;
+        }
         if (ctx.request.body.howDoYouUse !== undefined) {
             userFind.howDoYouUse = ctx.request.body.howDoYouUse;
         }
-        if (ctx.request.body.signUpForTesting !== undefined) {
-            userFind.signUpForTesting = (ctx.request.body.signUpForTesting === 'true');
-        }
-        if (ctx.request.body.language !== undefined) {
-            userFind.language = ctx.request.body.language;
+        // if (ctx.request.body.signUpToNewsletter !== undefined) {
+        //     userFind.signUpForTesting = (ctx.request.body.signUpForTesting === 'true');
+        // }
+        if (ctx.request.body.topics !== undefined) {
+            userFind.topics = (ctx.request.body.topics);
         }
         if (ctx.request.body.profileComplete !== undefined) {
             userFind.profileComplete = ctx.request.body.profileComplete;
