@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
-const UserModel = require('models/user');
+const UserModel = require('models/userV2');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUserV2 } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -78,8 +78,8 @@ describe('V2 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in should return a 200 and the user data (happy case)', async () => {
-        const userOne = await new UserModel(createUser()).save();
-        const userTwo = await new UserModel(createUser()).save();
+        const userOne = await new UserModel(createUserV2()).save();
+        const userTwo = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .get(`/api/v2/user/obtain/all-users`)
@@ -96,42 +96,42 @@ describe('V2 - Get all users tests', () => {
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
         responseUserOne.should.have.property('attributes').and.be.an('object');
-        responseUserOne.attributes.should.have.property('fullName').and.equal(userOne.fullName);
+        responseUserOne.attributes.should.have.property('firstName').and.equal(userOne.firstName);
+        responseUserOne.attributes.should.have.property('lastName').and.equal(userOne.lastName);
+        responseUserOne.attributes.should.have.property('aoiState').and.equal(userOne.aoiState);
+        responseUserOne.attributes.should.have.property('aoiCity').and.equal(userOne.aoiCity);
+        responseUserOne.attributes.should.have.property('aoiCountry').and.equal(userOne.aoiCountry);
         responseUserOne.attributes.should.have.property('email').and.equal(userOne.email);
         responseUserOne.attributes.should.have.property('createdAt');
         new Date(responseUserOne.attributes.createdAt).should.equalDate(userOne.createdAt);
         responseUserOne.attributes.should.have.property('sector').and.equal(userOne.sector);
-        responseUserOne.attributes.should.have.property('primaryResponsibilities').and.include.members(userOne.primaryResponsibilities);
         responseUserOne.attributes.should.have.property('country').and.equal(userOne.country);
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
-        responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
-        responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
         responseUserTwo.should.have.property('type').and.equal('user');
         responseUserTwo.should.have.property('id').and.equal(userTwo._id.toString());
         responseUserTwo.should.have.property('attributes').and.be.an('object');
-        responseUserTwo.attributes.should.have.property('fullName').and.equal(userTwo.fullName);
+        responseUserTwo.attributes.should.have.property('firstName').and.equal(userTwo.firstName);
+        responseUserTwo.attributes.should.have.property('lastName').and.equal(userTwo.lastName);
         responseUserTwo.attributes.should.have.property('email').and.equal(userTwo.email);
         responseUserTwo.attributes.should.have.property('createdAt');
         new Date(responseUserTwo.attributes.createdAt).should.equalDate(userTwo.createdAt);
+        responseUserTwo.attributes.should.have.property('aoiState').and.equal(userTwo.aoiState);
+        responseUserTwo.attributes.should.have.property('aoiCountry').and.equal(userTwo.aoiCountry);
+        responseUserTwo.attributes.should.have.property('aoiCity').and.equal(userTwo.aoiCity);
         responseUserTwo.attributes.should.have.property('sector').and.equal(userTwo.sector);
-        responseUserTwo.attributes.should.have.property('primaryResponsibilities').and.include.members(userTwo.primaryResponsibilities);
         responseUserTwo.attributes.should.have.property('country').and.equal(userTwo.country);
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
-        responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
-        responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });
 
     it('Get all users with start and end date filters while being logged in should return a 200 and the user data filtered by created date', async () => {
-        await new UserModel(createUser({ createdAt: new Date('2017-01-01') })).save();
-        const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
-        await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
+        await new UserModel(createUserV2({ createdAt: new Date('2017-01-01') })).save();
+        const userOne = await new UserModel(createUserV2({ createdAt: new Date('2018-01-01') })).save();
+        await new UserModel(createUserV2({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v2/user/obtain/all-users`)
@@ -149,24 +149,21 @@ describe('V2 - Get all users tests', () => {
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
         responseUserOne.should.have.property('attributes').and.be.an('object');
-        responseUserOne.attributes.should.have.property('fullName').and.equal(userOne.fullName);
+        responseUserOne.attributes.should.have.property('firstName').and.equal(userOne.firstName);
+        responseUserOne.attributes.should.have.property('lastName').and.equal(userOne.lastName);
         responseUserOne.attributes.should.have.property('email').and.equal(userOne.email);
         responseUserOne.attributes.should.have.property('createdAt');
         new Date(responseUserOne.attributes.createdAt).should.equalDate(userOne.createdAt);
         responseUserOne.attributes.should.have.property('sector').and.equal(userOne.sector);
-        responseUserOne.attributes.should.have.property('primaryResponsibilities').and.include.members(userOne.primaryResponsibilities);
         responseUserOne.attributes.should.have.property('country').and.equal(userOne.country);
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
-        responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
-        responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
     });
 
     it('Get all users with start date filter while being logged in should return a 200 unfiltered user list', async () => {
-        const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
-        const userTwo = await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
+        const userOne = await new UserModel(createUserV2({ createdAt: new Date('2018-01-01') })).save();
+        const userTwo = await new UserModel(createUserV2({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v2/user/obtain/all-users`)
@@ -184,41 +181,35 @@ describe('V2 - Get all users tests', () => {
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
         responseUserOne.should.have.property('attributes').and.be.an('object');
-        responseUserOne.attributes.should.have.property('fullName').and.equal(userOne.fullName);
+        responseUserOne.attributes.should.have.property('firstName').and.equal(userOne.firstName);
+        responseUserOne.attributes.should.have.property('lastName').and.equal(userOne.lastName);
         responseUserOne.attributes.should.have.property('email').and.equal(userOne.email);
         responseUserOne.attributes.should.have.property('createdAt');
         new Date(responseUserOne.attributes.createdAt).should.equalDate(userOne.createdAt);
         responseUserOne.attributes.should.have.property('sector').and.equal(userOne.sector);
-        responseUserOne.attributes.should.have.property('primaryResponsibilities').and.include.members(userOne.primaryResponsibilities);
         responseUserOne.attributes.should.have.property('country').and.equal(userOne.country);
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
-        responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
-        responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
         responseUserTwo.should.have.property('type').and.equal('user');
         responseUserTwo.should.have.property('id').and.equal(userTwo._id.toString());
         responseUserTwo.should.have.property('attributes').and.be.an('object');
-        responseUserTwo.attributes.should.have.property('fullName').and.equal(userTwo.fullName);
+        responseUserTwo.attributes.should.have.property('firstName').and.equal(userTwo.firstName);
+        responseUserTwo.attributes.should.have.property('lastName').and.equal(userTwo.lastName);
         responseUserTwo.attributes.should.have.property('email').and.equal(userTwo.email);
         responseUserTwo.attributes.should.have.property('createdAt');
         new Date(responseUserTwo.attributes.createdAt).should.equalDate(userTwo.createdAt);
         responseUserTwo.attributes.should.have.property('sector').and.equal(userTwo.sector);
-        responseUserTwo.attributes.should.have.property('primaryResponsibilities').and.include.members(userTwo.primaryResponsibilities);
         responseUserTwo.attributes.should.have.property('country').and.equal(userTwo.country);
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
-        responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
-        responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });
 
     it('Get all users with end date filter while being logged in should return a 200 unfiltered user list', async () => {
-        const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
-        const userTwo = await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
+        const userOne = await new UserModel(createUserV2({ createdAt: new Date('2018-01-01') })).save();
+        const userTwo = await new UserModel(createUserV2({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v2/user/obtain/all-users`)
@@ -236,36 +227,29 @@ describe('V2 - Get all users tests', () => {
         responseUserOne.should.have.property('type').and.equal('user');
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
         responseUserOne.should.have.property('attributes').and.be.an('object');
-        responseUserOne.attributes.should.have.property('fullName').and.equal(userOne.fullName);
+        responseUserOne.attributes.should.have.property('firstName').and.equal(userOne.firstName);
+        responseUserOne.attributes.should.have.property('lastName').and.equal(userOne.lastName);
         responseUserOne.attributes.should.have.property('email').and.equal(userOne.email);
         responseUserOne.attributes.should.have.property('createdAt');
         new Date(responseUserOne.attributes.createdAt).should.equalDate(userOne.createdAt);
         responseUserOne.attributes.should.have.property('sector').and.equal(userOne.sector);
-        responseUserOne.attributes.should.have.property('primaryResponsibilities').and.include.members(userOne.primaryResponsibilities);
         responseUserOne.attributes.should.have.property('country').and.equal(userOne.country);
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
-        responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
-        responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
         responseUserTwo.should.have.property('type').and.equal('user');
         responseUserTwo.should.have.property('id').and.equal(userTwo._id.toString());
         responseUserTwo.should.have.property('attributes').and.be.an('object');
-        responseUserTwo.attributes.should.have.property('fullName').and.equal(userTwo.fullName);
+        responseUserTwo.attributes.should.have.property('firstName').and.equal(userTwo.firstName);
         responseUserTwo.attributes.should.have.property('email').and.equal(userTwo.email);
         responseUserTwo.attributes.should.have.property('createdAt');
         new Date(responseUserTwo.attributes.createdAt).should.equalDate(userTwo.createdAt);
         responseUserTwo.attributes.should.have.property('sector').and.equal(userTwo.sector);
-        responseUserTwo.attributes.should.have.property('primaryResponsibilities').and.include.members(userTwo.primaryResponsibilities);
         responseUserTwo.attributes.should.have.property('country').and.equal(userTwo.country);
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
-        responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
-        responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });
 
     afterEach(async () => {
