@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
-const UserModel = require('models/user');
+const UserModel = require('models/userV2');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUserV2 } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -52,7 +52,7 @@ describe('V2 - Get current user tests', () => {
     });
 
     it('Get the current user while being logged in should return a 200 and the user data (happy case)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV2()).save();
 
         const response = await requester
             .get(`/api/v2/user`)
@@ -68,19 +68,16 @@ describe('V2 - Get current user tests', () => {
         response.body.data.should.have.property('type').and.equal('user');
         response.body.data.should.have.property('id').and.equal(user._id.toString());
         response.body.data.should.have.property('attributes').and.be.an('object');
-        response.body.data.attributes.should.have.property('fullName').and.equal(user.fullName);
+        response.body.data.attributes.should.have.property('firstName').and.equal(user.firstName);
+        response.body.data.attributes.should.have.property('lastName').and.equal(user.lastName);
         response.body.data.attributes.should.have.property('email').and.equal(user.email);
         response.body.data.attributes.should.have.property('createdAt');
         new Date(response.body.data.attributes.createdAt).should.equalDate(user.createdAt);
         response.body.data.attributes.should.have.property('sector').and.equal(user.sector);
-        response.body.data.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
         response.body.data.attributes.should.have.property('country').and.equal(user.country);
         response.body.data.attributes.should.have.property('state').and.equal(user.state);
         response.body.data.attributes.should.have.property('city').and.equal(user.city);
         response.body.data.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        response.body.data.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        response.body.data.attributes.should.have.property('language').and.equal(user.language);
-        response.body.data.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     afterEach(async () => {
