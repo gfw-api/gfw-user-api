@@ -2,9 +2,9 @@
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
-const { USERS } = require('./utils/test.constants');
-const { getTestServer } = require('./utils/test-server');
-const { createUser } = require('./utils/helpers');
+const { USERS } = require('../utils/test.constants');
+const { getTestServer } = require('../utils/test-server');
+const { createUser } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -15,7 +15,7 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('Get current user tests', () => {
+describe('V1 - Get current user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {

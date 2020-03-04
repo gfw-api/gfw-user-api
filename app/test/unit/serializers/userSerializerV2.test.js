@@ -1,17 +1,20 @@
-const UserSerializer = require('serializers/userSerializer');
-const chai = require('chai');
-
-chai.should();
+const UserSerializer = require('serializers/userSerializerV2');
 
 describe('User serializer test', () => {
     const user = {
         id: '5704f4031ad9ef22007e843f',
-        fullName: 'John Doe',
+        firstName: 'John',
+        lastName: 'Doe',
         provider: 'google',
         providerId: '2a324231345a',
         email: 'test@vizzuality.com',
         sector: 'Government (public sector)',
+        subsector: 'IT',
+        jobTitle: 'Developer',
         company: 'Vizzuality',
+        aoiCountry: 'Spain',
+        aoiState: 'state',
+        aoiCity: 'city',
         state: 'Madrid',
         city: 'Madrid',
         howDoYouUse: 'Obtain maps and data on tree cover'
@@ -27,7 +30,8 @@ describe('User serializer test', () => {
         data.should.have.property('id');
         data.type.should.equal('user');
         data.id.should.equal(user.id);
-        data.attributes.should.have.property('fullName');
+        data.attributes.should.have.property('firstName');
+        data.attributes.should.have.property('lastName');
         data.attributes.should.have.property('provider');
         data.attributes.should.have.property('providerId');
         data.attributes.should.have.property('email');
@@ -35,7 +39,7 @@ describe('User serializer test', () => {
         data.attributes.should.have.property('state');
         data.attributes.should.have.property('city');
         data.attributes.should.have.property('howDoYouUse');
-        data.attributes.fullName.should.be.equal(user.fullName);
+        data.attributes.firstName.should.be.equal(user.firstName);
         data.attributes.provider.should.be.equal(user.provider);
         data.attributes.providerId.should.be.equal(user.providerId);
         data.attributes.email.should.be.equal(user.email);
