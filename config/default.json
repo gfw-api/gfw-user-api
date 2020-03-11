@@ -17,15 +17,9 @@
     "mongodb":{
         "database": "gfw_user_db",
         "host": "mymachine",
-        "port": 32780
+        "port": 27017
     },
     "migrate":{
         "uri": ""
-    },
-    "googleSheets":{
-        "private_key" : "",
-        "client_email": "",
-        "target_sheet_id": "",
-        "target_sheet_index": null
     }
 }

@@ -1,69 +1,156 @@
 {
-    "id": "#(service.id)",
-    "name": "#(service.name)",
-    "tags": ["gfw"],
-    "urls": [{
-        "url": "/v1/user",
-        "authenticated": true,
-        "method": "GET",
-        "endpoints": [{
-            "method": "GET",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user"
-        }]
+  "id": "#(service.id)",
+  "name": "#(service.name)",
+  "tags": [
+    "gfw"
+  ],
+  "urls": [
+    {
+      "url": "/v1/user",
+      "authenticated": true,
+      "method": "GET",
+      "endpoints": [
+        {
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user",
+      "method": "POST",
+      "authenticated": true,
+      "endpoints": [
+        {
+          "method": "POST",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user/:id",
+      "method": "GET",
+      "authenticated": true,
+      "endpoints": [
+        {
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user/:id"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user/stories",
+      "method": "GET",
+      "authenticated": true,
+      "endpoints": [
+        {
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user/stories"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user/:id",
+      "method": "DELETE",
+      "authenticated": true,
+      "endpoints": [
+        {
+          "method": "DELETE",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user/:id"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user/:id",
+      "method": "PATCH",
+      "authenticated": true,
+      "endpoints": [
+        {
+          "method": "PATCH",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user/:id"
+        }
+      ]
+    },
+    {
+      "url": "/v1/user/obtain/all-users",
+      "authenticated": true,
+      "method": "GET",
+      "endpoints": [
+        {
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v1/user/obtain/all-users"
+        }
+      ]
     }, {
-        "url": "/v1/user",
-        "method": "POST",
-        "authenticated": true,
-        "endpoints": [{
-            "method": "POST",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user"
-        }]
-    }, {
-        "url": "/v1/user/:id",
-        "method": "GET",
-        "authenticated": true,
-        "endpoints": [{
-            "method": "GET",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/:id"
-        }]
-    }, {
-        "url": "/v1/user/stories",
-        "method": "GET",
-        "authenticated": true,
-        "endpoints": [{
-            "method": "GET",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/stories"
-        }]
-    }, {
-        "url": "/v1/user/:id",
-        "method": "DELETE",
-        "authenticated": true,
-        "endpoints": [{
-            "method": "DELETE",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/:id"
-        }]
-    }, {
-        "url": "/v1/user/:id",
-        "method": "PATCH",
-        "authenticated": true,
-        "endpoints": [{
-            "method": "PATCH",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/:id"
-        }]
-    }, {
-        "url": "/v1/user/obtain/all-users",
-        "authenticated": true,
-        "method": "GET",
-        "endpoints": [{
-            "method": "GET",
-            "baseUrl": "#(service.uri)",
-            "path": "/api/v1/user/obtain/all-users"
-        }]
-    }]
+      "url": "/v2/user",
+      "authenticated": true,
+      "method": "GET",
+      "endpoints": [{
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user"
+      }]
+  }, {
+      "url": "/v2/user",
+      "method": "POST",
+      "authenticated": true,
+      "endpoints": [{
+          "method": "POST",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user"
+      }]
+  }, {
+      "url": "/v2/user/:id",
+      "method": "GET",
+      "authenticated": true,
+      "endpoints": [{
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user/:id"
+      }]
+  }, {
+      "url": "/v2/user/stories",
+      "method": "GET",
+      "authenticated": true,
+      "endpoints": [{
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user/stories"
+      }]
+  }, {
+      "url": "/v2/user/:id",
+      "method": "DELETE",
+      "authenticated": true,
+      "endpoints": [{
+          "method": "DELETE",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user/:id"
+      }]
+  }, {
+      "url": "/v2/user/:id",
+      "method": "PATCH",
+      "authenticated": true,
+      "endpoints": [{
+          "method": "PATCH",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user/:id"
+      }]
+  }, {
+      "url": "/v2/user/obtain/all-users",
+      "authenticated": true,
+      "method": "GET",
+      "endpoints": [{
+          "method": "GET",
+          "baseUrl": "#(service.uri)",
+          "path": "/api/v2/user/obtain/all-users"
+      }]
+  }
+  ]
 }
