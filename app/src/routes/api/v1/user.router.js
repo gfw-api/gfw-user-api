@@ -72,7 +72,14 @@ class UserRouter {
             return;
         }
         ctx.request.body._id = mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
-        const userCreate = await new User(ctx.request.body).save();
+        const user = new User(ctx.request.body);
+        const errors = user.validateSync();
+        if (errors) {
+            logger.error(errors.message);
+            ctx.throw(400, errors.message);
+            return;
+        }
+        const userCreate = await user.save();
         ctx.body = UserSerializer.serialize(userCreate);
     }
 
@@ -119,6 +126,15 @@ class UserRouter {
         if (ctx.request.body.sector !== undefined) {
             userFind.sector = ctx.request.body.sector;
         }
+        if (ctx.request.body.subsector !== undefined) {
+            userFind.subsector = ctx.request.body.subsector;
+        }
+        if (ctx.request.body.jobTitle !== undefined) {
+            userFind.jobTitle = ctx.request.body.jobTitle;
+        }
+        if (ctx.request.body.company !== undefined) {
+            userFind.company = ctx.request.body.company;
+        }
         if (ctx.request.body.primaryResponsibilities !== undefined) {
             userFind.primaryResponsibilities = ctx.request.body.primaryResponsibilities;
         }
@@ -131,6 +147,15 @@ class UserRouter {
         if (ctx.request.body.city !== undefined) {
             userFind.city = ctx.request.body.city;
         }
+        if (ctx.request.body.aoiCountry !== undefined) {
+            userFind.aoiCountry = ctx.request.body.aoiCountry;
+        }
+        if (ctx.request.body.aoiCity !== undefined) {
+            userFind.aoiCity = ctx.request.body.aoiCity;
+        }
+        if (ctx.request.body.aoiState !== undefined) {
+            userFind.aoiState = ctx.request.body.aoiState;
+        }
         if (ctx.request.body.howDoYouUse !== undefined) {
             userFind.howDoYouUse = ctx.request.body.howDoYouUse;
         }
@@ -142,6 +167,15 @@ class UserRouter {
         }
         if (ctx.request.body.profileComplete !== undefined) {
             userFind.profileComplete = ctx.request.body.profileComplete;
+        }
+        if (ctx.request.body.interests !== undefined) {
+            userFind.interests = ctx.request.body.interests;
+        }
+        if (ctx.request.body.signUpToNewsletter !== undefined) {
+            userFind.signUpToNewsletter = (ctx.request.body.signUpToNewsletter);
+        }
+        if (ctx.request.body.topics !== undefined) {
+            userFind.topics = (ctx.request.body.topics);
         }
 
         await userFind.save();
