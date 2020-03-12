@@ -2,13 +2,31 @@ const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const userSerializer = new JSONAPISerializer('user', {
     attributes: [
-        'fullName', 'provider', 'providerId', 'email', 'createdAt', 'sector',
-        'primaryResponsibilities', 'country', 'state', 'city', 'howDoYouUse',
-        'signUpForTesting', 'language', 'profileComplete'
+        'fullName',
+        'provider',
+        'providerId',
+        'email',
+        'createdAt',
+        'sector',
+        'primaryResponsibilities',
+        'subsector',
+        'jobTitle',
+        'company',
+        'country',
+        'state',
+        'city',
+        'aoiCountry',
+        'aoiCity',
+        'aoiState',
+        'interests',
+        'howDoYouUse',
+        'signUpForTesting',
+        'signUpToNewsletter',
+        'topics',
+        'language',
+        'profileComplete'
     ],
-    typeForAttribute(attribute) {
-        return attribute;
-    },
+    typeForAttribute: (attribute) => attribute,
     keyForAttribute: 'camelCase'
 });
 
