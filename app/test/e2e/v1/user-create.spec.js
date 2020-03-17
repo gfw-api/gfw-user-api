@@ -97,6 +97,18 @@ describe('V1 - Create user tests', () => {
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
+    it('Create a user with missing data should return a 422 error', async () => {
+        const response = await requester
+            .post(`/api/v1/user`)
+            .send({
+                fullName: `Fake fullname`,
+                loggedUser: USERS.USER
+            });
+
+        response.status.should.equal(422);
+        // TODO: test that the response body has meaningful infomation on the error
+    });
+
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
         const user = await new UserModel(createUser()).save();
 
