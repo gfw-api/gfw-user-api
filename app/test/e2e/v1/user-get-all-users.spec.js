@@ -97,6 +97,9 @@ describe('V1 - Get all users tests', () => {
         responseUserOne.should.have.property('id').and.equal(userOne._id.toString());
         responseUserOne.should.have.property('attributes').and.be.an('object');
         responseUserOne.attributes.should.have.property('fullName').and.equal(userOne.fullName);
+        responseUserOne.attributes.should.have.property('aoiState').and.equal(userOne.aoiState);
+        responseUserOne.attributes.should.have.property('aoiCity').and.equal(userOne.aoiCity);
+        responseUserOne.attributes.should.have.property('aoiCountry').and.equal(userOne.aoiCountry);
         responseUserOne.attributes.should.have.property('email').and.equal(userOne.email);
         responseUserOne.attributes.should.have.property('createdAt');
         new Date(responseUserOne.attributes.createdAt).should.equalDate(userOne.createdAt);
@@ -106,7 +109,7 @@ describe('V1 - Get all users tests', () => {
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
+        // responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
         responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
         responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
@@ -123,7 +126,7 @@ describe('V1 - Get all users tests', () => {
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
+        // responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
         responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
         responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });
@@ -194,7 +197,7 @@ describe('V1 - Get all users tests', () => {
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
+        // responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
         responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
         responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
@@ -211,7 +214,7 @@ describe('V1 - Get all users tests', () => {
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
+        // responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
         responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
         responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });
@@ -246,7 +249,7 @@ describe('V1 - Get all users tests', () => {
         responseUserOne.attributes.should.have.property('state').and.equal(userOne.state);
         responseUserOne.attributes.should.have.property('city').and.equal(userOne.city);
         responseUserOne.attributes.should.have.property('howDoYouUse').and.include.members(userOne.howDoYouUse);
-        responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
+        // responseUserOne.attributes.should.have.property('signUpForTesting').and.equal(userOne.signUpForTesting);
         responseUserOne.attributes.should.have.property('language').and.equal(userOne.language);
         responseUserOne.attributes.should.have.property('profileComplete').and.equal(userOne.profileComplete);
 
@@ -263,7 +266,7 @@ describe('V1 - Get all users tests', () => {
         responseUserTwo.attributes.should.have.property('state').and.equal(userTwo.state);
         responseUserTwo.attributes.should.have.property('city').and.equal(userTwo.city);
         responseUserTwo.attributes.should.have.property('howDoYouUse').and.include.members(userTwo.howDoYouUse);
-        responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
+        // responseUserTwo.attributes.should.have.property('signUpForTesting').and.equal(userTwo.signUpForTesting);
         responseUserTwo.attributes.should.have.property('language').and.equal(userTwo.language);
         responseUserTwo.attributes.should.have.property('profileComplete').and.equal(userTwo.profileComplete);
     });

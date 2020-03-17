@@ -105,6 +105,9 @@ describe('V1 - Update user tests', () => {
                 country: `${user.country} updated`,
                 state: `${user.state} updated`,
                 city: `${user.city} updated`,
+                aoiCity: `${user.aoiCity} updated`,
+                aoiState: `${user.aoiState} updated`,
+                aoiCountry: `${user.aoiCountry} updated`,
                 language: `${user.language} updated`,
                 profileComplete: !user.profileComplete,
                 signUpForTesting: !user.signUpForTesting,
@@ -129,6 +132,9 @@ describe('V1 - Update user tests', () => {
         responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
         responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
         responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
+        responseUser.attributes.should.have.property('aoiCountry').and.equal(databaseUser.aoiCountry);
+        responseUser.attributes.should.have.property('aoiState').and.equal(databaseUser.aoiState);
+        responseUser.attributes.should.have.property('aoiCity').and.equal(databaseUser.aoiCity);
         responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
         responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
         responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
