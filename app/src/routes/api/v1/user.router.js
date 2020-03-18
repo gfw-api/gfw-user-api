@@ -75,8 +75,8 @@ class UserRouter {
         const user = new User(ctx.request.body);
         const errors = user.validateSync();
         if (errors) {
-            logger.error(errors.message);
-            ctx.throw(400, errors.message);
+            logger.info(errors.message);
+            ctx.throw(422, errors.message);
             return;
         }
         const userCreate = await user.save();
