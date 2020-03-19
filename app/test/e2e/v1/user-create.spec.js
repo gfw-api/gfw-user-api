@@ -97,20 +97,6 @@ describe('V1 - Create user tests', () => {
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
-    it('Create a user with missing data should return a 422 error', async () => {
-        const response = await requester
-            .post(`/api/v1/user`)
-            .send({
-                fullName: `Fake fullname`,
-                loggedUser: USERS.USER
-            });
-
-        response.status.should.equal(422);
-        response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(422);
-        response.body.errors[0].should.have.property('detail').and.equal('Can\'t create user, missing data');
-    });
-
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
         const user = await new UserModel(createUser()).save();
 
