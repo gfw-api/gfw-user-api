@@ -106,7 +106,9 @@ describe('V1 - Create user tests', () => {
             });
 
         response.status.should.equal(422);
-        // TODO: test that the response body has meaningful infomation on the error
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(422);
+        response.body.errors[0].should.have.property('detail').and.equal('Can\'t create user, missing data');
     });
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
