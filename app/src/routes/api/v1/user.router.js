@@ -76,7 +76,7 @@ class UserRouter {
         const errors = user.validateSync();
         if (errors) {
             logger.info(errors.message);
-            ctx.throw(422, errors.message);
+            ctx.throw(422, 'Can\'t create user, missing data');
             return;
         }
         const userCreate = await user.save();
