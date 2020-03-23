@@ -2,7 +2,8 @@
 const USERS = {
     USER: {
         id: '1a10d7c6e0a37126611fd7a5',
-        name: 'test user',
+        firstName: 'test',
+        lastName: 'user',
         role: 'USER',
         provider: 'local',
         email: 'user@control-tower.org',
