@@ -3,6 +3,8 @@ const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 const userSerializer = new JSONAPISerializer('user', {
     attributes: [
         'fullName',
+        'firstName',
+        'lastName',
         'provider',
         'providerId',
         'email',
