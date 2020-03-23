@@ -1,5 +1,26 @@
 # v2.0
 
+## 23/03/2020
+
+- Added extra fields to the user router, model, and serializer:
+  - firstName
+  - lastName
+  - primaryResponsibilities
+  - subsector
+  - jobTitle
+  - company
+  - aoiCountry
+  - aoiState
+  - aoiCity
+  - interests
+  - signUpToNewsletter
+  - topics.
+- Adds test coverage based on the (removed) v2 tests.
+
+### PATCH /v1/user/:id and POST /v1/user
+
+- Sending userData with the new fields saves them.
+
 ## 10/03/2020
 
 - Remove google sheets integration.
