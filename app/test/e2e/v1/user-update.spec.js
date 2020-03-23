@@ -74,7 +74,8 @@ describe('V1 - Update user tests', () => {
         responseUser.should.have.property('type').and.equal('user');
         responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
         responseUser.should.have.property('attributes').and.be.an('object');
-        responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+        responseUser.attributes.should.have.property('firstName').and.equal(databaseUser.firstName);
+        responseUser.attributes.should.have.property('lastName').and.equal(databaseUser.lastName);
         responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
