@@ -1,5 +1,3 @@
-# v2.0
-
 ## 23/03/2020
 
 - Added extra fields to the user router, model, and serializer:
@@ -16,6 +14,8 @@
   - signUpToNewsletter
   - topics.
 - Adds test coverage based on the (removed) v2 tests.
+
+# v2.0
 
 ### PATCH /v1/user/:id and POST /v1/user
 
