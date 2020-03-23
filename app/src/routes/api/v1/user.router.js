@@ -120,6 +120,12 @@ class UserRouter {
         if (ctx.request.body.fullName !== undefined) {
             userFind.fullName = ctx.request.body.fullName;
         }
+        if (ctx.request.body.firstName !== undefined) {
+            userFind.firstName = ctx.request.body.firstName;
+        }
+        if (ctx.request.body.lastName !== undefined) {
+            userFind.lastName = ctx.request.body.lastName;
+        }
         if (ctx.request.body.email !== undefined) {
             userFind.email = ctx.request.body.email;
         }

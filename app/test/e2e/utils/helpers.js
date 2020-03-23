@@ -5,6 +5,8 @@ const createUser = (anotherData = {}) => {
 
     return {
         fullName: `Fake fullname ${uuid}`,
+        firstName: `Fake firstName ${uuid}`,
+        lastName: `Fake lastName ${uuid}`,
         email: `fake-email-${uuid}@example.com`,
         sector: `Fake sector ${uuid}`,
         state: `Fake state ${uuid}`,
