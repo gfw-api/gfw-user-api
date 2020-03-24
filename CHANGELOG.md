@@ -1,4 +1,4 @@
-## 23/03/2020
+## 24/03/2020
 
 - Added extra fields to the user router, model, and serializer:
   - firstName
