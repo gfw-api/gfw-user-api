@@ -15,11 +15,15 @@
   - topics.
 - Adds test coverage based on the (removed) v2 tests.
 
+### PATCH /v1/user/:id
+
+  - Sending userData with the new fields saves them
+
+### POST /v1/user
+
+  - Sending userData with the new fields saves them.
+
 # v2.0
-
-### PATCH /v1/user/:id and POST /v1/user
-
-- Sending userData with the new fields saves them.
 
 ## 10/03/2020
 
