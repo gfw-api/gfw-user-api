@@ -1,22 +1,31 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "GFW User API",
-    "description": "Global Forest Watch - User API",
+    "title": "GLobal Forest Watch API",
+    "description": "The Global Forest Watch API is currently in beta. Based on feedback from trusted testers, this document specifies new API changes that are currently under development. Interested in being a trusted tester? Contact the [Data Lab](mailTo:support@wri.com) at World Resources Institute.\n\nAll endpoints are accessible via http & https and are located at\n`https://production-api.globalforestwatch.org`.\n\nForest change measures tree cover loss, tree cover gain, or forest disturbance. The following forest change data are available through the API: \n* University of Maryland tree cover loss & gain \n* FORMA alerts\n* IMAZON SAD alerts\n* Terrai alerts\n* Prodes\n* Guira Loss\n* Biomass loss\n* GLAD tree cover loss alerts \n* NASA VIIRs active fires.\n\nOther services provided by the Api complements the ecosystem that surrounds the platform:\n\n* Metadata\n* Urthecast \n* Geostore\n* OGR \n* Story \n* User \n* subscription\n\n\n### User API\nThis Microservice will provide a comprehensive way of create, modify or delete users within the platform\n",
+    "termsOfService": "http://www.globalforestwatch.org/terms",
+    "contact": {
+      "name": "API Support",
+      "url": "http://www.globalforestwatch.org",
+      "email": "support@wri.com"
+    },
+    "license": {
+      "name": "MIT License (MIT)",
+      "url": "https://opensource.org/licenses/MIT"
+    },
     "version": "1.0.0"
   },
-  "host": "example.vizzuality.com",
+  "host": "staging-api.globalforestwatch.org",
   "schemes": [
     "https",
     "http"
   ],
   "consumes": [
-    "application/json"
+    "application/vnd.api+json"
   ],
   "produces": [
     "application/vnd.api+json"
   ],
-  "basePath": "/api/v1",
   "paths": {
     "/user/{id}": {
       "delete": {

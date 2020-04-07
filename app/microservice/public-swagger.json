@@ -26,14 +26,6 @@
   "produces": [
     "application/vnd.api+json"
   ],
-  "securityDefinitions": {
-    "UserSecurity": {
-      "type": "apiKey",
-      "in": "header",
-      "name": "Authorization",
-      "description": "For write operations it's need an api key like  ```Bearer {{TOKEN}}```.\n\nTo obtain it please contact [support](mailto:support@wri.com).\n"
-    }
-  },
   "paths": {
     "/user/{id}": {
       "delete": {
@@ -52,11 +44,6 @@
             "description": "ID of user to delete",
             "required": true,
             "type": "string"
-          }
-        ],
-        "security": [
-          {
-            "UserSecurity": []
           }
         ],
         "responses": {
@@ -123,11 +110,6 @@
             }
           }
         ],
-        "security": [
-          {
-            "UserSecurity": []
-          }
-        ],
         "responses": {
           "200": {
             "description": "User updated",
@@ -185,11 +167,6 @@
             "schema": {
               "$ref": "#/definitions/UserCreate"
             }
-          }
-        ],
-        "security": [
-          {
-            "UserSecurity": []
           }
         ],
         "responses": {
