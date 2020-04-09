@@ -13,11 +13,6 @@ spec:
       labels:
         name: gfw-user
     spec:
-      tolerations:
-      - key: "type"
-        operator: "Equal"
-        value: "gfw"
-        effect: "NoSchedule"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

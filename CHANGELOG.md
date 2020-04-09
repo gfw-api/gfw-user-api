@@ -1,3 +1,9 @@
+# v2.0.1
+
+## 09/04/2020
+
+- Update k8s configuration with node affinity.
+
 ## 24/03/2020
 
 - Added extra fields to the user router, model, and serializer:
