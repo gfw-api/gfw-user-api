@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -41,11 +40,11 @@ describe('V1 - Get current user tests', () => {
     });
 
     it('Get the current user while being logged in should return a 200 and no user data (happy case, empty db)', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const response = await requester
             .get(`/api/v1/user`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.equal(null);
@@ -54,14 +53,14 @@ describe('V1 - Get current user tests', () => {
     it('Get the current user while being logged in should return a 200 and the user data (happy case)', async () => {
         const user = await new UserModel(createUser()).save();
 
+        mockGetUserFromToken({
+            ...USERS.USER,
+            id: user._id
+        });
+
         const response = await requester
             .get(`/api/v1/user`)
-            .query({
-                loggedUser: JSON.stringify({
-                    ...USERS.USER,
-                    id: user._id
-                })
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');

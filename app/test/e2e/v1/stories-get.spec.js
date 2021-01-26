@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -41,6 +40,8 @@ describe('V1 - Get stories tests', () => {
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice (no remote content)', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         nock(process.env.CT_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
@@ -50,15 +51,14 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 500', async () => {
+        mockGetUserFromToken(USERS.USER);
         nock(process.env.CT_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
@@ -68,9 +68,7 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(503);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -79,6 +77,7 @@ describe('V1 - Get stories tests', () => {
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice (remote content)', async () => {
+        mockGetUserFromToken(USERS.USER);
         nock(process.env.CT_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
@@ -97,9 +96,7 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);

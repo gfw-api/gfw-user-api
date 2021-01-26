@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const nock = require('nock');
 
 const createUser = (anotherData = {}) => {
     const uuid = mongoose.Types.ObjectId();
@@ -24,6 +25,13 @@ const createUser = (anotherData = {}) => {
     };
 };
 
+const mockGetUserFromToken = (userProfile) => {
+    nock(process.env.CT_URL, { reqheaders: { authorization: 'Bearer abcd' } })
+        .get('/auth/user/me')
+        .reply(200, userProfile);
+};
+
 module.exports = {
-    createUser
+    createUser,
+    mockGetUserFromToken
 };

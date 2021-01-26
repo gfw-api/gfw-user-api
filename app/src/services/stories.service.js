@@ -1,4 +1,4 @@
-const ctRegisterMicroservice = require('ct-register-microservice-node');
+const { RWAPIMicroservice } = require('rw-api-microservice-node');
 const logger = require('logger');
 const StoriesUnavailableError = require('errors/storiesUnavailable.error');
 
@@ -6,7 +6,7 @@ class StoriesService {
 
     static async getStoriesByUser(userId) {
         try {
-            const stories = await ctRegisterMicroservice.requestToMicroservice({
+            const stories = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/story/user/${userId}`,
                 method: 'GET',
                 json: true

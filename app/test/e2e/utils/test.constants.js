@@ -122,16 +122,7 @@ const SAMPLE_USER = {
     howDoYouUse: 'Obtain maps and data on tree cover'
 };
 
-const SAMPLE_LOGGED_USER = {
-    loggedUser: {
-        firstName: 'John',
-        lastName: 'Doe',
-        id: 1234
-    }
-};
-
 module.exports = {
     USERS,
-    SAMPLE_USER,
-    SAMPLE_LOGGED_USER
+    SAMPLE_USER
 };
