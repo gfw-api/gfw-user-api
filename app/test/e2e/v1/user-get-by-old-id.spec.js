@@ -1,11 +1,10 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const mongoose = require('mongoose');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -43,6 +42,8 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as a different should return a 403 \'Forbidden\' error', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const oldId = 12345;
 
         await new UserModel(createUser({
@@ -51,9 +52,7 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -68,14 +67,15 @@ describe('V1 - Get user by old id tests', () => {
             oldId
         })).save();
 
+        mockGetUserFromToken({
+            ...USERS.USER,
+            id: user._id.toString()
+        });
+
+
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .query({
-                loggedUser: JSON.stringify({
-                    ...USERS.USER,
-                    id: user._id.toString()
-                })
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -98,6 +98,8 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an ADMIN user should return a 200 and the user data (happy case)', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const oldId = 12345;
 
         const user = await new UserModel(createUser({
@@ -106,9 +108,7 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .query({
-                loggedUser: JSON.stringify(USERS.ADMIN)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -131,6 +131,8 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an MICROSERVICE user should return a 200 and the user data (happy case)', async () => {
+        mockGetUserFromToken(USERS.MICROSERVICE);
+
         const oldId = 12345;
 
         const user = await new UserModel(createUser({
@@ -139,9 +141,7 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .query({
-                loggedUser: JSON.stringify(USERS.MICROSERVICE)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -164,11 +164,11 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id for an invalid id should return a 404 \'User not found\' error', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const response = await requester
             .get(`/api/v1/user/oldId/1234`)
-            .query({
-                loggedUser: JSON.stringify(USERS.ADMIN)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -177,11 +177,11 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an ADMIN user for an valid id that does not exist on the database should return a 404 \'User not found\' error', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const response = await requester
             .get(`/api/v1/user/oldId/${mongoose.Types.ObjectId()}`)
-            .query({
-                loggedUser: JSON.stringify(USERS.ADMIN)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -190,11 +190,11 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an USER user for an valid id that does not exist on the database should return a 404 \'User not found\' error', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const response = await requester
             .get(`/api/v1/user/oldId/${mongoose.Types.ObjectId()}`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);

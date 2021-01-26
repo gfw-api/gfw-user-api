@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -41,11 +40,12 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const response = await requester
             .post(`/api/v1/user`)
-            .send({
-                loggedUser: USERS.USER
-            });
+            .set('Authorization', `Bearer abcd`)
+            .send({});
 
         response.status.should.equal(200);
 
@@ -63,12 +63,14 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const user = createUser();
         const response = await requester
             .post(`/api/v1/user`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 ...user,
-                loggedUser: USERS.USER
             });
 
         response.status.should.equal(200);
@@ -99,15 +101,16 @@ describe('V1 - Create user tests', () => {
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
         const user = await new UserModel(createUser()).save();
+        mockGetUserFromToken({
+            ...USERS.USER,
+            id: user._id.toString()
+        });
 
         const response = await requester
             .post(`/api/v1/user`)
+            .set('Authorization', `Bearer abcd`)
             .send({
                 ...user,
-                loggedUser: {
-                    ...USERS.USER,
-                    id: user._id.toString()
-                }
             });
 
         response.status.should.equal(400);

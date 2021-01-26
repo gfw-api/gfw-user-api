@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -40,13 +39,14 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Update a user while being logged in as a different user should return a 403 \'Forbidden\' error', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const user = await new UserModel(createUser()).save();
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
-            .send({
-                loggedUser: USERS.USER
-            });
+            .set('Authorization', `Bearer abcd`)
+            .send({});
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -57,14 +57,15 @@ describe('V1 - Update user tests', () => {
     it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
         const user = await new UserModel(createUser()).save();
 
+        mockGetUserFromToken({
+            ...USERS.USER,
+            id: user._id.toString()
+        });
+
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
-            .send({
-                loggedUser: {
-                    ...USERS.USER,
-                    id: user._id.toString()
-                }
-            });
+            .set('Authorization', `Bearer abcd`)
+            .send({});
 
         response.status.should.equal(200);
 
@@ -93,13 +94,15 @@ describe('V1 - Update user tests', () => {
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
         const user = await new UserModel(createUser()).save();
 
+        mockGetUserFromToken({
+            ...USERS.USER,
+            id: user._id.toString()
+        });
+
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
+            .set('Authorization', `Bearer abcd`)
             .send({
-                loggedUser: {
-                    ...USERS.USER,
-                    id: user._id.toString()
-                },
                 fullName: `${user.fullName} updated`,
                 email: `${user.email} updated`,
                 sector: `${user.sector} updated`,

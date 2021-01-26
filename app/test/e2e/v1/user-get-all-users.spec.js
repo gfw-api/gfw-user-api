@@ -1,10 +1,9 @@
-/* eslint-disable no-unused-vars,no-undef */
 const nock = require('nock');
 const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -41,11 +40,11 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a USER should return a 403 \'Forbidden\' error', async () => {
+        mockGetUserFromToken(USERS.USER);
+
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .query({
-                loggedUser: JSON.stringify(USERS.USER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -54,11 +53,11 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a MANAGER should return a 403 \'Forbidden\' error', async () => {
+        mockGetUserFromToken(USERS.MANAGER);
+
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .query({
-                loggedUser: JSON.stringify(USERS.MANAGER)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -67,25 +66,25 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a ADMIN should return a 200 (happy case)', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .query({
-                loggedUser: JSON.stringify(USERS.ADMIN)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
     it('Get all users while being logged in should return a 200 and the user data (happy case)', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const userOne = await new UserModel(createUser()).save();
         const userTwo = await new UserModel(createUser()).save();
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .query({
-                loggedUser: JSON.stringify(USERS.ADMIN)
-            });
+            .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
@@ -132,14 +131,16 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with start and end date filters while being logged in should return a 200 and the user data filtered by created date', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         await new UserModel(createUser({ createdAt: new Date('2017-01-01') })).save();
         const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
         await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                loggedUser: JSON.stringify(USERS.ADMIN),
                 start: '2017-12-01',
                 end: '2018-02-01'
             });
@@ -168,13 +169,15 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with start date filter while being logged in should return a 200 unfiltered user list', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
         const userTwo = await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                loggedUser: JSON.stringify(USERS.ADMIN),
                 start: '2017-12-01'
             });
 
@@ -220,13 +223,15 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with end date filter while being logged in should return a 200 unfiltered user list', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
         const userOne = await new UserModel(createUser({ createdAt: new Date('2018-01-01') })).save();
         const userTwo = await new UserModel(createUser({ createdAt: new Date('2019-01-01') })).save();
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
+            .set('Authorization', `Bearer abcd`)
             .query({
-                loggedUser: JSON.stringify(USERS.ADMIN),
                 end: '2018-02-01'
             });
 
