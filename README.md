@@ -1,6 +1,6 @@
 # GFW User API
 
-[![Build Status](https://travis-ci.org/gfw-api/gfw-user-api.svg?branch=develop)](https://travis-ci.org/gfw-api/gfw-user-api)
+[![Build Status](https://travis-ci.com/gfw-api/gfw-user-api.svg?branch=dev)](https://travis-ci.com/gfw-api/gfw-user-api)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/9f3238f6631f9c5e4ad7/test_coverage)](https://codeclimate.com/github/gfw-api/gfw-user-api/test_coverage)
 
 This repository is the microservice that it implement the user functionality and exposed the /user endpoint in the apigateway
