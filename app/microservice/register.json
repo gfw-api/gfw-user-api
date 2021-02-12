@@ -7,7 +7,6 @@
   "urls": [
     {
       "url": "/v1/user",
-      "authenticated": true,
       "method": "GET",
       "endpoints": [
         {
@@ -20,7 +19,6 @@
     {
       "url": "/v1/user",
       "method": "POST",
-      "authenticated": true,
       "endpoints": [
         {
           "method": "POST",
@@ -32,7 +30,6 @@
     {
       "url": "/v1/user/:id",
       "method": "GET",
-      "authenticated": true,
       "endpoints": [
         {
           "method": "GET",
@@ -44,7 +41,6 @@
     {
       "url": "/v1/user/stories",
       "method": "GET",
-      "authenticated": true,
       "endpoints": [
         {
           "method": "GET",
@@ -56,7 +52,6 @@
     {
       "url": "/v1/user/:id",
       "method": "DELETE",
-      "authenticated": true,
       "endpoints": [
         {
           "method": "DELETE",
@@ -68,7 +63,6 @@
     {
       "url": "/v1/user/:id",
       "method": "PATCH",
-      "authenticated": true,
       "endpoints": [
         {
           "method": "PATCH",
@@ -79,7 +73,6 @@
     },
     {
       "url": "/v1/user/obtain/all-users",
-      "authenticated": true,
       "method": "GET",
       "endpoints": [
         {

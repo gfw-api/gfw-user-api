@@ -270,7 +270,7 @@ const isMicroserviceOrAdmin = async (ctx, next) => {
     ctx.throw(403, 'Forbidden');
 };
 
-router.get('/', UserRouter.getCurrentUser);
+router.get('/', isLoggedIn, UserRouter.getCurrentUser);
 router.get('/obtain/all-users', isMicroserviceOrAdmin, UserRouter.getAllUsers);
 router.post('/', isLoggedIn, UserRouter.createUser);
 router.get('/stories', isLoggedIn, UserRouter.getStories);

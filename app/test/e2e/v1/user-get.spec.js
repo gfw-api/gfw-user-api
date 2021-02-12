@@ -28,14 +28,14 @@ describe('V1 - Get current user tests', () => {
         await UserModel.remove({}).exec();
     });
 
-    it('Get the current user while not being logged in should return a 400 error', async () => {
+    it('Get the current user while not being logged in should return a 401 error', async () => {
         const response = await requester
             .get(`/api/v1/user`);
 
-        response.status.should.equal(400);
+        response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(400);
-        response.body.errors[0].should.have.property('detail').and.equal('Error parsing');
+        response.body.errors[0].should.have.property('status').and.equal(401);
+        response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
 
     });
 
