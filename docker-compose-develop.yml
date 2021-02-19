@@ -28,7 +28,7 @@ services:
     container_name: gfw-user-mongo-develop
     command: --smallfiles
     ports:
-      - "27017"
+      - "27019:27017"
     volumes:
       - $HOME/docker/data/dataset:/data/db
     restart: always
