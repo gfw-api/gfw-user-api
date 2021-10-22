@@ -1,14 +1,13 @@
 const Router = require('koa-router');
 const logger = require('logger');
-const UserSerializer = require('serializers/userSerializer');
 const mongoose = require('mongoose');
+
 const User = require('models/user');
-
-const router = new Router({
-    prefix: '/user'
-});
+const UserSerializer = require('serializers/userSerializer');
 const StoriesService = require('services/stories.service');
+const SalesforceService = require('services/salesforce.service');
 
+const router = new Router({ prefix: '/user' });
 
 class UserRouter {
 
@@ -185,6 +184,9 @@ class UserRouter {
         }
 
         await userFind.save();
+
+        await SalesforceService.updateUserInformation(userFind);
+
         ctx.body = UserSerializer.serialize(userFind);
     }
 
