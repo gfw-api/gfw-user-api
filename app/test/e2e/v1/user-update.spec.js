@@ -3,7 +3,7 @@ const chai = require('chai');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser, mockGetUserFromToken } = require('../utils/helpers');
+const { createUser, mockGetUserFromToken, mockSalesforceUpdate } = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
@@ -29,9 +29,7 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Update a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
-        const response = await requester
-            .patch(`/api/v1/user/1234`);
-
+        const response = await requester.patch(`/api/v1/user/1234`);
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(401);
@@ -57,10 +55,8 @@ describe('V1 - Update user tests', () => {
     it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
         const user = await new UserModel(createUser()).save();
 
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
-        });
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockSalesforceUpdate(user);
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
@@ -94,9 +90,18 @@ describe('V1 - Update user tests', () => {
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
         const user = await new UserModel(createUser()).save();
 
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockSalesforceUpdate({
+            firstName: `${user.firstName} updated`,
+            lastName: `${user.lastName} updated`,
+            email: `${user.email} updated`,
+            sector: `${user.sector} updated`,
+            subsector: `${user.subsector} updated`,
+            jobTitle: `${user.jobTitle} updated`,
+            aoiCountry: `${user.aoiCountry} updated`,
+            aoiCity: `${user.aoiCity} updated`,
+            aoiState: `${user.aoiState} updated`,
+            interests: ['One', 'Two', 'Three'],
         });
 
         const response = await requester
@@ -104,8 +109,12 @@ describe('V1 - Update user tests', () => {
             .set('Authorization', `Bearer abcd`)
             .send({
                 fullName: `${user.fullName} updated`,
+                firstName: `${user.firstName} updated`,
+                lastName: `${user.lastName} updated`,
                 email: `${user.email} updated`,
                 sector: `${user.sector} updated`,
+                subsector: `${user.subsector} updated`,
+                jobTitle: `${user.jobTitle} updated`,
                 country: `${user.country} updated`,
                 state: `${user.state} updated`,
                 city: `${user.city} updated`,
@@ -116,6 +125,7 @@ describe('V1 - Update user tests', () => {
                 profileComplete: !user.profileComplete,
                 signUpForTesting: !user.signUpForTesting,
                 primaryResponsibilities: [],
+                interests: ['One', 'Two', 'Three'],
                 howDoYouUse: []
             });
 
