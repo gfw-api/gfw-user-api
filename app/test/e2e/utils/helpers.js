@@ -33,16 +33,18 @@ const mockGetUserFromToken = (userProfile) => {
 
 const mockSalesforceUpdate = (userProfile) => {
     nock(process.env.GATEWAY_URL)
-        .post('/v1/salesforce/contact/log-action', (body) => body.firstName === userProfile.firstName
-            && body.lastName === userProfile.lastName
-            && body.email === userProfile.email
-            && body.sector === userProfile.sector
-            && (userProfile.subsector ? body.primaryRole === userProfile.subsector : true)
-            && (userProfile.jobTitle ? body.title === userProfile.jobTitle : true)
-            && body.countryOfInterest === userProfile.aoiCountry
-            && body.cityOfInterest === userProfile.aoiCity
-            && body.stateDepartmentProvinceOfInterest === userProfile.aoiState
-            && JSON.stringify(body.topicsOfInterest) === JSON.stringify(Array.from(userProfile.interests)))
+        .post('/v1/salesforce/contact/log-action', {
+            firstName: userProfile.firstName,
+            lastName: userProfile.lastName,
+            email: userProfile.email,
+            sector: userProfile.sector,
+            ...(!!userProfile.subsector && { primaryRole: userProfile.subsector }),
+            ...(!!userProfile.jobTitle && { title: userProfile.jobTitle }),
+            countryOfInterest: userProfile.aoiCountry,
+            cityOfInterest: userProfile.aoiCity,
+            stateDepartmentProvinceOfInterest: userProfile.aoiState,
+            topicsOfInterest: Array.from(userProfile.interests),
+        })
         .reply(201);
 };
 
