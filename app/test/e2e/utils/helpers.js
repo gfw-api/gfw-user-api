@@ -26,13 +26,13 @@ const createUser = (anotherData = {}) => {
 };
 
 const mockGetUserFromToken = (userProfile) => {
-    nock(process.env.CT_URL, { reqheaders: { authorization: 'Bearer abcd' } })
+    nock(process.env.GATEWAY_URL, { reqheaders: { authorization: 'Bearer abcd' } })
         .get('/auth/user/me')
         .reply(200, userProfile);
 };
 
 const mockSalesforceUpdate = (userProfile) => {
-    nock(process.env.CT_URL)
+    nock(process.env.GATEWAY_URL)
         .post('/v1/salesforce/contact/log-action', (body) => body.firstName === userProfile.firstName
             && body.lastName === userProfile.lastName
             && body.email === userProfile.email

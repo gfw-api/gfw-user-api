@@ -7,7 +7,7 @@ class StoriesService {
     static async getStoriesByUser(userId) {
         try {
             const stories = await RWAPIMicroservice.requestToMicroservice({
-                uri: `/story/user/${userId}`,
+                uri: `/v1/story/user/${userId}`,
                 method: 'GET',
                 json: true
             });
