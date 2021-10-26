@@ -43,7 +43,7 @@ const mockSalesforceUpdate = (userProfile) => {
             countryOfInterest: userProfile.aoiCountry,
             cityOfInterest: userProfile.aoiCity,
             stateDepartmentProvinceOfInterest: userProfile.aoiState,
-            topicsOfInterest: Array.from(userProfile.interests),
+            topicsOfInterest: Array.from(userProfile.interests).join(','),
         })
         .reply(201);
 };

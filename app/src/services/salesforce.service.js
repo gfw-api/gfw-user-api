@@ -21,7 +21,7 @@ class SalesforceService {
                     countryOfInterest: userInfo.aoiCountry,
                     cityOfInterest: userInfo.aoiCity,
                     stateDepartmentProvinceOfInterest: userInfo.aoiState,
-                    topicsOfInterest: Array.from(userInfo.interests),
+                    topicsOfInterest: Array.from(userInfo.interests).join(','),
                 }
             });
         } catch (err) {
