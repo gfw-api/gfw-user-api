@@ -8,7 +8,7 @@ class SalesforceService {
             logger.info(`[SalesforceService] Preparing request to Salesforce service...`);
 
             await RWAPIMicroservice.requestToMicroservice({
-                uri: `/salesforce/contact/log-action`,
+                uri: `/v1/salesforce/contact/log-action`,
                 method: 'POST',
                 json: true,
                 body: {

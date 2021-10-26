@@ -42,7 +42,7 @@ describe('V1 - Get stories tests', () => {
     it('Get stories while being logged in should load user stories from the stories microservice (no remote content)', async () => {
         mockGetUserFromToken(USERS.USER);
 
-        nock(process.env.CT_URL)
+        nock(process.env.GATEWAY_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(200, {
@@ -59,7 +59,7 @@ describe('V1 - Get stories tests', () => {
 
     it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 500', async () => {
         mockGetUserFromToken(USERS.USER);
-        nock(process.env.CT_URL)
+        nock(process.env.GATEWAY_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(500, {
@@ -78,7 +78,7 @@ describe('V1 - Get stories tests', () => {
 
     it('Get stories while being logged in should load user stories from the stories microservice (remote content)', async () => {
         mockGetUserFromToken(USERS.USER);
-        nock(process.env.CT_URL)
+        nock(process.env.GATEWAY_URL)
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(200, {

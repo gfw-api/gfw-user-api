@@ -1,13 +1,16 @@
+# v2.1.0
+
+## 26/10/2021
+
+- Add communication with the Salesforce connector service after submission of MyGFW user profiles.
+- Update `rw-api-microservice-node` to remove CT integration support.
+
+# v2.0.2
+
 ## 31/05/2021
 
 - Update `rw-api-microservice-node` to add CORS support.
-
-## 12/02/2021
-
 - Remove dependency on CT's `authenticated` functionality
-
-## 26/01/2021
-
 - Replace CT integration library
 
 # v2.0.1
