@@ -185,7 +185,8 @@ class UserRouter {
 
         await userFind.save();
 
-        await SalesforceService.updateUserInformation(userFind);
+        // Purposefully not awaiting for this so that the main submission is not blocked
+        SalesforceService.updateUserInformation(userFind);
 
         ctx.body = UserSerializer.serialize(userFind);
     }
