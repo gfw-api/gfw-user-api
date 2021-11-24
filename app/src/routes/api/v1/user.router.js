@@ -6,6 +6,7 @@ const User = require('models/user');
 const UserSerializer = require('serializers/userSerializer');
 const StoriesService = require('services/stories.service');
 const SalesforceService = require('services/salesforce.service');
+const { uniformizeSector } = require('../../../services/sector-handler.service');
 
 const router = new Router({ prefix: '/user' });
 
@@ -70,8 +71,21 @@ class UserRouter {
             ctx.throw(400, 'Duplicated user');
             return;
         }
+
+        const newUserData = ctx.request.body;
+        if (newUserData.sector) {
+            const uniformizedSector = uniformizeSector(ctx.request.body.sector);
+            if (!uniformizedSector) {
+                logger.error('Unsupported sector');
+                ctx.throw(400, 'Unsupported sector');
+                return;
+            }
+
+            newUserData.sector = uniformizedSector;
+        }
+
         ctx.request.body._id = mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
-        const user = new User(ctx.request.body);
+        const user = new User(newUserData);
         const errors = user.validateSync();
         if (errors) {
             logger.info(errors.message);
@@ -129,7 +143,14 @@ class UserRouter {
             userFind.email = ctx.request.body.email;
         }
         if (ctx.request.body.sector !== undefined) {
-            userFind.sector = ctx.request.body.sector;
+            const uniformizedSector = uniformizeSector(ctx.request.body.sector);
+            if (!uniformizedSector) {
+                logger.error('Unsupported sector');
+                ctx.throw(400, 'Unsupported sector');
+                return;
+            }
+
+            userFind.sector = uniformizedSector;
         }
         if (ctx.request.body.subsector !== undefined) {
             userFind.subsector = ctx.request.body.subsector;

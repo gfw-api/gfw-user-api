@@ -95,7 +95,7 @@ describe('V1 - Update user tests', () => {
             firstName: `${user.firstName} updated`,
             lastName: `${user.lastName} updated`,
             email: `${user.email} updated`,
-            sector: `${user.sector} updated`,
+            sector: `Journalist / Media Organization`,
             subsector: `${user.subsector} updated`,
             jobTitle: `${user.jobTitle} updated`,
             aoiCountry: `${user.aoiCountry} updated`,
@@ -112,7 +112,7 @@ describe('V1 - Update user tests', () => {
                 firstName: `${user.firstName} updated`,
                 lastName: `${user.lastName} updated`,
                 email: `${user.email} updated`,
-                sector: `${user.sector} updated`,
+                sector: `Journalist / Media Organization`,
                 subsector: `${user.subsector} updated`,
                 jobTitle: `${user.jobTitle} updated`,
                 country: `${user.country} updated`,
@@ -159,18 +159,7 @@ describe('V1 - Update user tests', () => {
         const user = await new UserModel(createUser()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
-        mockSalesforceUpdate({
-            firstName: `${user.firstName} updated`,
-            lastName: `${user.lastName} updated`,
-            email: `${user.email} updated`,
-            sector: `Government`,
-            subsector: `${user.subsector} updated`,
-            jobTitle: `${user.jobTitle} updated`,
-            aoiCountry: `${user.aoiCountry} updated`,
-            aoiCity: `${user.aoiCity} updated`,
-            aoiState: `${user.aoiState} updated`,
-            interests: ['One', 'Two', 'Three'],
-        });
+        mockSalesforceUpdate({ ...user.toJSON(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
@@ -186,18 +175,7 @@ describe('V1 - Update user tests', () => {
         const user = await new UserModel(createUser()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
-        mockSalesforceUpdate({
-            firstName: `${user.firstName} updated`,
-            lastName: `${user.lastName} updated`,
-            email: `${user.email} updated`,
-            sector: `Government`,
-            subsector: `${user.subsector} updated`,
-            jobTitle: `${user.jobTitle} updated`,
-            aoiCountry: `${user.aoiCountry} updated`,
-            aoiCity: `${user.aoiCity} updated`,
-            aoiState: `${user.aoiState} updated`,
-            interests: ['One', 'Two', 'Three'],
-        });
+        mockSalesforceUpdate({ ...user.toJSON(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)

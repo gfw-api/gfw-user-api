@@ -9,7 +9,7 @@ const createUser = (anotherData = {}) => {
         firstName: `Fake firstName ${uuid}`,
         lastName: `Fake lastName ${uuid}`,
         email: `fake-email-${uuid}@example.com`,
-        sector: `Fake sector ${uuid}`,
+        sector: `Government`,
         state: `Fake state ${uuid}`,
         country: `Fake country ${uuid}`,
         city: `Fake city ${uuid}`,
