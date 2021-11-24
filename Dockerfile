@@ -4,13 +4,9 @@ MAINTAINER info@vizzuality.com
 ENV NAME gfw-user-api
 ENV USER microservice
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache --update bash git openssh python build-base
-
+RUN apk update && apk upgrade && apk add --no-cache --update bash git openssh build-base
 RUN addgroup $USER && adduser -s /bin/bash -D -G $USER $USER
-
 RUN yarn global add grunt-cli bunyan
-
 
 RUN mkdir -p /opt/$NAME
 COPY package.json /opt/$NAME/package.json
