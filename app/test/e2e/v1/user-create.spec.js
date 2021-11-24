@@ -14,6 +14,11 @@ let requester;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
+const sendCreateUserRequest = async (user = {}) => requester
+    .post(`/api/v1/user`)
+    .set('Authorization', `Bearer abcd`)
+    .send({ ...user });
+
 describe('V1 - Create user tests', () => {
 
     before(async () => {
@@ -29,9 +34,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
-        const response = await requester
-            .post(`/api/v1/user`);
-
+        const response = await requester.post(`/api/v1/user`);
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(401);
@@ -42,11 +45,7 @@ describe('V1 - Create user tests', () => {
     it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
         mockGetUserFromToken(USERS.USER);
 
-        const response = await requester
-            .post(`/api/v1/user`)
-            .set('Authorization', `Bearer abcd`)
-            .send({});
-
+        const response = await sendCreateUserRequest();
         response.status.should.equal(200);
 
         const responseUser = response.body.data;
@@ -66,13 +65,7 @@ describe('V1 - Create user tests', () => {
         mockGetUserFromToken(USERS.USER);
 
         const user = createUser();
-        const response = await requester
-            .post(`/api/v1/user`)
-            .set('Authorization', `Bearer abcd`)
-            .send({
-                ...user,
-            });
-
+        const response = await sendCreateUserRequest(user);
         response.status.should.equal(200);
 
         const responseUser = response.body.data;
@@ -106,17 +99,39 @@ describe('V1 - Create user tests', () => {
             id: user._id.toString()
         });
 
-        const response = await requester
-            .post(`/api/v1/user`)
-            .set('Authorization', `Bearer abcd`)
-            .send({
-                ...user,
-            });
-
+        const response = await sendCreateUserRequest(user);
         response.status.should.equal(400);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Duplicated user');
+    });
+
+    it('Uses the provided sector if the value is one of the uniformized values', async () => {
+        mockGetUserFromToken(USERS.USER);
+        const user = createUser({ sector: 'Government' });
+        const response = await sendCreateUserRequest(user);
+        const dbUser = await UserModel.findById(response.body.data.id);
+        dbUser.should.have.property('sector', 'Government');
+        response.body.data.attributes.should.have.property('sector', 'Government');
+    });
+
+    it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
+        mockGetUserFromToken(USERS.USER);
+        const user = createUser({ sector: 'Governo' });
+        const response = await sendCreateUserRequest(user);
+        const dbUser = await UserModel.findById(response.body.data.id);
+        dbUser.should.have.property('sector', 'Government');
+        response.body.data.attributes.should.have.property('sector', 'Government');
+    });
+
+    it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
+        mockGetUserFromToken(USERS.USER);
+        const user = createUser({ sector: 'Not existing' });
+        const response = await sendCreateUserRequest(user);
+        response.status.should.equal(400);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(400);
+        response.body.errors[0].should.have.property('detail').and.equal('Unsupported sector');
     });
 
     afterEach(async () => {

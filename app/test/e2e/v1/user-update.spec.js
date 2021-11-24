@@ -155,6 +155,75 @@ describe('V1 - Update user tests', () => {
         responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
     });
 
+    it('Uses the provided sector if the value is one of the uniformized values', async () => {
+        const user = await new UserModel(createUser()).save();
+
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockSalesforceUpdate({
+            firstName: `${user.firstName} updated`,
+            lastName: `${user.lastName} updated`,
+            email: `${user.email} updated`,
+            sector: `Government`,
+            subsector: `${user.subsector} updated`,
+            jobTitle: `${user.jobTitle} updated`,
+            aoiCountry: `${user.aoiCountry} updated`,
+            aoiCity: `${user.aoiCity} updated`,
+            aoiState: `${user.aoiState} updated`,
+            interests: ['One', 'Two', 'Three'],
+        });
+
+        const response = await requester
+            .patch(`/api/v1/user/${user._id.toString()}`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ sector: `Government` });
+
+        const dbUser = await UserModel.findById(response.body.data.id);
+        dbUser.should.have.property('sector', 'Government');
+        response.body.data.attributes.should.have.property('sector', 'Government');
+    });
+
+    it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
+        const user = await new UserModel(createUser()).save();
+
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockSalesforceUpdate({
+            firstName: `${user.firstName} updated`,
+            lastName: `${user.lastName} updated`,
+            email: `${user.email} updated`,
+            sector: `Government`,
+            subsector: `${user.subsector} updated`,
+            jobTitle: `${user.jobTitle} updated`,
+            aoiCountry: `${user.aoiCountry} updated`,
+            aoiCity: `${user.aoiCity} updated`,
+            aoiState: `${user.aoiState} updated`,
+            interests: ['One', 'Two', 'Three'],
+        });
+
+        const response = await requester
+            .patch(`/api/v1/user/${user._id.toString()}`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ sector: `Governo` });
+
+        const dbUser = await UserModel.findById(response.body.data.id);
+        dbUser.should.have.property('sector', 'Government');
+        response.body.data.attributes.should.have.property('sector', 'Government');
+    });
+
+    it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
+        const user = await new UserModel(createUser()).save();
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+
+        const response = await requester
+            .patch(`/api/v1/user/${user._id.toString()}`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ sector: `Not existing` });
+
+        response.status.should.equal(400);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(400);
+        response.body.errors[0].should.have.property('detail').and.equal('Unsupported sector');
+    });
+
     afterEach(async () => {
         await UserModel.remove({}).exec();
 
