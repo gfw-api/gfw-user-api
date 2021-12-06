@@ -2,6 +2,7 @@
 
 ## 06/12/2021
 
+- Migrate to TypeScript.
 - Add feature flag to disable Salesforce integration.
 
 ## 26/10/2021
