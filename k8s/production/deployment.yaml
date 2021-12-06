@@ -38,6 +38,8 @@ spec:
           env:
             - name: PORT
               value: "3100"
+            - name: SALESFORCE_INTEGRATION_ENABLED
+              value: "false"
             - name: NODE_ENV
               value: prod
             - name: NODE_PATH

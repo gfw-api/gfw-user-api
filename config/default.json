@@ -1,25 +1,17 @@
 {
-    "logger": {
-        "name": "gfw-user-api-DEV",
-        "level": "debug",
-        "toFile": false,
-        "dirLogFile": null
-    },
-    "service": {
-        "id": "gfw-user-api_1.0.0",
-        "name": "GFW User API",
-        "uri": "http://mymachine:3100",
-        "port": 3100
-    },
-    "apiGateway":{
-        "uri": "http://mymachine:8000/gateway/service"
-    },
-    "mongodb":{
-        "database": "gfw_user_db",
-        "host": "mymachine",
-        "port": 27017
-    },
-    "migrate":{
-        "uri": ""
-    }
+  "logger": {
+    "name": "gfw-user-api-DEV",
+    "level": "debug",
+    "toFile": false,
+    "dirLogFile": null
+  },
+  "service": {
+    "port": 3100
+  },
+  "salesforceIntegrationEnabled": true,
+  "mongodb": {
+    "database": "gfw_user_db",
+    "host": "mymachine",
+    "port": 27017
+  }
 }

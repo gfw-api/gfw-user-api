@@ -1,9 +1,15 @@
 const { RWAPIMicroservice } = require('rw-api-microservice-node');
 const logger = require('logger');
+const config = require('config');
 
 class SalesforceService {
 
     static async updateUserInformation(userInfo) {
+        const salesforceIntegrationEnabled = config.get('salesforceIntegrationEnabled');
+        if (salesforceIntegrationEnabled === false || salesforceIntegrationEnabled === 'false') {
+            logger.info(`[SalesforceService] Salesforce integration disabled, skipping call to salesforce integration microservice.`);
+            return;
+        }
         try {
             logger.info(`[SalesforceService] Preparing request to Salesforce service...`);
 

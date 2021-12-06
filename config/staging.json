@@ -1,12 +1,8 @@
 {
-    "logger": {
-        "name": "gfw-user-api-STAGING",
-        "level": "info",
-        "toFile": false,
-        "dirLogFile": null
-    },
-    "service": {
-        "uri": "http://gfw-user-api-staging.herokuapp.com",
-        "port": null
-    }
+  "logger": {
+    "name": "gfw-user-api-STAGING",
+    "level": "info",
+    "toFile": false,
+    "dirLogFile": null
+  }
 }

@@ -1,15 +1,19 @@
 const nock = require('nock');
 const chai = require('chai');
+const sinon = require('sinon');
 const UserModel = require('models/user');
 const { USERS } = require('../utils/test.constants');
 const { getTestServer } = require('../utils/test-server');
-const { createUser, mockGetUserFromToken, mockSalesforceUpdate } = require('../utils/helpers');
+const {
+    createUser, mockGetUserFromToken, mockSalesforceUpdate, stubConfigValue
+} = require('../utils/helpers');
 
 chai.use(require('chai-datetime'));
 
 chai.should();
 
 let requester;
+let sandbox;
 
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
@@ -200,6 +204,71 @@ describe('V1 - Update user tests', () => {
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Unsupported sector');
+    });
+
+    describe('Salesforce integration disabled', () => {
+        beforeEach(async () => {
+            sandbox = sinon.createSandbox();
+            stubConfigValue(sandbox, {
+                salesforceIntegrationEnabled: 'false'
+            });
+        });
+
+        it('Update a user while being logged in should return a 200 and the updated user data - no salesforce call (happy case)', async () => {
+            const user = await new UserModel(createUser()).save();
+
+            mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+
+            const response = await requester
+                .patch(`/api/v1/user/${user._id.toString()}`)
+                .set('Authorization', `Bearer abcd`)
+                .send({
+                    fullName: `${user.fullName} updated`,
+                    firstName: `${user.firstName} updated`,
+                    lastName: `${user.lastName} updated`,
+                    email: `${user.email} updated`,
+                    sector: `Journalist / Media Organization`,
+                    subsector: `${user.subsector} updated`,
+                    jobTitle: `${user.jobTitle} updated`,
+                    country: `${user.country} updated`,
+                    state: `${user.state} updated`,
+                    city: `${user.city} updated`,
+                    aoiCity: `${user.aoiCity} updated`,
+                    aoiState: `${user.aoiState} updated`,
+                    aoiCountry: `${user.aoiCountry} updated`,
+                    language: `${user.language} updated`,
+                    profileComplete: !user.profileComplete,
+                    signUpForTesting: !user.signUpForTesting,
+                    primaryResponsibilities: [],
+                    interests: ['One', 'Two', 'Three'],
+                    howDoYouUse: []
+                });
+
+            response.status.should.equal(200);
+
+            const responseUser = response.body.data;
+            const databaseUser = await UserModel.findById(responseUser.id);
+
+            responseUser.should.have.property('type').and.equal('user');
+            responseUser.should.have.property('id').and.equal(databaseUser._id.toString());
+            responseUser.should.have.property('attributes').and.be.an('object');
+            responseUser.attributes.should.have.property('fullName').and.equal(databaseUser.fullName);
+            responseUser.attributes.should.have.property('email').and.equal(databaseUser.email);
+            responseUser.attributes.should.have.property('createdAt');
+            new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
+            responseUser.attributes.should.have.property('sector').and.equal(databaseUser.sector);
+            responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
+            responseUser.attributes.should.have.property('country').and.equal(databaseUser.country);
+            responseUser.attributes.should.have.property('state').and.equal(databaseUser.state);
+            responseUser.attributes.should.have.property('city').and.equal(databaseUser.city);
+            responseUser.attributes.should.have.property('aoiCountry').and.equal(databaseUser.aoiCountry);
+            responseUser.attributes.should.have.property('aoiState').and.equal(databaseUser.aoiState);
+            responseUser.attributes.should.have.property('aoiCity').and.equal(databaseUser.aoiCity);
+            responseUser.attributes.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
+            responseUser.attributes.should.have.property('signUpForTesting').and.equal(databaseUser.signUpForTesting);
+            responseUser.attributes.should.have.property('language').and.equal(databaseUser.language);
+            responseUser.attributes.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
+        });
     });
 
     afterEach(async () => {

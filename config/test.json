@@ -1,8 +1,8 @@
 {
-    "logger": {
-        "name": "gfw-user-api-TEST",
-        "level": "debug",
-        "toFile": false,
-        "dirLogFile": null
-    }
+  "logger": {
+    "name": "gfw-user-api-TEST",
+    "level": "debug",
+    "toFile": false,
+    "dirLogFile": null
+  }
 }

@@ -1,16 +1,10 @@
 {
-    "apiGateway": {
-        "uri": "API_GATEWAY_URI"
-    },
-    "mongodb": {
-        "host": "MONGO_PORT_27017_TCP_ADDR",
-        "port": "MONGO_PORT_27017_TCP_PORT"
-    },
-    "service": {
-        "port": "PORT",
-        "uri": "URI"
-    },
-    "migrate":{
-        "uri": "MIGRATE_URI"
-    }
+  "mongodb": {
+    "host": "MONGO_PORT_27017_TCP_ADDR",
+    "port": "MONGO_PORT_27017_TCP_PORT"
+  },
+  "salesforceIntegrationEnabled": "SALESFORCE_INTEGRATION_ENABLED",
+  "service": {
+    "port": "PORT"
+  }
 }

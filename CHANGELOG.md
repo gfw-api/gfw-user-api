@@ -1,5 +1,9 @@
 # v2.1.0
 
+## 06/12/2021
+
+- Add feature flag to disable Salesforce integration.
+
 ## 26/10/2021
 
 - Add communication with the Salesforce connector service after submission of MyGFW user profiles.
@@ -22,27 +26,27 @@
 ## 24/03/2020
 
 - Added extra fields to the user router, model, and serializer:
-  - firstName
-  - lastName
-  - primaryResponsibilities
-  - subsector
-  - jobTitle
-  - company
-  - aoiCountry
-  - aoiState
-  - aoiCity
-  - interests
-  - signUpToNewsletter
-  - topics.
+    - firstName
+    - lastName
+    - primaryResponsibilities
+    - subsector
+    - jobTitle
+    - company
+    - aoiCountry
+    - aoiState
+    - aoiCity
+    - interests
+    - signUpToNewsletter
+    - topics.
 - Adds test coverage based on the (removed) v2 tests.
 
 ### PATCH /v1/user/:id
 
-  - Sending userData with the new fields saves them
+- Sending userData with the new fields saves them
 
 ### POST /v1/user
 
-  - Sending userData with the new fields saves them.
+- Sending userData with the new fields saves them.
 
 # v2.0
 
@@ -76,7 +80,7 @@
 ### GET /v1/user/obtain/all-users
 
 - Getting all users while not being authenticated now returns a 401 'Unauthorized' error.
-- Getting all users while being authenticated authenticated as a USER or MANAGER now returns a 'Forbidden' error message
+- Getting all users while being authenticated as a USER or MANAGER now returns a 'Forbidden' error message
 
 ### POST /v1/user
 

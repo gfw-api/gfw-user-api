@@ -206,7 +206,7 @@ class UserRouter {
 
         await userFind.save();
 
-        // Purposefully not awaiting for this so that the main submission is not blocked
+        // Purposefully not awaiting this so that the main submission is not blocked
         SalesforceService.updateUserInformation(userFind);
 
         ctx.body = UserSerializer.serialize(userFind);
@@ -245,7 +245,8 @@ class UserRouter {
                 oldId: ctx.params.id
             });
             // eslint-disable-next-line no-empty
-        } catch (e) { }
+        } catch (e) {
+        }
 
         if (!userFind) {
             ctx.throw(404, 'User not found');

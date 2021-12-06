@@ -6,7 +6,6 @@ module.exports = (grunt) => {
 
     grunt.initConfig({
 
-
         clean: {},
         express: {
             dev: {
