@@ -1,12 +1,12 @@
 ---
-extends: [airbnb, plugin:mocha/recommended]
+extends: [ airbnb, plugin:mocha/recommended ]
 env:
   node: true
   es6: true
 parserOptions:
   sourceType: module
   ecmaVersion: 2018
-plugins: [mocha]
+plugins: [ mocha ]
 globals:
   describe: true
   it: true
@@ -15,25 +15,25 @@ globals:
   beforeEach: true
   afterEach: true
 rules:
-  max-len: [1, 200, 2, {"ignoreUrls":true}]
-  curly: [2, "multi-line"]
-  comma-dangle: [0, always-multiline]
+  max-len: [ 1, 200, 2, { "ignoreUrls": true } ]
+  curly: [ 2, "multi-line" ]
+  comma-dangle: [ 0, always-multiline ]
   no-plusplus: 0
-  eqeqeq: [2, "allow-null"]
+  eqeqeq: [ 2, "allow-null" ]
   global-require: 0
   no-shadow: 1
-  no-param-reassign: [2, { "props": false }]
-  indent: [2, 4, { "SwitchCase": 1 }]
-  padded-blocks: [2, { "switches": "always", "classes": "always" }]
+  no-param-reassign: [ 2, { "props": false } ]
+  indent: [ 2, 4, { "SwitchCase": 1 } ]
+  padded-blocks: [ 2, { "switches": "always", "classes": "always" } ]
   quotes:
     - 2
     - single
     - allowTemplateLiterals: true
-  no-underscore-dangle: ["error", { "allow": ["_id"] }]
-  import/no-extraneous-dependencies: ["error", { devDependencies: ['app/test/**']}]
+  no-underscore-dangle: [ "error", { "allow": [ "_id" ] } ]
+  import/no-extraneous-dependencies: [ "error", { devDependencies: [ 'app/test/**' ] } ]
   no-await-in-loop: off
-  mocha/no-mocha-arrows: [0]
-  mocha/no-hooks-for-single-case: [0]
+  mocha/no-mocha-arrows: [ 0 ]
+  mocha/no-hooks-for-single-case: [ 0 ]
 settings:
   import/resolver:
     node:

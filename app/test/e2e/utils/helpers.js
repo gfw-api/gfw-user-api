@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const config = require('config');
 const nock = require('nock');
 
 const createUser = (anotherData = {}) => {
@@ -48,8 +49,17 @@ const mockSalesforceUpdate = (userProfile) => {
         .reply(201);
 };
 
+const stubConfigValue = (sandbox, stubMap) => {
+    const stub = sandbox.stub(config, 'get');
+    Object.keys(stubMap).forEach((key) => {
+        stub.withArgs(key).returns(stubMap[key]);
+    });
+    stub.callThrough();
+};
+
 module.exports = {
     createUser,
     mockGetUserFromToken,
-    mockSalesforceUpdate
+    mockSalesforceUpdate,
+    stubConfigValue
 };
