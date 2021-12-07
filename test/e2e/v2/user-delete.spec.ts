@@ -14,7 +14,7 @@ let requester: ChaiHttp.Agent;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('V1 - Delete user tests', () => {
+describe('V2 - Delete user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -30,7 +30,7 @@ describe('V1 - Delete user tests', () => {
 
     it('Delete a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
         const response = await requester
-            .delete(`/api/v1/user/1234`);
+            .delete(`/api/v2/user/1234`);
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -44,7 +44,7 @@ describe('V1 - Delete user tests', () => {
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .delete(`/api/v1/user/${user._id.toString()}`)
+            .delete(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(401);
@@ -61,7 +61,7 @@ describe('V1 - Delete user tests', () => {
         });
 
         const response = await requester
-            .delete(`/api/v1/user/${user._id.toString()}`)
+            .delete(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -78,15 +78,19 @@ describe('V1 - Delete user tests', () => {
         responseUser.attributes.should.have.property('email').and.equal(user.email);
         responseUser.attributes.should.have.property('createdAt');
         new Date(responseUser.attributes.createdAt).should.equalDate(user.createdAt);
-        responseUser.attributes.should.have.property('sector').and.equal(user.sector);
-        responseUser.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
-        responseUser.attributes.should.have.property('country').and.equal(user.country);
-        responseUser.attributes.should.have.property('state').and.equal(user.state);
-        responseUser.attributes.should.have.property('city').and.equal(user.city);
-        responseUser.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        responseUser.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        responseUser.attributes.should.have.property('language').and.equal(user.language);
-        responseUser.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
+        responseUser.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        responseUser.attributes.applicationData.gfw.should.have.property('sector').and.equal(user.sector);
+        responseUser.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
+        responseUser.attributes.applicationData.gfw.should.have.property('country').and.equal(user.country);
+        responseUser.attributes.applicationData.gfw.should.have.property('state').and.equal(user.state);
+        responseUser.attributes.applicationData.gfw.should.have.property('city').and.equal(user.city);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiState').and.equal(user.aoiState);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiCity').and.equal(user.aoiCity);
+        responseUser.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
+        responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
+        responseUser.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
+        responseUser.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     afterEach(async () => {

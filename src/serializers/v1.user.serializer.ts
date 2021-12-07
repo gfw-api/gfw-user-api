@@ -1,6 +1,6 @@
 import { Serializer } from 'jsonapi-serializer';
 
-const userSerializer: Serializer = new Serializer('user', {
+const v1UserSerializer: Serializer = new Serializer('user', {
     attributes: [
         'fullName',
         'firstName',
@@ -32,12 +32,11 @@ const userSerializer: Serializer = new Serializer('user', {
     keyForAttribute: 'camelCase'
 });
 
-class UserSerializer {
+export default class V1UserSerializer {
 
     static serialize(data: Record<string, any>) {
-        return userSerializer.serialize(data);
+        return v1UserSerializer.serialize(data);
     }
 
 }
 
-export default UserSerializer;

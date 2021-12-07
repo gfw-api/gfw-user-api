@@ -15,7 +15,7 @@ let requester: ChaiHttp.Agent;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('V1 - Get user by id tests', () => {
+describe('V2 - Get user by id tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -33,7 +33,7 @@ describe('V1 - Get user by id tests', () => {
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`);
+            .get(`/api/v2/user/${user._id.toString()}`);
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -47,7 +47,7 @@ describe('V1 - Get user by id tests', () => {
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(403);
@@ -65,7 +65,7 @@ describe('V1 - Get user by id tests', () => {
         });
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -77,15 +77,19 @@ describe('V1 - Get user by id tests', () => {
         response.body.data.attributes.should.have.property('email').and.equal(user.email);
         response.body.data.attributes.should.have.property('createdAt');
         new Date(response.body.data.attributes.createdAt).should.equalDate(user.createdAt);
-        response.body.data.attributes.should.have.property('sector').and.equal(user.sector);
-        response.body.data.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
-        response.body.data.attributes.should.have.property('country').and.equal(user.country);
-        response.body.data.attributes.should.have.property('state').and.equal(user.state);
-        response.body.data.attributes.should.have.property('city').and.equal(user.city);
-        response.body.data.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        response.body.data.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        response.body.data.attributes.should.have.property('language').and.equal(user.language);
-        response.body.data.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        response.body.data.attributes.applicationData.gfw.should.have.property('sector').and.equal(user.sector);
+        response.body.data.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
+        response.body.data.attributes.applicationData.gfw.should.have.property('country').and.equal(user.country);
+        response.body.data.attributes.applicationData.gfw.should.have.property('state').and.equal(user.state);
+        response.body.data.attributes.applicationData.gfw.should.have.property('city').and.equal(user.city);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiState').and.equal(user.aoiState);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCity').and.equal(user.aoiCity);
+        response.body.data.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
+        response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
+        response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
+        response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     it('Get user by id while being authenticated as an ADMIN user should return a 200 and the user data (happy case)', async () => {
@@ -94,7 +98,7 @@ describe('V1 - Get user by id tests', () => {
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -106,15 +110,19 @@ describe('V1 - Get user by id tests', () => {
         response.body.data.attributes.should.have.property('email').and.equal(user.email);
         response.body.data.attributes.should.have.property('createdAt');
         new Date(response.body.data.attributes.createdAt).should.equalDate(user.createdAt);
-        response.body.data.attributes.should.have.property('sector').and.equal(user.sector);
-        response.body.data.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
-        response.body.data.attributes.should.have.property('country').and.equal(user.country);
-        response.body.data.attributes.should.have.property('state').and.equal(user.state);
-        response.body.data.attributes.should.have.property('city').and.equal(user.city);
-        response.body.data.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        response.body.data.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        response.body.data.attributes.should.have.property('language').and.equal(user.language);
-        response.body.data.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        response.body.data.attributes.applicationData.gfw.should.have.property('sector').and.equal(user.sector);
+        response.body.data.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
+        response.body.data.attributes.applicationData.gfw.should.have.property('country').and.equal(user.country);
+        response.body.data.attributes.applicationData.gfw.should.have.property('state').and.equal(user.state);
+        response.body.data.attributes.applicationData.gfw.should.have.property('city').and.equal(user.city);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiState').and.equal(user.aoiState);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCity').and.equal(user.aoiCity);
+        response.body.data.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
+        response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
+        response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
+        response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     it('Get user by id while being authenticated as an MICROSERVICE user should return a 200 and the user data (happy case)', async () => {
@@ -123,7 +131,7 @@ describe('V1 - Get user by id tests', () => {
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .get(`/api/v1/user/${user._id.toString()}`)
+            .get(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -135,22 +143,26 @@ describe('V1 - Get user by id tests', () => {
         response.body.data.attributes.should.have.property('email').and.equal(user.email);
         response.body.data.attributes.should.have.property('createdAt');
         new Date(response.body.data.attributes.createdAt).should.equalDate(user.createdAt);
-        response.body.data.attributes.should.have.property('sector').and.equal(user.sector);
-        response.body.data.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
-        response.body.data.attributes.should.have.property('country').and.equal(user.country);
-        response.body.data.attributes.should.have.property('state').and.equal(user.state);
-        response.body.data.attributes.should.have.property('city').and.equal(user.city);
-        response.body.data.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        response.body.data.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        response.body.data.attributes.should.have.property('language').and.equal(user.language);
-        response.body.data.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        response.body.data.attributes.applicationData.gfw.should.have.property('sector').and.equal(user.sector);
+        response.body.data.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
+        response.body.data.attributes.applicationData.gfw.should.have.property('country').and.equal(user.country);
+        response.body.data.attributes.applicationData.gfw.should.have.property('state').and.equal(user.state);
+        response.body.data.attributes.applicationData.gfw.should.have.property('city').and.equal(user.city);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiState').and.equal(user.aoiState);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCity').and.equal(user.aoiCity);
+        response.body.data.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
+        response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
+        response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
+        response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     it('Get user by id for an invalid id should return a 404 \'User not found\' error', async () => {
         mockGetUserFromToken(USERS.ADMIN);
 
         const response = await requester
-            .get(`/api/v1/user/1234`)
+            .get(`/api/v2/user/1234`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
@@ -163,7 +175,7 @@ describe('V1 - Get user by id tests', () => {
         mockGetUserFromToken(USERS.ADMIN);
 
         const response = await requester
-            .get(`/api/v1/user/${mongoose.Types.ObjectId()}`)
+            .get(`/api/v2/user/${new mongoose.Types.ObjectId()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);

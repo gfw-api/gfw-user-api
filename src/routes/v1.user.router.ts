@@ -2,8 +2,7 @@ import Router from 'koa-router';
 import { Context, DefaultState, Next } from 'koa';
 import logger from 'logger';
 import mongoose, { Error, FilterQuery } from 'mongoose';
-import UserSerializer from 'serializers/user.serializer';
-
+import V1UserSerializer from 'serializers/v1.user.serializer';
 import User, { IUser } from 'models/user';
 import StoriesService from 'services/stories.service';
 import SalesforceService from 'services/salesforce.service';
@@ -15,7 +14,7 @@ interface IRequestUser {
     extraUserData: Record<string, any>;
 }
 
-class UserRouter {
+class V1UserRouter {
 
     static getUser(ctx: Context): IRequestUser {
         const { query, body } = ctx.request;
@@ -37,7 +36,7 @@ class UserRouter {
 
                 const user: IUser = await User.findById(loggedUser.id);
                 logger.info('User found:', user);
-                ctx.body = UserSerializer.serialize(user);
+                ctx.body = V1UserSerializer.serialize(user);
             } else {
                 ctx.throw(403, 'Forbidden');
             }
@@ -62,7 +61,7 @@ class UserRouter {
         }
         try {
             const users: IUser[] = await User.find(defaultFilter);
-            ctx.body = UserSerializer.serialize(users);
+            ctx.body = V1UserSerializer.serialize(users);
         } catch (err) {
             logger.error(err);
         }
@@ -98,11 +97,11 @@ class UserRouter {
             return;
         }
         const userCreate: IUser = await user.save();
-        ctx.body = UserSerializer.serialize(userCreate);
+        ctx.body = V1UserSerializer.serialize(userCreate);
     }
 
     static async getUserById(ctx: Context) {
-        const user: IRequestUser = UserRouter.getUser(ctx);
+        const user: IRequestUser = V1UserRouter.getUser(ctx);
         if (ctx.params.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
             ctx.throw(403, 'Forbidden');
             return;
@@ -118,7 +117,7 @@ class UserRouter {
             ctx.throw(404, 'User not found');
             return;
         }
-        ctx.body = UserSerializer.serialize(userFind);
+        ctx.body = V1UserSerializer.serialize(userFind);
     }
 
     static async updateUser(ctx: Context) {
@@ -214,7 +213,7 @@ class UserRouter {
         // Purposefully not waiting for this so that the main submission is not blocked
         SalesforceService.updateUserInformation(userFind);
 
-        ctx.body = UserSerializer.serialize(userFind);
+        ctx.body = V1UserSerializer.serialize(userFind);
     }
 
     static async deleteUser(ctx: Context) {
@@ -231,18 +230,18 @@ class UserRouter {
             return;
         }
         await userFind.remove();
-        ctx.body = UserSerializer.serialize(userFind);
+        ctx.body = V1UserSerializer.serialize(userFind);
     }
 
     static async getStories(ctx: Context) {
-        logger.info('[UserRouter - getStories] Obtaining stories for logged in user');
+        logger.info('[V1UserRouter - getStories] Obtaining stories for logged in user');
         const userId: string = JSON.parse(ctx.request.query.loggedUser as string).id;
         ctx.body = await StoriesService.getStoriesByUser(userId);
     }
 
     static async getUserByOldId(ctx: Context) {
         logger.info('Obtaining user by oldId %s', ctx.params.id);
-        const user: IRequestUser = UserRouter.getUser(ctx);
+        const user: IRequestUser = V1UserRouter.getUser(ctx);
 
         let userFind: IUser;
         try {
@@ -263,7 +262,7 @@ class UserRouter {
             return;
         }
 
-        ctx.body = UserSerializer.serialize(userFind);
+        ctx.body = V1UserSerializer.serialize(userFind);
     }
 
 }
@@ -302,13 +301,13 @@ const isMicroserviceOrAdmin = async (ctx: Context, next: Next) => {
 
 const router: Router = new Router<DefaultState, Context>({ prefix: '/api/v1/user' });
 
-router.get('/', isLoggedIn, UserRouter.getCurrentUser);
-router.get('/obtain/all-users', isMicroserviceOrAdmin, UserRouter.getAllUsers);
-router.post('/', isLoggedIn, UserRouter.createUser);
-router.get('/stories', isLoggedIn, UserRouter.getStories);
-router.get('/:id', isLoggedIn, UserRouter.getUserById);
-router.get('/oldId/:id', isLoggedIn, UserRouter.getUserByOldId);
-router.patch('/:id', isLoggedIn, UserRouter.updateUser);
-router.delete('/:id', isLoggedIn, UserRouter.deleteUser);
+router.get('/', isLoggedIn, V1UserRouter.getCurrentUser);
+router.get('/obtain/all-users', isMicroserviceOrAdmin, V1UserRouter.getAllUsers);
+router.post('/', isLoggedIn, V1UserRouter.createUser);
+router.get('/stories', isLoggedIn, V1UserRouter.getStories);
+router.get('/:id', isLoggedIn, V1UserRouter.getUserById);
+router.get('/oldId/:id', isLoggedIn, V1UserRouter.getUserByOldId);
+router.patch('/:id', isLoggedIn, V1UserRouter.updateUser);
+router.delete('/:id', isLoggedIn, V1UserRouter.deleteUser);
 
 export default router;

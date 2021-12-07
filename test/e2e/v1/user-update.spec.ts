@@ -1,11 +1,11 @@
 import nock from 'nock';
 import chai from 'chai';
-import UserModel from 'models/user';
+import UserModel, { IUser } from 'models/user';
 import sinon, { SinonSandbox } from 'sinon';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUser, mockGetUserFromToken, mockSalesforceUpdate, stubConfigValue } from '../utils/helpers';
+import { createUserV1, mockGetUserFromToken, mockSalesforceUpdate, stubConfigValue } from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -41,7 +41,7 @@ describe('V1 - Update user tests', () => {
     it('Update a user while being logged in as a different user should return a 403 \'Forbidden\' error', async () => {
         mockGetUserFromToken(USERS.USER);
 
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
@@ -55,7 +55,7 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Update a user while being logged in with that user should return a 200 and the user data (happy case - no user data provided)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
         mockSalesforceUpdate(user);
@@ -90,7 +90,7 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
         mockSalesforceUpdate({
@@ -158,10 +158,10 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
-        mockSalesforceUpdate({ ...user.toJSON(), sector: `Government` });
+        mockSalesforceUpdate({ ...user.toObject(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
@@ -174,10 +174,10 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user: IUser = await new UserModel(createUserV1()).save();
 
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
-        mockSalesforceUpdate({ ...user.toJSON(), sector: `Government` });
+        mockSalesforceUpdate({ ...user.toObject(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v1/user/${user._id.toString()}`)
@@ -190,7 +190,7 @@ describe('V1 - Update user tests', () => {
     });
 
     it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
         mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
 
         const response = await requester
@@ -213,7 +213,7 @@ describe('V1 - Update user tests', () => {
         });
 
         it('Update a user while being logged in should return a 200 and the updated user data - no salesforce call (happy case)', async () => {
-            const user = await new UserModel(createUser()).save();
+            const user = await new UserModel(createUserV1()).save();
 
             mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
 
@@ -274,6 +274,10 @@ describe('V1 - Update user tests', () => {
 
         if (!nock.isDone()) {
             throw new Error(`Not all nock interceptors were used: ${nock.pendingMocks()}`);
+        }
+
+        if (sandbox) {
+            sandbox.restore();
         }
     });
 });

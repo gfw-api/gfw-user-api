@@ -3,7 +3,8 @@ import logger from 'logger';
 import koaLogger from 'koa-logger';
 import mongoose, { ConnectOptions } from 'mongoose';
 import config from 'config';
-import UserRouter from 'routes/user.router';
+import V1UserRouter from 'routes/v1.user.router';
+import V2UserRouter from 'routes/v2.user.router';
 import { Server } from "http";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -11,9 +12,6 @@ import koaSimpleHealthCheck from 'koa-simple-healthcheck';
 import { RWAPIMicroservice } from 'rw-api-microservice-node';
 import ErrorSerializer from 'serializers/error.serializer';
 import sleep from 'sleep';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import koaValidate from 'koa-validate';
 import koaBody from 'koa-body';
 
 const mongoUri: string = process.env.MONGO_URI || `mongodb://${config.get('mongodb.host')}:${config.get('mongodb.port')}/${config.get('mongodb.database')}`;
@@ -104,9 +102,8 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
                     fastlyAPIKey: process.env.FASTLY_APIKEY
                 }));
 
-                koaValidate(app);
-
-                app.use(UserRouter.routes());
+                app.use(V1UserRouter.routes());
+                app.use(V2UserRouter.middleware());
 
                 const port: string = process.env.PORT || '3000';
 
