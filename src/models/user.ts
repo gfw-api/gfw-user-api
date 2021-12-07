@@ -1,13 +1,16 @@
 import type { Document, Model, Schema as ISchema } from 'mongoose';
 import { model, Schema } from 'mongoose';
 
+export const CORE_FIELDS: string[] = ['fullName', 'firstName', 'lastName', 'email', 'createdAt'];
+
+export const LEGACY_GFW_FIELDS: string[] = ['oldId', 'country', 'sector', 'country', 'state', 'city', 'howDoYouUse', 'primaryResponsibilities', 'signUpForTesting', 'language', 'profileComplete', 'subsector', 'jobTitle', 'company', 'aoiCountry', 'aoiState', 'aoiCity', 'interests', 'signUpToNewsletter', 'topics'];
 
 export interface IUser extends Document {
     fullName?: string;
     firstName?: string;
     lastName?: string;
-    oldId?: number,
     email?: string,
+    oldId?: number,
     createdAt?: Date,
     sector?: string,
     country?: string,
@@ -26,7 +29,8 @@ export interface IUser extends Document {
     aoiCity?: string,
     interests?: any,
     signUpToNewsletter?: boolean,
-    topics?: any
+    topics?: any,
+    applicationData: Record<string, Record<string, any>>;
 }
 
 export const User: ISchema<IUser> = new Schema<IUser>({
@@ -53,7 +57,8 @@ export const User: ISchema<IUser> = new Schema<IUser>({
     aoiCity: { type: String, trim: true },
     interests: { type: Array, default: [] },
     signUpToNewsletter: { type: Boolean, default: false },
-    topics: { type: Array, default: [] }
+    topics: { type: Array, default: [] },
+    applicationData: { type: Object, default: {} }
 });
 
 const UserModel: Model<IUser> = model<IUser>('User', User);

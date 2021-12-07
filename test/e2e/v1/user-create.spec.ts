@@ -4,7 +4,7 @@ import UserModel from 'models/user';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUser, mockGetUserFromToken } from '../utils/helpers';
+import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -64,7 +64,7 @@ describe('V1 - Create user tests', () => {
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
         mockGetUserFromToken(USERS.USER);
 
-        const user = createUser();
+        const user = createUserV1();
         const response = await sendCreateUserRequest(user);
         response.status.should.equal(200);
 
@@ -93,7 +93,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
-        const user = await new UserModel(createUser()).save();
+        const user = await new UserModel(createUserV1()).save();
         mockGetUserFromToken({
             ...USERS.USER,
             id: user._id.toString()
@@ -108,7 +108,7 @@ describe('V1 - Create user tests', () => {
 
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
         mockGetUserFromToken(USERS.USER);
-        const user = createUser({ sector: 'Government' });
+        const user = createUserV1({ sector: 'Government' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
         dbUser.should.have.property('sector', 'Government');
@@ -117,7 +117,7 @@ describe('V1 - Create user tests', () => {
 
     it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
         mockGetUserFromToken(USERS.USER);
-        const user = createUser({ sector: 'Governo' });
+        const user = createUserV1({ sector: 'Governo' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
         dbUser.should.have.property('sector', 'Government');
@@ -126,7 +126,7 @@ describe('V1 - Create user tests', () => {
 
     it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
         mockGetUserFromToken(USERS.USER);
-        const user = createUser({ sector: 'Not existing' });
+        const user = createUserV1({ sector: 'Not existing' });
         const response = await sendCreateUserRequest(user);
         response.status.should.equal(400);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);

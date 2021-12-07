@@ -14,7 +14,7 @@ let requester: ChaiHttp.Agent;
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('V1 - Get current user tests', () => {
+describe('V2 - Get current user tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -30,7 +30,7 @@ describe('V1 - Get current user tests', () => {
 
     it('Get the current user while not being logged in should return a 401 error', async () => {
         const response = await requester
-            .get(`/api/v1/user`);
+            .get(`/api/v2/user`);
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -43,7 +43,7 @@ describe('V1 - Get current user tests', () => {
         mockGetUserFromToken(USERS.USER);
 
         const response = await requester
-            .get(`/api/v1/user`)
+            .get(`/api/v2/user`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -59,7 +59,7 @@ describe('V1 - Get current user tests', () => {
         });
 
         const response = await requester
-            .get(`/api/v1/user`)
+            .get(`/api/v2/user`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(200);
@@ -71,15 +71,19 @@ describe('V1 - Get current user tests', () => {
         response.body.data.attributes.should.have.property('email').and.equal(user.email);
         response.body.data.attributes.should.have.property('createdAt');
         new Date(response.body.data.attributes.createdAt).should.equalDate(user.createdAt);
-        response.body.data.attributes.should.have.property('sector').and.equal(user.sector);
-        response.body.data.attributes.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
-        response.body.data.attributes.should.have.property('country').and.equal(user.country);
-        response.body.data.attributes.should.have.property('state').and.equal(user.state);
-        response.body.data.attributes.should.have.property('city').and.equal(user.city);
-        response.body.data.attributes.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
-        response.body.data.attributes.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
-        response.body.data.attributes.should.have.property('language').and.equal(user.language);
-        response.body.data.attributes.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        response.body.data.attributes.applicationData.gfw.should.have.property('sector').and.equal(user.sector);
+        response.body.data.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(user.primaryResponsibilities);
+        response.body.data.attributes.applicationData.gfw.should.have.property('country').and.equal(user.country);
+        response.body.data.attributes.applicationData.gfw.should.have.property('state').and.equal(user.state);
+        response.body.data.attributes.applicationData.gfw.should.have.property('city').and.equal(user.city);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCountry').and.equal(user.aoiCountry);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiState').and.equal(user.aoiState);
+        response.body.data.attributes.applicationData.gfw.should.have.property('aoiCity').and.equal(user.aoiCity);
+        response.body.data.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(user.howDoYouUse);
+        response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
+        response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
+        response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
     });
 
     afterEach(async () => {

@@ -1,9 +1,13 @@
-# v2.1.0
+## 07/12/2021
+
+- Add `/v2` endpoints.
 
 ## 06/12/2021
 
 - Migrate to TypeScript.
 - Add feature flag to disable Salesforce integration.
+
+# v2.1.0
 
 ## 26/10/2021
 
