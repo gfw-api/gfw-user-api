@@ -49,24 +49,31 @@ class V2UserRouter {
     }
 
     static async getCurrentUser(ctx: Context) {
-        try {
-            logger.info('Obtaining logged in user');
-            let loggedUser: Record<string, any> = null;
-            if (ctx.request.query.loggedUser) {
-                logger.info('logged user', ctx.request.query.loggedUser);
-                loggedUser = JSON.parse(ctx.request.query.loggedUser as string);
+        logger.info('Obtaining logged in user');
+        const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
 
-                const user: IUser = await User.findById(loggedUser.id);
-                logger.info('User found:', user);
-                ctx.body = V2UserSerializer.serialize(user);
-            } else {
-                ctx.throw(403, 'Forbidden');
-            }
-        } catch (e) {
-            logger.error(e);
-            ctx.throw(400, 'Error parsing');
+        ctx.params.id = tokenUser.id;
+        return V2UserRouter.getUserById(ctx);
+    }
+
+    static async getUserById(ctx: Context) {
+        const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
+        if (ctx.params.id !== tokenUser.id && tokenUser.role !== 'ADMIN' && tokenUser.id !== 'microservice') {
+            ctx.throw(403, 'Forbidden');
+            return;
         }
 
+        logger.info('Obtaining user by id %s', ctx.params.id);
+        if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) {
+            ctx.throw(404, 'User not found');
+            return;
+        }
+        const user: IUser = await User.findById(ctx.params.id);
+        if (user === null) {
+            ctx.throw(404, 'User not found');
+            return;
+        }
+        ctx.body = V2UserSerializer.serialize(user);
     }
 
     static async createUser(ctx: Context) {
@@ -113,38 +120,17 @@ class V2UserRouter {
         ctx.body = V2UserSerializer.serialize(userCreate);
     }
 
-    static async getUserById(ctx: Context) {
-        const user: IRequestUser = V2UserRouter.getUser(ctx);
-        if (ctx.params.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
-            ctx.throw(403, 'Forbidden');
-            return;
-        }
-
-        logger.info('Obtaining users by id %s', ctx.params.id);
-        if (!mongoose.Types.ObjectId.isValid(ctx.params.id)) {
-            ctx.throw(404, 'User not found');
-            return;
-        }
-        const userFind: IUser = await User.findById(ctx.params.id);
-        if (!userFind) {
-            ctx.throw(404, 'User not found');
-            return;
-        }
-        ctx.body = V2UserSerializer.serialize(userFind);
-    }
-
     static async updateUser(ctx: Context) {
         logger.info('Obtaining users by id %s', ctx.params.id);
-        const userId: string = ctx.request.body.loggedUser.id;
-        if (ctx.params.id !== userId) {
+        const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
+        if (ctx.params.id !== tokenUser.id) {
             ctx.throw(403, 'Forbidden');
             return;
         }
-        let user: IUser = await User.findById(ctx.params.id);
-        if (!user) {
-            user = new User();
-            user._id = new mongoose.Types.ObjectId(userId);
-            await user.save();
+        const user: IUser = await User.findById(ctx.params.id);
+        if (user === null) {
+            ctx.throw(404, 'User not found');
+            return;
         }
 
         const { body } = ctx.request;
@@ -248,8 +234,8 @@ class V2UserRouter {
 
     static async deleteUser(ctx: Context) {
         logger.info('Obtaining users by id %s', ctx.params.id);
-        const userId: string = JSON.parse(ctx.request.query.loggedUser as string).id;
-        if (ctx.params.id !== userId) {
+        const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
+        if (ctx.params.id !== tokenUser.id) {
             ctx.throw(401, 'Not authorized');
             return;
         }

@@ -244,7 +244,6 @@ describe('V2 - Update user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(databaseUser.profileComplete);
         responseUser.attributes.applicationData.gfw.should.have.property('someGFWKey', 'someGFWValue');
         responseUser.attributes.applicationData.rw.should.have.property('someKey', 'someValue');
-
     });
 
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
@@ -256,7 +255,7 @@ describe('V2 - Update user tests', () => {
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
-            .send({ applicationData: { gfw: { sector: `Government` }}});
+            .send({ applicationData: { gfw: { sector: `Government` } } });
 
         const dbUser = await UserModel.findById(response.body.data.id);
         dbUser.should.have.property('sector', 'Government');
@@ -272,7 +271,7 @@ describe('V2 - Update user tests', () => {
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
-            .send({ applicationData: { gfw: { sector: `Governo` }}});
+            .send({ applicationData: { gfw: { sector: `Governo` } } });
 
         const dbUser = await UserModel.findById(response.body.data.id);
         dbUser.should.have.property('sector', 'Government');
@@ -286,12 +285,30 @@ describe('V2 - Update user tests', () => {
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
-            .send({ applicationData: { gfw: { sector: `Not Existing` }}});
+            .send({ applicationData: { gfw: { sector: `Not Existing` } } });
 
         response.status.should.equal(400);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(400);
         response.body.errors[0].should.have.property('detail').and.equal('Unsupported sector');
+    });
+
+    it('Modifying the applicationData for one application does not affect other apps data', async () => {
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                rw: { someKey: 'someValue' }
+            }
+        })).save();
+        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+
+        const response = await requester
+            .patch(`/api/v2/user/${user._id.toString()}`)
+            .set('Authorization', `Bearer abcd`)
+            .send({ applicationData: { gfw: { sector: `Government` } } });
+
+        response.status.should.equal(200);
+        response.body.data.attributes.applicationData.gfw.should.have.property('sector', 'Government');
+        response.body.data.attributes.applicationData.rw.should.have.property('someKey', 'someValue');
     });
 
     describe('Salesforce integration disabled', () => {

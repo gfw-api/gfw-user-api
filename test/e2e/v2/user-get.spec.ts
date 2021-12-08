@@ -36,18 +36,19 @@ describe('V2 - Get current user tests', () => {
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(401);
         response.body.errors[0].should.have.property('detail').and.equal('Unauthorized');
-
     });
 
-    it('Get the current user while being logged in should return a 200 and no user data (happy case, empty db)', async () => {
+    it('Get the current user while being logged in should return a 404 and no user data (happy case, empty db)', async () => {
         mockGetUserFromToken(USERS.USER);
 
         const response = await requester
             .get(`/api/v2/user`)
             .set('Authorization', `Bearer abcd`);
 
-        response.status.should.equal(200);
-        response.body.should.have.property('data').and.equal(null);
+        response.status.should.equal(404);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(404);
+        response.body.errors[0].should.have.property('detail').and.equal('User not found');
     });
 
     it('Get the current user while being logged in should return a 200 and the user data (happy case)', async () => {
