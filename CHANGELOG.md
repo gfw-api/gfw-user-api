@@ -1,3 +1,7 @@
+## 25/01/2022
+
+- Fix issue with `createdAt` date being incorrect for v2 user data.
+
 ## 07/12/2021
 
 - Add `/v2` endpoints.

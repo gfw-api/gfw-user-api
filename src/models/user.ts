@@ -39,7 +39,7 @@ export const User: ISchema<IUser> = new Schema<IUser>({
     lastName: { type: String, required: false, trim: true },
     oldId: { type: Number, required: false },
     email: { type: String, required: false, trim: true },
-    createdAt: { type: Date, required: false, default: new Date() },
+    createdAt: { type: Date, required: false, default: () => new Date() },
     sector: { type: String, required: false, trim: true },
     country: { type: String, required: false, trim: true },
     state: { type: String, required: false, trim: true },
