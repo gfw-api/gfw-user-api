@@ -108,7 +108,7 @@ class V2UserRouter {
             newUserData.sector = uniformizedSector;
         }
 
-        ctx.request.body._id = new mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
+        newUserData._id = new mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
         const user: IUser = new User(newUserData);
         const errors: Error.ValidationError | null = user.validateSync();
         if (errors) {

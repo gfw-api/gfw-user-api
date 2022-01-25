@@ -1,6 +1,7 @@
 ## 25/01/2022
 
 - Fix issue with `createdAt` date being incorrect for v2 user data.
+- Fix issue where user data would not be associated the expected user id.
 
 ## 07/12/2021
 

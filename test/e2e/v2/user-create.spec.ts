@@ -83,6 +83,7 @@ describe('V2 - Create user tests', () => {
 
         responseUser.should.have.property('type', 'user');
         responseUser.should.have.property('id', databaseUser._id.toString());
+        responseUser.should.have.property('id', USERS.USER.id);
         responseUser.should.have.property('attributes').and.be.an('object');
         responseUser.attributes.should.have.property('fullName', databaseUser.fullName);
         responseUser.attributes.should.have.property('email', databaseUser.email);
@@ -115,6 +116,7 @@ describe('V2 - Create user tests', () => {
 
         responseUser.should.have.property('type', 'user');
         responseUser.should.have.property('id', databaseUser._id.toString());
+        responseUser.should.have.property('id', USERS.USER.id);
         responseUser.should.have.property('attributes').and.be.an('object');
         responseUser.attributes.should.have.property('fullName', databaseUser.fullName);
         responseUser.attributes.should.have.property('email', databaseUser.email);
