@@ -1,5 +1,5 @@
 import { Serializer } from 'jsonapi-serializer';
-import { CORE_FIELDS, LEGACY_GFW_FIELDS } from '../models/user';
+import { CORE_FIELDS, LEGACY_GFW_FIELDS } from 'models/user';
 import { pick } from 'lodash';
 
 const v2UserSerializer: Serializer = new Serializer('user', {

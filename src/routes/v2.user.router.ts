@@ -235,7 +235,7 @@ class V2UserRouter {
     static async deleteUser(ctx: Context) {
         logger.info('Obtaining users by id %s', ctx.params.id);
         const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
-        if (ctx.params.id !== tokenUser.id) {
+        if (ctx.params.id !== tokenUser.id && tokenUser.id !== 'microservice' && tokenUser.role !== 'ADMIN') {
             ctx.throw(401, 'Not authorized');
             return;
         }
