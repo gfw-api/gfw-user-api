@@ -49,7 +49,7 @@
     "koa-simple-healthcheck": "^0.0.1",
     "lodash": "^4.17.21",
     "mongoose": "^6.0.14",
-    "rw-api-microservice-node": "^4.0.5",
+    "rw-api-microservice-node": "^4.0.7",
     "sleep": "^6.3.0",
     "typescript": "^4.5.2"
   },
