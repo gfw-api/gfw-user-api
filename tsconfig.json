@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
-    "lib": ["es2019", "es2020.promise", "es2020.bigint", "es2020.string"],
+    "lib": [
+      "es2019",
+      "es2020.promise",
+      "es2020.bigint",
+      "es2020.string"
+    ],
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -14,7 +19,11 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "noImplicitReturns": true,
-    "noImplicitAny": true
+    "noImplicitAny": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "dist"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

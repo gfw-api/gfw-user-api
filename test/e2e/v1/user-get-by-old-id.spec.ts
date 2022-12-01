@@ -179,7 +179,7 @@ describe('V1 - Get user by old id tests', () => {
         mockGetUserFromToken(USERS.ADMIN);
 
         const response = await requester
-            .get(`/api/v1/user/oldId/${mongoose.Types.ObjectId()}`)
+            .get(`/api/v1/user/oldId/${new mongoose.Types.ObjectId()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);
@@ -192,7 +192,7 @@ describe('V1 - Get user by old id tests', () => {
         mockGetUserFromToken(USERS.USER);
 
         const response = await requester
-            .get(`/api/v1/user/oldId/${mongoose.Types.ObjectId()}`)
+            .get(`/api/v1/user/oldId/${new mongoose.Types.ObjectId()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);

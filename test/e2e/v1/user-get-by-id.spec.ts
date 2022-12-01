@@ -163,7 +163,7 @@ describe('V1 - Get user by id tests', () => {
         mockGetUserFromToken(USERS.ADMIN);
 
         const response = await requester
-            .get(`/api/v1/user/${mongoose.Types.ObjectId()}`)
+            .get(`/api/v1/user/${new mongoose.Types.ObjectId()}`)
             .set('Authorization', `Bearer abcd`);
 
         response.status.should.equal(404);

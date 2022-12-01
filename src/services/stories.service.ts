@@ -9,7 +9,6 @@ class StoriesService {
             const stories: Record<string, any> = await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/story/user/${userId}`,
                 method: 'GET',
-                json: true
             });
 
             return stories;

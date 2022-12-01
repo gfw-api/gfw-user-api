@@ -16,7 +16,6 @@ export default class SalesforceService {
             await RWAPIMicroservice.requestToMicroservice({
                 uri: `/v1/salesforce/contact/log-action`,
                 method: 'POST',
-                json: true,
                 body: {
                     firstName: userInfo.firstName,
                     lastName: userInfo.lastName,
