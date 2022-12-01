@@ -34,7 +34,12 @@
     "url": "https://github.com/Vizzuality/gfw-geostore-api/issues"
   },
   "engines": {
-    "node": "~12"
+    "node": "~18.12"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix"
+    ]
   },
   "homepage": "https://github.com/Vizzuality/gfw-geostore-api#readme",
   "dependencies": {
@@ -49,7 +54,7 @@
     "koa-router": "^12.0.0",
     "koa-simple-healthcheck": "^0.0.1",
     "lodash": "^4.17.21",
-    "mongoose": "^6.0.14",
+    "mongoose": "^6.7.5",
     "rw-api-microservice-node": "^4.0.7",
     "sleep": "^6.3.0",
     "typescript": "^4.9.3"
@@ -67,15 +72,15 @@
     "@types/mongoose": "^5.11.97",
     "@types/sinon": "^10.0.6",
     "@types/sleep": "^0.0.8",
-    "@typescript-eslint/eslint-plugin": "^5.4.0",
-    "@typescript-eslint/parser": "^5.4.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
     "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-http": "^4.3.0",
     "eslint": "^8.2.0",
     "eslint-plugin-mocha": "^9.0.0",
-    "husky": "^7.0.0",
-    "lint-staged": "^12.1.2",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.4",
     "mocha": "^8.4.0",
     "nock": "^13.2.1",
     "nyc": "^15.1.0",
@@ -84,8 +89,5 @@
     "ts-node": "^10.4.0",
     "ts-node-dev": "^1.1.8",
     "tsconfig-paths": "^3.12.0"
-  },
-  "lint-staged": {
-    "*.ts": "eslint \"{src,test}/**/*.ts\" --fix"
   }
 }

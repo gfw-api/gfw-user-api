@@ -1,4 +1,4 @@
-FROM node:12-bullseye
+FROM node:18.12-bullseye
 MAINTAINER info@vizzuality.com
 
 ENV NAME gfw-user-api
