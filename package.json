@@ -44,7 +44,7 @@
   "homepage": "https://github.com/Vizzuality/gfw-geostore-api#readme",
   "dependencies": {
     "bunyan": "^1.8.12",
-    "config": "^3.2.5",
+    "config": "^3.3.8",
     "jsonapi-serializer": "^3.6.6",
     "koa": "^2.11.0",
     "koa-body": "^4.2.0",
@@ -62,14 +62,13 @@
   "devDependencies": {
     "@types/bunyan": "^1.8.8",
     "@types/chai-datetime": "^0.0.37",
-    "@types/config": "^0.0.40",
+    "@types/config": "^3.3.0",
     "@types/jsonapi-serializer": "^3.6.5",
     "@types/koa": "^2.13.4",
     "@types/koa-joi-router": "^8.0.3",
     "@types/koa-logger": "^3.1.2",
     "@types/lodash": "^4.14.177",
     "@types/mocha": "^10.0.1",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^18.11.10",
     "@types/sinon": "^10.0.6",
     "@types/sleep": "^0.0.8",
@@ -88,7 +87,7 @@
     "sinon": "^12.0.1",
     "ts-mocha": "^10.0.0",
     "ts-node": "^10.4.0",
-    "ts-node-dev": "^1.1.8",
-    "tsconfig-paths": "^3.12.0"
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.1.1"
   }
 }
