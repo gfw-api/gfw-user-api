@@ -1,7 +1,7 @@
 dist: focal
 language: node_js
 services:
-  - mongodb
+  - mongod
 addons:
   apt:
     sources:
