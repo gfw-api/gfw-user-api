@@ -2,6 +2,12 @@ dist: jammy
 language: node_js
 services:
   - mongodb
+addons:
+  apt:
+    sources:
+      - sourceline: 'deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse'
+    packages:
+      - mongodb-org
 node_js:
   - "18.12"
 cache:
@@ -18,9 +24,6 @@ env:
     - FASTLY_ENABLED=false
     - ALLOW_CONFIG_MUTATIONS=true
 
-before_install:
-  - sudo systemctl restart mongod.service
-  - sleep 10
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
