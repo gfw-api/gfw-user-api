@@ -46,6 +46,7 @@ export const createUserV2 = (anotherData: Record<string, any> = {}, applicationD
                 aoiCountry: 'Fake AOI country',
                 aoiState: 'Fake AOI state',
                 aoiCity: 'Fake AOI city',
+                areaOrRegionOfInterest: 'Fake area or region of interest',
                 primaryResponsibilities: ['fake responsibility'],
                 howDoYouUse: ['fake howDoYouUse'],
                 profileComplete: true,
@@ -75,8 +76,7 @@ export const mockSalesforceUpdate = (userProfile: Partial<IUser>) => {
             ...(!!userProfile.subsector && { primaryRole: userProfile.subsector }),
             ...(!!userProfile.jobTitle && { title: userProfile.jobTitle }),
             countryOfInterest: userProfile.aoiCountry,
-            cityOfInterest: userProfile.aoiCity,
-            stateDepartmentProvinceOfInterest: userProfile.aoiState,
+            areaOrRegionOfInterest: userProfile.applicationData?.gfw?.areaOrRegionOfInterest,
             topicsOfInterest: Array.from(userProfile.interests).join(','),
         })
         .reply(201);

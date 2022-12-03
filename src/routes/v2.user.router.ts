@@ -4,7 +4,7 @@ import logger from 'logger';
 import mongoose, { Error } from 'mongoose';
 import V2UserSerializer from 'serializers/v2.user.serializer';
 
-import User, { IUser, LEGACY_GFW_FIELDS } from 'models/user';
+import User, { getAreaOrRegionOfInterest, IUser, LEGACY_GFW_FIELDS } from 'models/user';
 import SalesforceService from 'services/salesforce.service';
 import { uniformizeSector } from 'services/sector-handler.service';
 import { omit, pick } from 'lodash';
@@ -85,7 +85,9 @@ class V2UserRouter {
             return;
         }
 
-        let newUserData: Record<string, any> = pick(ctx.request.body, ['fullName', 'firstName', 'lastName', 'email', 'applicationData']);
+
+
+        let newUserData: Partial<IUser> = pick(ctx.request.body, ['fullName', 'firstName', 'lastName', 'email', 'applicationData']);
         if (newUserData.applicationData?.gfw) {
             newUserData = {
                 ...newUserData,
@@ -106,6 +108,11 @@ class V2UserRouter {
             }
 
             newUserData.sector = uniformizedSector;
+        }
+
+        const gfwData: Record<string, any> = ctx.request.body.applicationData?.gfw;
+        if (gfwData?.areaOrRegionOfInterest === undefined && (gfwData?.aoiCity || gfwData?.aoiState)) {
+            newUserData.applicationData.gfw.areaOrRegionOfInterest = getAreaOrRegionOfInterest(newUserData as IUser)
         }
 
         newUserData._id = new mongoose.Types.ObjectId(ctx.request.body.loggedUser.id);
@@ -219,6 +226,10 @@ class V2UserRouter {
                 }
                 if (gfwData.topics !== undefined) {
                     user.topics = (gfwData.topics);
+                }
+                if (gfwData.areaOrRegionOfInterest === undefined && (gfwData.aoiCity || gfwData.aoiState)) {
+                    user.applicationData.gfw.areaOrRegionOfInterest = null;
+                    user.applicationData.gfw.areaOrRegionOfInterest = getAreaOrRegionOfInterest(user)
                 }
             }
 

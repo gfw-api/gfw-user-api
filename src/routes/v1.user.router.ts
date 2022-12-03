@@ -3,7 +3,7 @@ import { Context, DefaultState, Next } from 'koa';
 import logger from 'logger';
 import mongoose, { Error, FilterQuery } from 'mongoose';
 import V1UserSerializer from 'serializers/v1.user.serializer';
-import User, { IUser } from 'models/user';
+import User, { getAreaOrRegionOfInterest, IUser } from 'models/user';
 import StoriesService from 'services/stories.service';
 import SalesforceService from 'services/salesforce.service';
 import { uniformizeSector } from 'services/sector-handler.service';

@@ -1,5 +1,5 @@
 import { Serializer } from 'jsonapi-serializer';
-import { CORE_FIELDS, LEGACY_GFW_FIELDS } from 'models/user';
+import { CORE_FIELDS, getAreaOrRegionOfInterest, IUser, LEGACY_GFW_FIELDS } from 'models/user';
 import { pick } from 'lodash';
 
 const v2UserSerializer: Serializer = new Serializer('user', {
@@ -13,7 +13,7 @@ const v2UserSerializer: Serializer = new Serializer('user', {
     ],
     typeForAttribute: (attribute: string) => attribute,
     keyForAttribute: 'camelCase',
-    transform: (record: Record<string, any>) => {
+    transform: (record: IUser) => {
         return {
             id: record.id,
             ...pick(record, CORE_FIELDS),
@@ -21,7 +21,8 @@ const v2UserSerializer: Serializer = new Serializer('user', {
                 ...record.applicationData,
                 gfw: {
                     ...record.applicationData.gfw,
-                    ...pick(record, LEGACY_GFW_FIELDS)
+                    ...pick(record, LEGACY_GFW_FIELDS),
+                    areaOrRegionOfInterest: getAreaOrRegionOfInterest(record)
                 }
             }
 

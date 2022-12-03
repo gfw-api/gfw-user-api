@@ -66,7 +66,8 @@ describe('V2 - Create user tests', () => {
                 profileComplete: false,
                 interests: [],
                 signUpToNewsletter: false,
-                topics: []
+                topics: [],
+                areaOrRegionOfInterest: null
             }
         });
     });
@@ -102,6 +103,56 @@ describe('V2 - Create user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting', databaseUser.signUpForTesting);
         responseUser.attributes.applicationData.gfw.should.have.property('language', databaseUser.language);
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete', databaseUser.profileComplete);
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest', databaseUser.applicationData.gfw.areaOrRegionOfInterest);
+    });
+
+    it('Create a user while being logged in should return a 200 (happy case - aioCity and aioState merge into areaOrRegionOfInterest)', async () => {
+        mockGetUserFromToken(USERS.USER);
+
+        const user = createUserV2({}, {
+            'gfw': {
+                sector: `Government`,
+                state: `Fake state`,
+                country: `Fake country`,
+                city: `Fake city `,
+                aoiCountry: 'Fake AOI country',
+                aoiState: 'Fake AOI state',
+                aoiCity: 'Fake AOI city',
+                primaryResponsibilities: ['fake responsibility'],
+                howDoYouUse: ['fake howDoYouUse'],
+                profileComplete: true,
+                signUpForTesting: false,
+                language: 'English',
+            },
+        });
+        const response = await sendCreateUserRequest(user);
+        response.status.should.equal(200);
+
+        const responseUser = response.body.data;
+        const databaseUser = await UserModel.findById(responseUser.id);
+
+        responseUser.should.have.property('type', 'user');
+        responseUser.should.have.property('id', databaseUser._id.toString());
+        responseUser.should.have.property('id', USERS.USER.id);
+        responseUser.should.have.property('attributes').and.be.an('object');
+        responseUser.attributes.should.have.property('fullName', databaseUser.fullName);
+        responseUser.attributes.should.have.property('email', databaseUser.email);
+        responseUser.attributes.should.have.property('createdAt');
+        new Date(responseUser.attributes.createdAt).should.equalDate(databaseUser.createdAt);
+        responseUser.attributes.should.have.property('applicationData').and.haveOwnProperty('gfw');
+        responseUser.attributes.applicationData.gfw.should.have.property('sector', databaseUser.sector);
+        responseUser.attributes.applicationData.gfw.should.have.property('primaryResponsibilities').and.include.members(databaseUser.primaryResponsibilities);
+        responseUser.attributes.applicationData.gfw.should.have.property('country', databaseUser.country);
+        responseUser.attributes.applicationData.gfw.should.have.property('state', databaseUser.state);
+        responseUser.attributes.applicationData.gfw.should.have.property('city', databaseUser.city);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiCountry', databaseUser.aoiCountry);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiState', databaseUser.aoiState);
+        responseUser.attributes.applicationData.gfw.should.have.property('aoiCity', databaseUser.aoiCity);
+        responseUser.attributes.applicationData.gfw.should.have.property('howDoYouUse').and.include.members(databaseUser.howDoYouUse);
+        responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting', databaseUser.signUpForTesting);
+        responseUser.attributes.applicationData.gfw.should.have.property('language', databaseUser.language);
+        responseUser.attributes.applicationData.gfw.should.have.property('profileComplete', databaseUser.profileComplete);
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest', databaseUser.applicationData.gfw.areaOrRegionOfInterest).and.equal(`${databaseUser.aoiCity} ${databaseUser.aoiState}`);
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data with additional apps and additional gfw data)', async () => {
@@ -136,6 +187,7 @@ describe('V2 - Create user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('language', databaseUser.language);
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete', databaseUser.profileComplete);
         responseUser.attributes.applicationData.gfw.should.have.property('someGFWKey', 'someGFWValue');
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest', databaseUser.applicationData.gfw.areaOrRegionOfInterest).and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
         responseUser.attributes.applicationData.rw.should.have.property('someKey', 'someValue');
     });
 
