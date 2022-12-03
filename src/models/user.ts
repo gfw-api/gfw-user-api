@@ -61,6 +61,16 @@ export const User: ISchema<IUser> = new Schema<IUser>({
     applicationData: { type: Object, default: {} }
 });
 
+export const getAreaOrRegionOfInterest = (record: IUser) => {
+    if (record.applicationData.gfw?.areaOrRegionOfInterest) {
+        return record.applicationData.gfw.areaOrRegionOfInterest;
+    }
+    if (record.aoiCity || record.aoiState) {
+        return `${record.aoiCity ?? ''} ${record.aoiState ?? ''}`.trim()
+    }
+    return null;
+}
+
 const UserModel: Model<IUser> = model<IUser>('User', User);
 
 export default UserModel;

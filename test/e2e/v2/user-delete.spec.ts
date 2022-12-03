@@ -71,7 +71,13 @@ describe('V2 - Delete user tests', () => {
     it('Delete a user while being logged in as a different user that has ADMIN role should return a delete the user data', async () => {
         mockGetUserFromToken(USERS.ADMIN);
 
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
@@ -104,12 +110,19 @@ describe('V2 - Delete user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         responseUser.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     it('Delete a user while being logged in as a MICROSERVICE should return a delete the user data', async () => {
         mockGetUserFromToken(USERS.MICROSERVICE);
 
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
@@ -142,10 +155,17 @@ describe('V2 - Delete user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         responseUser.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     it('Delete a user while being logged in with that user should return a 200 and the user data (happy case)', async () => {
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
         mockGetUserFromToken({
             ...USERS.USER,
             id: user._id.toString()
@@ -182,6 +202,7 @@ describe('V2 - Delete user tests', () => {
         responseUser.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         responseUser.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         responseUser.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        responseUser.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     afterEach(async () => {

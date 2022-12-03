@@ -57,7 +57,13 @@ describe('V2 - Get user by id tests', () => {
     });
 
     it('Get user by id while being authenticated as the same user should return a 200 and the user data (happy case)', async () => {
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         mockGetUserFromToken({
             ...USERS.USER,
@@ -90,12 +96,19 @@ describe('V2 - Get user by id tests', () => {
         response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     it('Get user by id while being authenticated as an ADMIN user should return a 200 and the user data (happy case)', async () => {
         mockGetUserFromToken(USERS.ADMIN);
 
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         const response = await requester
             .get(`/api/v2/user/${user._id.toString()}`)
@@ -123,12 +136,19 @@ describe('V2 - Get user by id tests', () => {
         response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     it('Get user by id while being authenticated as an MICROSERVICE user should return a 200 and the user data (happy case)', async () => {
         mockGetUserFromToken(USERS.MICROSERVICE);
 
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         const response = await requester
             .get(`/api/v2/user/${user._id.toString()}`)
@@ -156,6 +176,7 @@ describe('V2 - Get user by id tests', () => {
         response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     it('Get user by id for an invalid id should return a 404 \'User not found\' error', async () => {

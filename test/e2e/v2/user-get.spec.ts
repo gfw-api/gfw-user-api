@@ -52,7 +52,13 @@ describe('V2 - Get current user tests', () => {
     });
 
     it('Get the current user while being logged in should return a 200 and the user data (happy case)', async () => {
-        const user = await new UserModel(createUserV1()).save();
+        const user = await new UserModel(createUserV1({
+            applicationData: {
+                'gfw': {
+                    areaOrRegionOfInterest: 'Fake area or region of interest',
+                }
+            }
+        })).save();
 
         mockGetUserFromToken({
             ...USERS.USER,
@@ -85,6 +91,7 @@ describe('V2 - Get current user tests', () => {
         response.body.data.attributes.applicationData.gfw.should.have.property('signUpForTesting').and.equal(user.signUpForTesting);
         response.body.data.attributes.applicationData.gfw.should.have.property('language').and.equal(user.language);
         response.body.data.attributes.applicationData.gfw.should.have.property('profileComplete').and.equal(user.profileComplete);
+        response.body.data.attributes.applicationData.gfw.should.have.property('areaOrRegionOfInterest').and.equal(user.applicationData.gfw.areaOrRegionOfInterest);
     });
 
     afterEach(async () => {

@@ -1,10 +1,11 @@
 import { RWAPIMicroservice } from 'rw-api-microservice-node';
 import logger from 'logger';
 import config from 'config';
+import { IUser } from "../models/user";
 
 export default class SalesforceService {
 
-    static async updateUserInformation(userInfo: Record<string, any>) {
+    static async updateUserInformation(userInfo: IUser) {
         const salesforceIntegrationEnabled: boolean | string = config.get('salesforceIntegrationEnabled');
         if (salesforceIntegrationEnabled === false || salesforceIntegrationEnabled === 'false') {
             logger.info(`[SalesforceService] Salesforce integration disabled, skipping call to salesforce integration microservice.`);
@@ -24,8 +25,7 @@ export default class SalesforceService {
                     primaryRole: userInfo.subsector,
                     title: userInfo.jobTitle,
                     countryOfInterest: userInfo.aoiCountry,
-                    cityOfInterest: userInfo.aoiCity,
-                    stateDepartmentProvinceOfInterest: userInfo.aoiState,
+                    areaOrRegionOfInterest: userInfo.applicationData?.gfw?.areaOrRegionOfInterest,
                     topicsOfInterest: Array.from(userInfo.interests).join(','),
                 }
             });
