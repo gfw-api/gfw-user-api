@@ -18,7 +18,6 @@ services:
       - mongo
 
   mongo:
-    image: mongo:3.4
-    command: --smallfiles
+    image: mongo:3.6
     ports:
       - "27017"
