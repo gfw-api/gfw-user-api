@@ -68,6 +68,22 @@ describe('V2 - Delete user tests', () => {
         response.body.errors[0].should.have.property('detail').and.equal('Not authorized');
     });
 
+    it('Delete a user while being logged in as ADMIN role for a user that has no data should return a 404', async () => {
+        mockGetUserFromToken(USERS.ADMIN);
+
+        const response = await requester
+            .delete(`/api/v2/user/${USERS.ADMIN.id}`)
+            .set('Authorization', `Bearer abcd`);
+
+        response.status.should.equal(404);
+
+        const responseUser = response.body.data;
+
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(404);
+        response.body.errors[0].should.have.property('detail').and.equal('User not found');
+    });
+
     it('Delete a user while being logged in as a different user that has ADMIN role should return a delete the user data', async () => {
         mockGetUserFromToken(USERS.ADMIN);
 
