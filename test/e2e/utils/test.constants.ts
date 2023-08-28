@@ -1,13 +1,6 @@
-export interface IRequestUser {
-    id: string;
-    role?: string;
-    extraUserData?: Record<string, any>;
-    name?: string;
-    provider?: string;
-    email?: string;
-}
+import { LoggedUserValidationResponse } from "rw-api-microservice-node/dist/types";
 
-export const USERS: Record<string, IRequestUser> = {
+export const USERS: Record<string, LoggedUserValidationResponse> = {
     USER: {
         id: '1a10d7c6e0a37126611fd7a5',
         name: 'user',
@@ -87,27 +80,7 @@ export const USERS: Record<string, IRequestUser> = {
         extraUserData: { apps: ['rw'] }
     },
     MICROSERVICE: {
-        id: 'microservice'
+        id: 'microservice',
+        createdAt: '2018-07-05T13:50:16.000Z'
     }
 };
-
-
-export const SAMPLE_USER = {
-    id: 1234,
-    firstName: 'John',
-    lastName: 'Doe',
-    provider: 'google',
-    providerId: '2a324231345a',
-    email: 'test@vizzuality.com',
-    sector: 'Government (public sector)',
-    subsector: 'IT',
-    jobTitle: 'Developer',
-    company: 'Vizzuality',
-    aoiCountry: 'Spain',
-    aoiState: 'state',
-    aoiCity: 'city',
-    state: 'Madrid',
-    city: 'Madrid',
-    howDoYouUse: 'Obtain maps and data on tree cover'
-};
-

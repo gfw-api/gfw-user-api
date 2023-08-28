@@ -13,7 +13,7 @@ const v2UserSerializer: Serializer = new Serializer('user', {
     ],
     typeForAttribute: (attribute: string) => attribute,
     keyForAttribute: 'camelCase',
-    transform: (record: IUser) => {
+    transform: (record: IUser): Record<string, any> => {
         return {
             id: record.id,
             ...pick(record, CORE_FIELDS),
@@ -32,7 +32,7 @@ const v2UserSerializer: Serializer = new Serializer('user', {
 
 export default class V2UserSerializer {
 
-    static serialize(data: Record<string, any>) {
+    static serialize(data: Record<string, any>): Record<string, any> {
         return v2UserSerializer.serialize(data);
     }
 

@@ -3,7 +3,11 @@ import chai from 'chai';
 import UserModel from 'models/user';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 import chaiDateTime from 'chai-datetime';
 
 chai.should();
@@ -29,8 +33,10 @@ describe('V1 - Delete user tests', () => {
     });
 
     it('Delete a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
-            .delete(`/api/v1/user/1234`);
+            .delete(`/api/v1/user/1234`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -39,13 +45,14 @@ describe('V1 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a different user should return a 401 \'Not authorized\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .delete(`/api/v1/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -55,14 +62,17 @@ describe('V1 - Delete user tests', () => {
 
     it('Delete a user while being logged in with that user should return a 200 and the user data (happy case)', async () => {
         const user = await new UserModel(createUserV1()).save();
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
         const response = await requester
             .delete(`/api/v1/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 

@@ -3,7 +3,7 @@ import { Context, DefaultState, Next } from 'koa';
 import logger from 'logger';
 import mongoose, { Error, FilterQuery } from 'mongoose';
 import V1UserSerializer from 'serializers/v1.user.serializer';
-import User, { getAreaOrRegionOfInterest, IUser } from 'models/user';
+import User, { IUser } from 'models/user';
 import StoriesService from 'services/stories.service';
 import SalesforceService from 'services/salesforce.service';
 import { uniformizeSector } from 'services/sector-handler.service';
@@ -26,7 +26,7 @@ class V1UserRouter {
         return user;
     }
 
-    static async getCurrentUser(ctx: Context) {
+    static async getCurrentUser(ctx: Context): Promise<void> {
         try {
             logger.info('Obtaining logged in user');
             let loggedUser: Record<string, any> = null;
@@ -47,7 +47,7 @@ class V1UserRouter {
 
     }
 
-    static async getAllUsers(ctx: Context) {
+    static async getAllUsers(ctx: Context): Promise<void> {
         logger.info('Obtaining users');
 
         let defaultFilter: FilterQuery<IUser> = {};
@@ -67,7 +67,7 @@ class V1UserRouter {
         }
     }
 
-    static async createUser(ctx: Context) {
+    static async createUser(ctx: Context): Promise<void> {
         logger.info('Create user', ctx.request.body);
         const existingUser: IUser = await User.findById(ctx.request.body.loggedUser.id);
         if (existingUser) {
@@ -100,7 +100,7 @@ class V1UserRouter {
         ctx.body = V1UserSerializer.serialize(userCreate);
     }
 
-    static async getUserById(ctx: Context) {
+    static async getUserById(ctx: Context): Promise<void> {
         const user: IRequestUser = V1UserRouter.getUser(ctx);
         if (ctx.params.id !== user.id && user.role !== 'ADMIN' && user.id !== 'microservice') {
             ctx.throw(403, 'Forbidden');
@@ -120,7 +120,7 @@ class V1UserRouter {
         ctx.body = V1UserSerializer.serialize(userFind);
     }
 
-    static async updateUser(ctx: Context) {
+    static async updateUser(ctx: Context): Promise<void> {
         logger.info('Obtaining users by id %s', ctx.params.id);
         const userId: string = ctx.request.body.loggedUser.id;
         if (ctx.params.id !== userId) {
@@ -211,12 +211,12 @@ class V1UserRouter {
         await userFind.save();
 
         // Purposefully not waiting for this so that the main submission is not blocked
-        SalesforceService.updateUserInformation(userFind);
+        SalesforceService.updateUserInformation(userFind, ctx.request.headers['x-api-key'] as string);
 
         ctx.body = V1UserSerializer.serialize(userFind);
     }
 
-    static async deleteUser(ctx: Context) {
+    static async deleteUser(ctx: Context): Promise<void> {
         logger.info('Obtaining users by id %s', ctx.params.id);
         const userId: string = JSON.parse(ctx.request.query.loggedUser as string).id;
         if (ctx.params.id !== userId) {
@@ -233,13 +233,13 @@ class V1UserRouter {
         ctx.body = V1UserSerializer.serialize(userFind);
     }
 
-    static async getStories(ctx: Context) {
+    static async getStories(ctx: Context): Promise<void> {
         logger.info('[V1UserRouter - getStories] Obtaining stories for logged in user');
         const userId: string = JSON.parse(ctx.request.query.loggedUser as string).id;
-        ctx.body = await StoriesService.getStoriesByUser(userId);
+        ctx.body = await StoriesService.getStoriesByUser(userId, ctx.request.headers['x-api-key'] as string);
     }
 
-    static async getUserByOldId(ctx: Context) {
+    static async getUserByOldId(ctx: Context): Promise<void> {
         logger.info('Obtaining user by oldId %s', ctx.params.id);
         const user: IRequestUser = V1UserRouter.getUser(ctx);
 
@@ -267,7 +267,7 @@ class V1UserRouter {
 
 }
 
-const isLoggedIn = async (ctx: Context, next: Next) => {
+const isLoggedIn = async (ctx: Context, next: Next): Promise<void> => {
     let loggedUser: IRequestUser = ctx.request.body ? ctx.request.body.loggedUser : null;
     if (!loggedUser) {
         loggedUser = ctx.query.loggedUser ? JSON.parse(ctx.query.loggedUser as string) : null;
@@ -279,7 +279,7 @@ const isLoggedIn = async (ctx: Context, next: Next) => {
     await next();
 };
 
-const isMicroserviceOrAdmin = async (ctx: Context, next: Next) => {
+const isMicroserviceOrAdmin = async (ctx: Context, next: Next): Promise<void> => {
     let loggedUser: IRequestUser = ctx.request.body ? ctx.request.body.loggedUser : null;
     if (!loggedUser) {
         loggedUser = ctx.query.loggedUser ? JSON.parse(ctx.query.loggedUser as string) : null;

@@ -89,6 +89,6 @@ export const LANGUAGE_MAPPING: Record<string, any> = {
     ]
 };
 
-export const uniformizeSector = (sector: string) => Object.keys(LANGUAGE_MAPPING)
+export const uniformizeSector = (sector: string): string => Object.keys(LANGUAGE_MAPPING)
     .find((key: string) => LANGUAGE_MAPPING[key].includes(sector));
 

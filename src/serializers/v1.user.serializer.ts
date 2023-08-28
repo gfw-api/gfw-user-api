@@ -34,7 +34,7 @@ const v1UserSerializer: Serializer = new Serializer('user', {
 
 export default class V1UserSerializer {
 
-    static serialize(data: Record<string, any>) {
+    static serialize(data: Record<string, any>): Record<string, any> {
         return v1UserSerializer.serialize(data);
     }
 

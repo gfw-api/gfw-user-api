@@ -3,7 +3,11 @@ import chai from 'chai';
 import UserModel from 'models/user';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 import chaiDateTime from 'chai-datetime';
 
 chai.should();
@@ -29,8 +33,10 @@ describe('V2 - Get current user tests', () => {
     });
 
     it('Get the current user while not being logged in should return a 401 error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
-            .get(`/api/v2/user`);
+            .get(`/api/v2/user`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -39,11 +45,12 @@ describe('V2 - Get current user tests', () => {
     });
 
     it('Get the current user while being logged in should return a 404 and no user data (happy case, empty db)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await requester
             .get(`/api/v2/user`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -60,14 +67,17 @@ describe('V2 - Get current user tests', () => {
             }
         })).save();
 
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
         const response = await requester
             .get(`/api/v2/user`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');

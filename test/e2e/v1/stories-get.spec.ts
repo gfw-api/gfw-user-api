@@ -4,7 +4,7 @@ import chaiDateTime from 'chai-datetime';
 import UserModel from 'models/user'
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { mockGetUserFromToken } from '../utils/helpers';
+import { mockValidateRequestWithApiKey, mockValidateRequestWithApiKeyAndUserToken } from "../utils/helpers";
 
 chai.should();
 chai.use(chaiDateTime);
@@ -29,8 +29,10 @@ describe('V1 - Get stories tests', () => {
     });
 
     it('Get stories while not being logged in should return a 401 \'Unauthorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
-            .get(`/api/v1/user/stories`);
+            .get(`/api/v1/user/stories`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -40,9 +42,13 @@ describe('V1 - Get stories tests', () => {
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice (no remote content)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
-        nock(process.env.GATEWAY_URL)
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(200, {
@@ -51,15 +57,20 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice - if remote service fails, return a 500', async () => {
-        mockGetUserFromToken(USERS.USER);
-        nock(process.env.GATEWAY_URL)
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(500, {
@@ -68,7 +79,8 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(503);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -77,8 +89,12 @@ describe('V1 - Get stories tests', () => {
     });
 
     it('Get stories while being logged in should load user stories from the stories microservice (remote content)', async () => {
-        mockGetUserFromToken(USERS.USER);
-        nock(process.env.GATEWAY_URL)
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
+        nock(process.env.GATEWAY_URL, {
+            reqheaders: {
+                'x-api-key': 'api-key-test',
+            }
+        })
             .get(`/v1/story/user/${USERS.USER.id}`)
             .once()
             .reply(200, {
@@ -96,7 +112,8 @@ describe('V1 - Get stories tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/stories`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);

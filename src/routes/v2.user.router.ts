@@ -48,7 +48,7 @@ class V2UserRouter {
         return user;
     }
 
-    static async getCurrentUser(ctx: Context) {
+    static async getCurrentUser(ctx: Context): Promise<void> {
         logger.info('Obtaining logged in user');
         const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
 
@@ -56,7 +56,7 @@ class V2UserRouter {
         return V2UserRouter.getUserById(ctx);
     }
 
-    static async getUserById(ctx: Context) {
+    static async getUserById(ctx: Context): Promise<void> {
         const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
         if (ctx.params.id !== tokenUser.id && tokenUser.role !== 'ADMIN' && tokenUser.id !== 'microservice') {
             ctx.throw(403, 'Forbidden');
@@ -76,7 +76,7 @@ class V2UserRouter {
         ctx.body = V2UserSerializer.serialize(user);
     }
 
-    static async createUser(ctx: Context) {
+    static async createUser(ctx: Context): Promise<void> {
         logger.info('Create user', ctx.request.body);
         const existingUser: IUser = await User.findById(ctx.request.body.loggedUser.id);
         if (existingUser) {
@@ -127,7 +127,7 @@ class V2UserRouter {
         ctx.body = V2UserSerializer.serialize(userCreate);
     }
 
-    static async updateUser(ctx: Context) {
+    static async updateUser(ctx: Context): Promise<void> {
         logger.info('Obtaining users by id %s', ctx.params.id);
         const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
         if (ctx.params.id !== tokenUser.id) {
@@ -238,12 +238,12 @@ class V2UserRouter {
         await user.save();
 
         // Purposefully not waiting for this so that the main submission is not blocked
-        SalesforceService.updateUserInformation(user);
+        SalesforceService.updateUserInformation(user, ctx.request.headers['x-api-key'] as string);
 
         ctx.body = V2UserSerializer.serialize(user);
     }
 
-    static async deleteUser(ctx: Context) {
+    static async deleteUser(ctx: Context): Promise<void> {
         logger.info('Obtaining users by id %s', ctx.params.id);
         const tokenUser: IRequestUser = V2UserRouter.getUser(ctx);
         if (ctx.params.id !== tokenUser.id && tokenUser.id !== 'microservice' && tokenUser.role !== 'ADMIN') {
@@ -263,7 +263,7 @@ class V2UserRouter {
 
 }
 
-const isLoggedIn = async (ctx: Context, next: Next) => {
+const isLoggedIn = async (ctx: Context, next: Next): Promise<void> => {
     let loggedUser: IRequestUser = ctx.request.body ? ctx.request.body.loggedUser : null;
     if (!loggedUser) {
         loggedUser = ctx.query.loggedUser ? JSON.parse(ctx.query.loggedUser as string) : null;

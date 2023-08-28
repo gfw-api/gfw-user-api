@@ -14,6 +14,10 @@ services:
       MICROSERVICE_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
       MONGO_PORT_27017_TCP_ADDR: mongo
       FASTLY_ENABLED: "false"
+      AWS_REGION: "us-east-1"
+      REQUIRE_API_KEY: true
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
     command: start
     links:
       - mongo

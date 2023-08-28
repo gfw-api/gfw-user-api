@@ -5,7 +5,12 @@ import sinon, { SinonSandbox } from 'sinon';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken, mockSalesforceUpdate, stubConfigValue } from '../utils/helpers';
+import {
+    createUserV1,
+    mockSalesforceUpdate, mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken,
+    stubConfigValue
+} from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -31,7 +36,11 @@ describe('V2 - Update user tests', () => {
     });
 
     it('Update a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
-        const response = await requester.patch(`/api/v2/user/1234`).send({});
+        mockValidateRequestWithApiKey({});
+        const response = await requester
+            .patch(`/api/v2/user/1234`)
+            .set('x-api-key', 'api-key-test')
+            .send({});
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -40,13 +49,14 @@ describe('V2 - Update user tests', () => {
     });
 
     it('Update a user while being logged in as a different user should return a 403 \'Forbidden\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
 
         response.status.should.equal(403);
@@ -64,12 +74,13 @@ describe('V2 - Update user tests', () => {
             }
         })).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate(user);
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({});
 
         response.status.should.equal(200);
@@ -104,7 +115,7 @@ describe('V2 - Update user tests', () => {
     it('Update a user while being logged in should return a 200 and the updated user data (happy case)', async () => {
         const user = await new UserModel(createUserV1()).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate({
             firstName: `${user.firstName} updated`,
             lastName: `${user.lastName} updated`,
@@ -116,12 +127,13 @@ describe('V2 - Update user tests', () => {
             aoiCity: `${user.aoiCity} updated`,
             aoiState: `${user.aoiState} updated`,
             interests: ['One', 'Two', 'Three'],
-            applicationData: {gfw: {areaOrRegionOfInterest: `${user.aoiCity} updated ${user.aoiState} updated`}}
+            applicationData: { gfw: { areaOrRegionOfInterest: `${user.aoiCity} updated ${user.aoiState} updated` } }
         });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 fullName: `${user.fullName} updated`,
                 firstName: `${user.firstName} updated`,
@@ -179,7 +191,7 @@ describe('V2 - Update user tests', () => {
     it('Update a user while being logged in should return a 200 and the updated user data (happy case - complete user data with additional apps and additional gfw data)', async () => {
         const user = await new UserModel(createUserV1()).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate({
             firstName: `${user.firstName} updated`,
             lastName: `${user.lastName} updated`,
@@ -191,12 +203,13 @@ describe('V2 - Update user tests', () => {
             aoiCity: `${user.aoiCity} updated`,
             aoiState: `${user.aoiState} updated`,
             interests: ['One', 'Two', 'Three'],
-            applicationData: {gfw: {areaOrRegionOfInterest: `${user.aoiCity} updated ${user.aoiState} updated`}}
+            applicationData: { gfw: { areaOrRegionOfInterest: `${user.aoiCity} updated ${user.aoiState} updated` } }
         });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 fullName: `${user.fullName} updated`,
                 firstName: `${user.firstName} updated`,
@@ -266,7 +279,7 @@ describe('V2 - Update user tests', () => {
             }
         })).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate({
             firstName: `${user.firstName} updated`,
             lastName: `${user.lastName} updated`,
@@ -278,12 +291,13 @@ describe('V2 - Update user tests', () => {
             aoiCity: `${user.aoiCity} updated`,
             aoiState: `${user.aoiState} updated`,
             interests: ['One', 'Two', 'Three'],
-            applicationData: {gfw: {areaOrRegionOfInterest: `${user.applicationData.gfw.areaOrRegionOfInterest} updated`}}
+            applicationData: { gfw: { areaOrRegionOfInterest: `${user.applicationData.gfw.areaOrRegionOfInterest} updated` } }
         });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({
                 fullName: `${user.fullName} updated`,
                 firstName: `${user.firstName} updated`,
@@ -348,12 +362,13 @@ describe('V2 - Update user tests', () => {
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
         const user = await new UserModel(createUserV1()).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate({ ...user.toObject(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ applicationData: { gfw: { sector: `Government` } } });
 
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -364,12 +379,13 @@ describe('V2 - Update user tests', () => {
     it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
         const user = await new UserModel(createUserV1()).save();
 
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
         mockSalesforceUpdate({ ...user.toObject(), sector: `Government` });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ applicationData: { gfw: { sector: `Governo` } } });
 
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -379,11 +395,12 @@ describe('V2 - Update user tests', () => {
 
     it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
         const user = await new UserModel(createUserV1()).save();
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ applicationData: { gfw: { sector: `Not Existing` } } });
 
         response.status.should.equal(400);
@@ -398,11 +415,12 @@ describe('V2 - Update user tests', () => {
                 rw: { someKey: 'someValue' }
             }
         })).save();
-        mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+        mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
 
         const response = await requester
             .patch(`/api/v2/user/${user._id.toString()}`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .send({ applicationData: { gfw: { sector: `Government` } } });
 
         response.status.should.equal(200);
@@ -421,11 +439,12 @@ describe('V2 - Update user tests', () => {
         it('Update a user while being logged in should return a 200 and the updated user data - no salesforce call (happy case)', async () => {
             const user = await new UserModel(createUserV1()).save();
 
-            mockGetUserFromToken({ ...USERS.USER, id: user._id.toString() });
+            mockValidateRequestWithApiKeyAndUserToken({ user: { ...USERS.USER, id: user._id.toString() } });
 
             const response = await requester
                 .patch(`/api/v2/user/${user._id.toString()}`)
                 .set('Authorization', `Bearer abcd`)
+                .set('x-api-key', 'api-key-test')
                 .send({
                     fullName: `${user.fullName} updated`,
                     firstName: `${user.firstName} updated`,

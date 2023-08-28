@@ -61,7 +61,7 @@ export const User: ISchema<IUser> = new Schema<IUser>({
     applicationData: { type: Object, default: {} }
 });
 
-export const getAreaOrRegionOfInterest = (record: IUser) => {
+export const getAreaOrRegionOfInterest = (record: IUser): string | void => {
     if (record.applicationData.gfw?.areaOrRegionOfInterest) {
         return record.applicationData.gfw.areaOrRegionOfInterest;
     }

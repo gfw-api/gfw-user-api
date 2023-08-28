@@ -93,14 +93,20 @@ const init: () => Promise<IInit> = async (): Promise<IInit> => {
 
                 app.use(koaLogger());
 
-                app.use(RWAPIMicroservice.bootstrap({
-                    logger,
-                    gatewayURL: process.env.GATEWAY_URL,
-                    microserviceToken: process.env.MICROSERVICE_TOKEN,
-                    fastlyEnabled: process.env.FASTLY_ENABLED as boolean | "true" | "false",
-                    fastlyServiceId: process.env.FASTLY_SERVICEID,
-                    fastlyAPIKey: process.env.FASTLY_APIKEY
-                }));
+                app.use(
+                    RWAPIMicroservice.bootstrap({
+                        logger,
+                        gatewayURL: process.env.GATEWAY_URL,
+                        microserviceToken: process.env.MICROSERVICE_TOKEN,
+                        fastlyEnabled: process.env.FASTLY_ENABLED as | boolean | 'true' | 'false',
+                        fastlyServiceId: process.env.FASTLY_SERVICEID,
+                        fastlyAPIKey: process.env.FASTLY_APIKEY,
+                        requireAPIKey: process.env.REQUIRE_API_KEY as boolean | 'true' | 'false' || true,
+                        awsCloudWatchLoggingEnabled: process.env.AWS_CLOUD_WATCH_LOGGING_ENABLED as boolean | 'true' | 'false' || true,
+                        awsRegion: process.env.AWS_REGION,
+                        awsCloudWatchLogStreamName: config.get('service.name'),
+                    }),
+                );
 
                 app.use(V1UserRouter.routes());
                 app.use(V2UserRouter.middleware());

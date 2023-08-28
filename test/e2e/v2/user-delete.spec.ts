@@ -3,7 +3,11 @@ import chai from 'chai';
 import UserModel from 'models/user';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 import chaiDateTime from 'chai-datetime';
 
 chai.should();
@@ -29,8 +33,10 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
-            .delete(`/api/v2/user/1234`);
+            .delete(`/api/v2/user/1234`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -39,13 +45,14 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a different user that has USER role should return a 401 \'Not authorized\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -54,13 +61,14 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a different user that has MANAGER role should return a 401 \'Not authorized\' error', async () => {
-        mockGetUserFromToken(USERS.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
 
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -69,11 +77,12 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as ADMIN role for a user that has no data should return a 404', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .delete(`/api/v2/user/${USERS.ADMIN.id}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
 
@@ -85,7 +94,7 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a different user that has ADMIN role should return a delete the user data', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const user = await new UserModel(createUserV1({
             applicationData: {
@@ -97,7 +106,8 @@ describe('V2 - Delete user tests', () => {
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 
@@ -130,7 +140,7 @@ describe('V2 - Delete user tests', () => {
     });
 
     it('Delete a user while being logged in as a MICROSERVICE should return a delete the user data', async () => {
-        mockGetUserFromToken(USERS.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const user = await new UserModel(createUserV1({
             applicationData: {
@@ -142,7 +152,8 @@ describe('V2 - Delete user tests', () => {
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 
@@ -182,14 +193,17 @@ describe('V2 - Delete user tests', () => {
                 }
             }
         })).save();
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
         const response = await requester
             .delete(`/api/v2/user/${user._id.toString()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
 

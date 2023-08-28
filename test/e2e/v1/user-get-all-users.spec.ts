@@ -4,7 +4,11 @@ import UserModel from 'models/user';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -29,8 +33,10 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while not being logged in should return a 401 \'Not authorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
-            .get(`/api/v1/user/obtain/all-users`);
+            .get(`/api/v1/user/obtain/all-users`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -40,11 +46,12 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a USER should return a 403 \'Forbidden\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -53,11 +60,12 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a MANAGER should return a 403 \'Forbidden\' error', async () => {
-        mockGetUserFromToken(USERS.MANAGER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MANAGER });
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -66,25 +74,27 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users while being logged in as a ADMIN should return a 200 (happy case)', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(0);
     });
 
     it('Get all users while being logged in should return a 200 and the user data (happy case)', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const userOne = await new UserModel(createUserV1()).save();
         const userTwo = await new UserModel(createUserV1()).save();
 
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('array').and.length(2);
@@ -131,7 +141,7 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with start and end date filters while being logged in should return a 200 and the user data filtered by created date', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         await new UserModel(createUserV1({ createdAt: new Date('2017-01-01') })).save();
         const userOne = await new UserModel(createUserV1({ createdAt: new Date('2018-01-01') })).save();
@@ -140,6 +150,7 @@ describe('V1 - Get all users tests', () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 start: '2017-12-01',
                 end: '2018-02-01'
@@ -169,7 +180,7 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with start date filter while being logged in should return a 200 unfiltered user list', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const userOne = await new UserModel(createUserV1({ createdAt: new Date('2018-01-01') })).save();
         const userTwo = await new UserModel(createUserV1({ createdAt: new Date('2019-01-01') })).save();
@@ -177,6 +188,7 @@ describe('V1 - Get all users tests', () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 start: '2017-12-01'
             });
@@ -223,7 +235,7 @@ describe('V1 - Get all users tests', () => {
     });
 
     it('Get all users with end date filter while being logged in should return a 200 unfiltered user list', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const userOne = await new UserModel(createUserV1({ createdAt: new Date('2018-01-01') })).save();
         const userTwo = await new UserModel(createUserV1({ createdAt: new Date('2019-01-01') })).save();
@@ -231,6 +243,7 @@ describe('V1 - Get all users tests', () => {
         const response = await requester
             .get(`/api/v1/user/obtain/all-users`)
             .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test')
             .query({
                 end: '2018-02-01'
             });

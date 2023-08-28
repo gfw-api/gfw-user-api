@@ -4,7 +4,11 @@ import UserModel from 'models/user';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -17,6 +21,7 @@ nock.enableNetConnect(process.env.HOST_IP);
 const sendCreateUserRequest = async (user: Record<string, any> = {}) => requester
     .post(`/api/v1/user`)
     .set('Authorization', `Bearer abcd`)
+    .set('x-api-key', 'api-key-test')
     .send({ ...user });
 
 describe('V1 - Create user tests', () => {
@@ -34,7 +39,11 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
-        const response = await requester.post(`/api/v1/user`);
+        mockValidateRequestWithApiKey({});
+        const response = await requester
+            .post(`/api/v1/user`)
+            .set('x-api-key', 'api-key-test');
+
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
         response.body.errors[0].should.have.property('status').and.equal(401);
@@ -43,7 +52,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await sendCreateUserRequest();
         response.status.should.equal(200);
@@ -62,7 +71,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = createUserV1();
         const response = await sendCreateUserRequest(user);
@@ -94,9 +103,11 @@ describe('V1 - Create user tests', () => {
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
         const user = await new UserModel(createUserV1()).save();
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
         const response = await sendCreateUserRequest(user);
@@ -107,7 +118,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV1({ sector: 'Government' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -116,7 +127,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV1({ sector: 'Governo' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -125,7 +136,7 @@ describe('V1 - Create user tests', () => {
     });
 
     it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV1({ sector: 'Not existing' });
         const response = await sendCreateUserRequest(user);
         response.status.should.equal(400);

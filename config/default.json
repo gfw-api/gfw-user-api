@@ -6,7 +6,8 @@
     "dirLogFile": null
   },
   "service": {
-    "port": 3100
+    "port": 3100,
+    "name": "gfw-user-api"
   },
   "salesforceIntegrationEnabled": true,
   "mongodb": {

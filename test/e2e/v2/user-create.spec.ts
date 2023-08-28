@@ -4,7 +4,12 @@ import UserModel from 'models/user';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, createUserV2, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    createUserV2,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -17,6 +22,7 @@ nock.enableNetConnect(process.env.HOST_IP);
 const sendCreateUserRequest = async (user: Record<string, any> = {}) => requester
     .post(`/api/v2/user`)
     .set('Authorization', `Bearer abcd`)
+    .set('x-api-key', 'api-key-test')
     .send({ ...user });
 
 describe('V2 - Create user tests', () => {
@@ -34,8 +40,10 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Create a user while not being logged in should return a 401 \'Unauthorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const response = await requester
             .post(`/api/v2/user`)
+            .set('x-api-key', 'api-key-test')
             .send({});
 
         response.status.should.equal(401);
@@ -46,7 +54,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - no user data)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await sendCreateUserRequest();
         response.status.should.equal(200);
@@ -73,7 +81,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = createUserV2();
         const response = await sendCreateUserRequest(user);
@@ -107,7 +115,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - aioCity and aioState merge into areaOrRegionOfInterest)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = createUserV2({}, {
             'gfw': {
@@ -156,7 +164,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Create a user while being logged in should return a 200 (happy case - complete user data with additional apps and additional gfw data)', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const user = createUserV2({}, { rw: { someKey: 'someValue' } }, { someGFWKey: 'someGFWValue' });
         const response = await sendCreateUserRequest(user);
@@ -193,9 +201,11 @@ describe('V2 - Create user tests', () => {
 
     it('Create a user that already exists should return a 400 \'Duplicated user\' error', async () => {
         const user = await new UserModel(createUserV1()).save();
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
         const response = await sendCreateUserRequest({});
@@ -206,7 +216,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Uses the provided sector if the value is one of the uniformized values', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV2({}, {}, { sector: 'Government' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -215,7 +225,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Uniformizes the provided sector if the value is one of the uniformized values in a different language', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV2({}, {}, { sector: 'Government' });
         const response = await sendCreateUserRequest(user);
         const dbUser = await UserModel.findById(response.body.data.id);
@@ -224,7 +234,7 @@ describe('V2 - Create user tests', () => {
     });
 
     it('Rejects unsupported sectors with 400 Bad Request and the appropriate error message', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
         const user = createUserV2({}, {}, { sector: 'Not existing' });
         const response = await sendCreateUserRequest(user);
         response.status.should.equal(400);

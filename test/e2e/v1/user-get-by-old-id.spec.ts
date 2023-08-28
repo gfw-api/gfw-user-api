@@ -5,7 +5,11 @@ import UserModel from 'models/user';
 import chaiDateTime from 'chai-datetime';
 import { USERS } from '../utils/test.constants';
 import { getTestServer } from '../utils/test-server';
-import { createUserV1, mockGetUserFromToken } from '../utils/helpers';
+import {
+    createUserV1,
+    mockValidateRequestWithApiKey,
+    mockValidateRequestWithApiKeyAndUserToken
+} from '../utils/helpers';
 
 chai.should();
 chai.use(chaiDateTime);
@@ -29,10 +33,12 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id without being authenticated should return a 401 \'Unauthorized\' error', async () => {
+        mockValidateRequestWithApiKey({});
         const user = await new UserModel(createUserV1()).save();
 
         const response = await requester
-            .get(`/api/v1/user/oldId/${user._id.toString()}`);
+            .get(`/api/v1/user/oldId/${user._id.toString()}`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(401);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -41,7 +47,7 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as a different should return a 403 \'Forbidden\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const oldId = 12345;
 
@@ -51,7 +57,8 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(403);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -66,15 +73,18 @@ describe('V1 - Get user by old id tests', () => {
             oldId
         })).save();
 
-        mockGetUserFromToken({
-            ...USERS.USER,
-            id: user._id.toString()
+        mockValidateRequestWithApiKeyAndUserToken({
+            user: {
+                ...USERS.USER,
+                id: user._id.toString()
+            }
         });
 
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -97,7 +107,7 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an ADMIN user should return a 200 and the user data (happy case)', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const oldId = 12345;
 
@@ -107,7 +117,8 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -130,7 +141,7 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an MICROSERVICE user should return a 200 and the user data (happy case)', async () => {
-        mockGetUserFromToken(USERS.MICROSERVICE);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.MICROSERVICE });
 
         const oldId = 12345;
 
@@ -140,7 +151,8 @@ describe('V1 - Get user by old id tests', () => {
 
         const response = await requester
             .get(`/api/v1/user/oldId/12345`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(200);
         response.body.should.have.property('data').and.be.an('object');
@@ -163,11 +175,12 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id for an invalid id should return a 404 \'User not found\' error', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(`/api/v1/user/oldId/1234`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -176,11 +189,12 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an ADMIN user for an valid id that does not exist on the database should return a 404 \'User not found\' error', async () => {
-        mockGetUserFromToken(USERS.ADMIN);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.ADMIN });
 
         const response = await requester
             .get(`/api/v1/user/oldId/${new mongoose.Types.ObjectId()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);
@@ -189,11 +203,12 @@ describe('V1 - Get user by old id tests', () => {
     });
 
     it('Get user by old id while being authenticated as an USER user for an valid id that does not exist on the database should return a 404 \'User not found\' error', async () => {
-        mockGetUserFromToken(USERS.USER);
+        mockValidateRequestWithApiKeyAndUserToken({ user: USERS.USER });
 
         const response = await requester
             .get(`/api/v1/user/oldId/${new mongoose.Types.ObjectId()}`)
-            .set('Authorization', `Bearer abcd`);
+            .set('Authorization', `Bearer abcd`)
+            .set('x-api-key', 'api-key-test');
 
         response.status.should.equal(404);
         response.body.should.have.property('errors').and.be.an('array').and.length(1);

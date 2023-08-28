@@ -1,6 +1,6 @@
 export default class ErrorSerializer {
 
-    static serializeValidationError(data: Record<string, any>, typeParam: string) {
+    static serializeValidationError(data: Record<string, any>, typeParam: string): Record<string, any> {
         const keys: string[] = Object.keys(data);
         let message: string = '';
         switch (typeParam) {
@@ -25,19 +25,7 @@ export default class ErrorSerializer {
         };
     }
 
-    static serializeValidationBodyErrors(data: Record<string, any>) {
-        const errors: any[] = [];
-        if (data) {
-            for (let i: number = 0, { length } = data; i < length; i++) {
-                errors.push(ErrorSerializer.serializeValidationError(data[i], 'body'));
-            }
-        }
-        return {
-            errors
-        };
-    }
-
-    static serializeError(status: number, message: string) {
+    static serializeError(status: number, message: string): Record<string, any> {
         return {
             errors: [{
                 status,
