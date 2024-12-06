@@ -12,7 +12,7 @@ services:
       MIGRATE_URI: <urlmigrate>
       NODE_PATH: app/src
       MICROSERVICE_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
-      MONGO_PORT_27017_TCP_ADDR: mongo
+      MONGO_PORT_27017_TCP_ADDR: gfw-user-mongo-develop
       FASTLY_ENABLED: "false"
       AWS_REGION: "us-east-1"
       REQUIRE_API_KEY: true
@@ -25,11 +25,11 @@ services:
       - ./app:/opt/gfw-user-api/app
 
   mongo:
-    image: mongo:3.4
+    image: mongo:3.6
     container_name: gfw-user-mongo-develop
     command: --smallfiles
     ports:
-      - "27019:27017"
+      - "27017"
     volumes:
       - $HOME/docker/data/dataset:/data/db
     restart: always
