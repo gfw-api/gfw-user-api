@@ -13,9 +13,11 @@ services:
       MONGO_PORT_27017_TCP_ADDR: gfw-user-mongo-develop
       FASTLY_ENABLED: "false"
       AWS_REGION: "us-east-1"
-      REQUIRE_API_KEY: true
       AWS_ACCESS_KEY_ID: "test"
       AWS_SECRET_ACCESS_KEY: "test"
+      REQUIRE_API_KEY: "false"
+      AWS_CLOUD_WATCH_LOGGING_ENABLED: "false"
+      GATEWAY_URL: "http://host.docker.internal:4566/_aws/execute-api/l0xikwwhja/prod"
     command: start
     links:
       - mongo
