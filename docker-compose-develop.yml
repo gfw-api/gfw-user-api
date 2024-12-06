@@ -3,12 +3,10 @@ services:
   develop:
     build: .
     ports:
-      - "8674:8674"
+      - "30540:3100"
     container_name: gfw-user-api-develop
-    env_file:
-      - dev.env
     environment:
-      PORT: 8674
+      PORT: 3100
       MIGRATE_URI: <urlmigrate>
       NODE_PATH: app/src
       MICROSERVICE_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
