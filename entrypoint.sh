@@ -2,6 +2,10 @@
 set -e
 
 case "$1" in
+    develop)
+        echo "Running Development Server"
+        exec yarn watch | ./node_modules/bunyan/bin/bunyan
+        ;;
     test)
         echo "Running Test"
         exec yarn test
